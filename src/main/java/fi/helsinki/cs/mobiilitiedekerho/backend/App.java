@@ -1,6 +1,9 @@
 package fi.helsinki.cs.mobiilitiedekerho.backend;
 
-import static spark.Spark.*;
+import fi.helsinki.cs.mobiilitiedekerho.backend.models.*;
+import spark.Spark;
+import spark.Response;
+import spark.Request;
 
 public class App
 {
@@ -10,6 +13,16 @@ public class App
     }
 
     private static void defineRoutes() {
-      get("/hello", (req, res) -> "Hello World");
+      Spark.get("/DescribeTask", (req, res) -> DescribeTask(req, res));
+    }
+
+    private static String DescribeTask(Request req, Response res) {
+      String task_id = req.queryParams("task_id");
+
+      if (task_id == null) {
+        return("Error: Task not found.");
+      }
+
+      return "task_id: " + task_id;
     }
 }
