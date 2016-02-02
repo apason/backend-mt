@@ -36,6 +36,10 @@ public class TaskService {
   }
   
   public List<Task> getAllTasks(int task_id) {
+      try(Connection con = sql2o.open()) {
+	  return con.createQuery(sql).executeAndFetch(Task.class);
+      }
+      
       return java.util.Collections.emptyList();
   }
 }
