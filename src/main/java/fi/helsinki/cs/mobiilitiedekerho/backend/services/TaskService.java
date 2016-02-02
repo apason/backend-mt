@@ -28,7 +28,11 @@ public class TaskService {
   }
   
   public void saveTask(Task task) {
-      
+      try (Connection con = sql2o.open()) {
+      con.createQuery(insertSql)
+          .addParameter("id", task_id)
+          .executeUpdate();
+      }
   }
   
   public List<Task> getAllTasks(int task_id) {
