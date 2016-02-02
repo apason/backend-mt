@@ -40,10 +40,10 @@ public class JsonResponse {
     public String toJson() {
         Gson gson = new Gson();
         JsonElement jsonElement = new JsonObject();
+        jsonElement.getAsJsonObject().addProperty("status", this.status);
         if (this.object != null) {
             jsonElement = gson.toJsonTree(this.object);
         }
-        jsonElement.getAsJsonObject().addProperty("status", this.status);
         return gson.toJson(jsonElement);
     }
 }
