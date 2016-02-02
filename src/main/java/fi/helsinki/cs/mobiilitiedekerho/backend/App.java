@@ -17,6 +17,6 @@ public class App
       
       AnswerResource answerResource = new AnswerResource(new AnswerService(sql2o));
       
-      
+      UserResource userResource = new UserResource(new UserService(sql2o));
     }
 }
