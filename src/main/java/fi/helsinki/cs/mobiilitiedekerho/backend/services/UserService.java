@@ -18,7 +18,7 @@ public class UserService {
 
     public User getUserById(int user_id) {
         String sql
-                = "SELECT *"
+                = "SELECT * "
                 + "FROM user "
                 + "WHERE id = :id";
 
@@ -26,7 +26,7 @@ public class UserService {
             List<User> users = con.createQuery(sql)
                     .addParameter("id", user_id)
                     .executeAndFetch(User.class);
-            
+
             if (users.isEmpty()) {
                 return null;
             } else {
@@ -37,7 +37,7 @@ public class UserService {
 
     public User authenticateUser(String email, String password) {
         String sql
-                = "SELECT *"
+                = "SELECT * "
                 + "FROM user "
                 + "WHERE email = :email AND password = :password";
 
@@ -57,7 +57,7 @@ public class UserService {
 
     public User authenticateUserByHash(String user_hash) {
         String sql
-                = "SELECT *"
+                = "SELECT * "
                 + "FROM user "
                 + "WHERE hash = :hash";
 
@@ -75,22 +75,11 @@ public class UserService {
     }
 
     public boolean createAuthHashForUser(int user_id) {
-
-        // Generate a new random sha-256 hash to be stored
-        // in the user database.
-        java.util.Random random = new java.util.Random();
-        int random_integer = random.nextInt();
-        String new_hash = "";
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(Integer.toString(random_integer).getBytes());
-            new_hash = Arrays.toString(md.digest());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
+        
+        String new_hash = this.generateRandomSHA256Hash();
+        
         String sql
-                = "UPDATE user"
+                = "UPDATE user "
                 + "SET hash = :hash "
                 + "WHERE id = :id";
 
@@ -102,6 +91,33 @@ public class UserService {
         }
 
         return true;
+    }
+
+    private String generateRandomSHA256Hash() {
+        // Generate a new random sha-256 hash to be stored
+        // in the user database.
+        java.util.Random random = new java.util.Random();
+        int random_integer = random.nextInt();
+
+        String base = Integer.toString(random_integer);
+
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(base.getBytes("UTF-8"));
+            StringBuffer hexString = new StringBuffer();
+
+            for (int i = 0; i < hash.length; i++) {
+                String hex = Integer.toHexString(0xff & hash[i]);
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+
+            return hexString.toString();
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     public List<User> getAllUsers(int user_id) {
