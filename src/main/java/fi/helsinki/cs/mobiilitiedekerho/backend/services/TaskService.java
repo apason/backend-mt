@@ -29,7 +29,7 @@ public class TaskService {
   
   public void saveTask(Task task) {
       try (Connection con = sql2o.open()) {
-      con.createQuery(insertSql)
+	  con.createQuery(insertSql)
           .addParameter("id", task_id)
           .executeUpdate();
       }
@@ -39,7 +39,5 @@ public class TaskService {
       try(Connection con = sql2o.open()) {
 	  return con.createQuery(sql).executeAndFetch(Task.class);
       }
-      
-      return java.util.Collections.emptyList();
   }
 }
