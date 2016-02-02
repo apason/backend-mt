@@ -9,9 +9,12 @@ public class JsonResponse {
     
     private Object object;
     
+    private JsonElement jsonElement;
+    
     public JsonResponse() {
         this.object = null;
         this.status = "";
+        this.jsonElement = new JsonObject();
     }
     
     public JsonResponse(Object object) {
@@ -37,13 +40,17 @@ public class JsonResponse {
         return this.object;
     }
     
+    public JsonResponse addPropery(String propery, String value) {
+        this.jsonElement.getAsJsonObject().addProperty(propery, value);
+        return(this);
+    }
+    
     public String toJson() {
         Gson gson = new Gson();
-        JsonElement jsonElement = new JsonObject();
-        jsonElement.getAsJsonObject().addProperty("status", this.status);
+        this.jsonElement.getAsJsonObject().addProperty("status", this.status);
         if (this.object != null) {
-            jsonElement = gson.toJsonTree(this.object);
+            this.jsonElement = gson.toJsonTree(this.object);
         }
-        return gson.toJson(jsonElement);
+        return gson.toJson(this.jsonElement);
     }
 }
