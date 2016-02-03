@@ -36,11 +36,11 @@ public class UserResource {
             setContentTypeToJson(res);
             return this.authenticateUser(req, res);
         });
-        
+
         Spark.get("/AuthenticateUserByHash", (req, res) -> {
             setContentTypeToJson(res);
             return this.authenticateUserByHash(req, res);
-        });        
+        });
     }
 
     private String describeUser(Request req, Response res) {
@@ -68,16 +68,16 @@ public class UserResource {
         String email = req.queryParams("email");
         String password = req.queryParams("password");
         JsonResponse jsonResponse = new JsonResponse();
-        
+
         if (email == null) {
             jsonResponse.setStatus("ParameterError");
             return jsonResponse.toJson();
         }
-        
+
         if (password == null) {
             jsonResponse.setStatus("ParameterError");
             return jsonResponse.toJson();
-        }    
+        }
 
         User user = this.userService.authenticateUser(email, password);
 
@@ -89,11 +89,11 @@ public class UserResource {
             return new JsonResponse().setObject(user).setStatus("Success").toJson();
         }
     }
-    
+
     private String authenticateUserByHash(Request req, Response res) {
         String user_hash = req.queryParams("user_hash");
         JsonResponse jsonResponse = new JsonResponse();
-        
+
         if (user_hash == null) {
             jsonResponse.setStatus("ParameterError");
             return jsonResponse.toJson();
@@ -106,5 +106,5 @@ public class UserResource {
         } else {
             return new JsonResponse().setObject(user).setStatus("Success").toJson();
         }
-    }    
+    }
 }

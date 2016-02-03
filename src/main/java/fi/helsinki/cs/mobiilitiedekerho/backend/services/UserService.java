@@ -6,7 +6,6 @@ import org.sql2o.*;
 
 import java.util.List;
 import java.security.MessageDigest;
-import java.util.Arrays;
 
 public class UserService {
 
@@ -75,9 +74,9 @@ public class UserService {
     }
 
     public boolean createAuthHashForUser(int user_id) {
-        
+
         String new_hash = this.generateRandomSHA256Hash();
-        
+
         String sql
                 = "UPDATE user "
                 + "SET hash = :hash "
