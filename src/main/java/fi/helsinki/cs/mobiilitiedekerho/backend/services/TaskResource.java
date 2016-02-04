@@ -11,10 +11,11 @@ import java.util.List;
 public class TaskResource {
 
     private final TaskService taskService;
-
-    public TaskResource(TaskService taskService) {
+    private final UserService userService;
+    
+    public TaskResource(TaskService taskService, UserService userService) {
         this.taskService = taskService;
-
+        this.userService = userService;
         setContentType();
 
         defineRoutes();
@@ -28,8 +29,26 @@ public class TaskResource {
 
     private void defineRoutes() {
         Spark.get("/DescribeTask", (req, res) -> {
-            return this.describeTask(req, res);
+            setContentType();
+            requireAuthentication(req, res);
+            return describeTask(req, res);
         });
+    }
+
+    private void requireAuthentication(Request req, Response res) {
+        String authHash = req.queryParams("auth_hash");
+
+        if (authHash == null) {
+            Spark.halt(401, authFailure());
+        }
+
+        if (userService.authenticateUserByHash(authHash) == null) {
+            Spark.halt(401, authFailure());
+        }
+    }
+
+    private String authFailure() {
+        return new JsonResponse().setStatus("AuthFailure").toJson();
     }
 
     private String describeTask(Request req, Response res) {
