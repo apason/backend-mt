@@ -13,24 +13,15 @@ import com.google.gson.JsonElement;
 import java.util.List;
 import java.lang.Integer;
 
-public class AnswerResource {
+public class AnswerResource extends Resource {
 
     private final AnswerService answerService;
-    private final UserService userService;
 
     public AnswerResource(AnswerService answerService, UserService userService) {
         this.answerService = answerService;
         this.userService = userService;
 
-        setContentType();
-
         defineRoutes();
-    }
-
-    private void setContentType() {
-        Spark.after((req, res) -> {
-            res.type("application/json");
-        });
     }
 
     private void defineRoutes() {
