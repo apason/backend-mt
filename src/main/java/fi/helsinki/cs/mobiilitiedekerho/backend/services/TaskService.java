@@ -14,7 +14,7 @@ public class TaskService {
         this.sql2o = sql2o;
     }
 
-    public List<Task> getTaskById(int task_id) {
+    public List<Task> getTaskById(int taskId) {
         String sql
                 = "SELECT *"
                 + "FROM task "
@@ -22,7 +22,7 @@ public class TaskService {
 
         try (Connection con = sql2o.open()) {
             List<Task> tasks = con.createQuery(sql)
-                    .addParameter("id", task_id)
+                    .addParameter("id", taskId)
                     .executeAndFetch(Task.class);
             return tasks;
         }

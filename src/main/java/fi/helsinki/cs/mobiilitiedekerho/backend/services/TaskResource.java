@@ -33,15 +33,15 @@ public class TaskResource {
     }
 
     private String describeTask(Request req, Response res) {
-        String task_id = req.queryParams("task_id");
+        String taskId = req.queryParams("task_id");
         JsonResponse jsonResponse = new JsonResponse();
 
-        if (task_id == null) {
+        if (taskId == null) {
             jsonResponse.setStatus("ParameterError");
             return jsonResponse.toJson();
         }
 
-        List<Task> tasks = taskService.getTaskById(Integer.parseInt(task_id));
+        List<Task> tasks = taskService.getTaskById(Integer.parseInt(taskId));
 
         if (tasks.isEmpty()) {
             jsonResponse.setStatus("TaskNotFoundError");
