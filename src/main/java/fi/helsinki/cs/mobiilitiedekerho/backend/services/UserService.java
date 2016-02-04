@@ -15,7 +15,7 @@ public class UserService {
         this.sql2o = sql2o;
     }
 
-    public User getUserById(int user_id) {
+    public User getUserById(int userId) {
         String sql
                 = "SELECT * "
                 + "FROM user "
@@ -23,7 +23,7 @@ public class UserService {
 
         try (Connection con = sql2o.open()) {
             List<User> users = con.createQuery(sql)
-                    .addParameter("id", user_id)
+                    .addParameter("id", userId)
                     .executeAndFetch(User.class);
 
             if (users.isEmpty()) {
@@ -54,7 +54,7 @@ public class UserService {
         }
     }
 
-    public User authenticateUserByHash(String user_hash) {
+    public User authenticateUserByHash(String userHash) {
         String sql
                 = "SELECT * "
                 + "FROM user "
@@ -62,7 +62,7 @@ public class UserService {
 
         try (Connection con = sql2o.open()) {
             List<User> users = con.createQuery(sql)
-                    .addParameter("hash", user_hash)
+                    .addParameter("hash", userHash)
                     .executeAndFetch(User.class);
 
             if (users.isEmpty()) {
@@ -73,9 +73,9 @@ public class UserService {
         }
     }
 
-    public boolean createAuthHashForUser(int user_id) {
+    public boolean createAuthHashForUser(int userId) {
 
-        String new_hash = this.generateRandomSHA256Hash();
+        String newHash = this.generateRandomSHA256Hash();
 
         String sql
                 = "UPDATE user "
@@ -84,8 +84,8 @@ public class UserService {
 
         try (Connection con = sql2o.open()) {
             con.createQuery(sql)
-                    .addParameter("hash", new_hash)
-                    .addParameter("id", user_id)
+                    .addParameter("hash", newHash)
+                    .addParameter("id", userId)
                     .executeUpdate();
         }
 
@@ -96,9 +96,9 @@ public class UserService {
         // Generate a new random sha-256 hash to be stored
         // in the user database.
         java.util.Random random = new java.util.Random();
-        int random_integer = random.nextInt();
+        int randomInteger = random.nextInt();
 
-        String base = Integer.toString(random_integer);
+        String base = Integer.toString(randomInteger);
 
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -119,7 +119,7 @@ public class UserService {
         }
     }
 
-    public List<User> getAllUsers(int user_id) {
+    public List<User> getAllUsers(int userId) {
         return java.util.Collections.emptyList();
     }
 }
