@@ -6,12 +6,15 @@ import org.sql2o.Sql2o;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import spark.Spark;
 
 public class App {
 
     public static void main(String[] args) {
         Sql2o sql2o = new Sql2o(App.configureHikariConnectionPool());
 
+        SparkConfiguration();
+                
         TaskService taskService = new TaskService(sql2o);
         AnswerService answerService = new AnswerService(sql2o);
         UserService userService = new UserService(sql2o);
@@ -31,5 +34,11 @@ public class App {
         config.addDataSourceProperty("prepStmtCacheSize", "250");
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
         return new HikariDataSource(config);
+    }
+
+    private static void SparkConfiguration() {
+        Spark.before((req, res) -> {
+            res.type("application/json");
+        });
     }
 }
