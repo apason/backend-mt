@@ -12,9 +12,7 @@ import com.google.gson.JsonElement;
 import java.util.List;
 import java.lang.Integer;
 
-public class UserResource {
-
-    private final UserService userService;
+public class UserResource extends Resource {
 
     public UserResource(UserService userService) {
         this.userService = userService;
@@ -22,24 +20,18 @@ public class UserResource {
         defineRoutes();
     }
 
-    private void setContentTypeToJson(Response res) {
-        res.type("application/json");
-    }
-
     private void defineRoutes() {
         Spark.get("/DescribeUser", (req, res) -> {
-            setContentTypeToJson(res);
-            return this.describeUser(req, res);
+            requireAuthentication(req, res);
+            return describeUser(req, res);
         });
 
         Spark.get("/AuthenticateUser", (req, res) -> {
-            setContentTypeToJson(res);
-            return this.authenticateUser(req, res);
+            return authenticateUser(req, res);
         });
 
         Spark.get("/AuthenticateUserByHash", (req, res) -> {
-            setContentTypeToJson(res);
-            return this.authenticateUserByHash(req, res);
+            return authenticateUserByHash(req, res);
         });
     }
 
@@ -79,13 +71,13 @@ public class UserResource {
             return jsonResponse.toJson();
         }
 
-        User user = this.userService.authenticateUser(email, password);
+        User user = userService.authenticateUser(email, password);
 
         if (user == null) {
             return new JsonResponse().setStatus("AuthFailure").toJson();
         } else {
-            this.userService.createAuthHashForUser(user.getId());
-            user = this.userService.getUserById(user.getId());
+            userService.createAuthHashForUser(user.getId());
+            user = userService.getUserById(user.getId());
             return new JsonResponse().setObject(user).setStatus("Success").toJson();
         }
     }
@@ -99,7 +91,7 @@ public class UserResource {
             return jsonResponse.toJson();
         }
 
-        User user = this.userService.authenticateUserByHash(userHash);
+        User user = userService.authenticateUserByHash(userHash);
 
         if (user == null) {
             return new JsonResponse().setStatus("AuthFailure").toJson();

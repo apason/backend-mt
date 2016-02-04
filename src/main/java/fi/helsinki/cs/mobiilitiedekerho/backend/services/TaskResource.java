@@ -8,27 +8,21 @@ import spark.Request;
 
 import java.util.List;
 
-public class TaskResource {
+public class TaskResource extends Resource {
 
     private final TaskService taskService;
 
-    public TaskResource(TaskService taskService) {
+    public TaskResource(TaskService taskService, UserService userService) {
         this.taskService = taskService;
-
-        setContentType();
+        this.userService = userService;
 
         defineRoutes();
     }
 
-    private void setContentType() {
-        Spark.after((req, res) -> {
-            res.type("application/json");
-        });
-    }
-
     private void defineRoutes() {
         Spark.get("/DescribeTask", (req, res) -> {
-            return this.describeTask(req, res);
+            requireAuthentication(req, res);
+            return describeTask(req, res);
         });
     }
 

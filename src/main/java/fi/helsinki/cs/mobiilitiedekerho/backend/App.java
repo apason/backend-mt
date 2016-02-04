@@ -6,19 +6,22 @@ import org.sql2o.Sql2o;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import spark.Spark;
 
 public class App {
 
     public static void main(String[] args) {
         Sql2o sql2o = new Sql2o(App.configureHikariConnectionPool());
 
-      TaskService   taskService   = new TaskService  (sql2o);
-      AnswerService answerService = new AnswerService(sql2o);
-      UserService   userService   = new UserService  (sql2o);
-      
-      TaskResource   taskResource   = new TaskResource  (taskService);
-      AnswerResource answerResource = new AnswerResource(answerService, userService);
-      UserResource   userResource   = new UserResource  (userService);
+        SparkConfiguration();
+                
+        TaskService taskService = new TaskService(sql2o);
+        AnswerService answerService = new AnswerService(sql2o);
+        UserService userService = new UserService(sql2o);
+
+        TaskResource taskResource = new TaskResource(taskService, userService);
+        AnswerResource answerResource = new AnswerResource(answerService, userService);
+        UserResource userResource = new UserResource(userService);
 
     }
 
@@ -31,5 +34,11 @@ public class App {
         config.addDataSourceProperty("prepStmtCacheSize", "250");
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
         return new HikariDataSource(config);
+    }
+
+    private static void SparkConfiguration() {
+        Spark.before((req, res) -> {
+            res.type("application/json");
+        });
     }
 }
