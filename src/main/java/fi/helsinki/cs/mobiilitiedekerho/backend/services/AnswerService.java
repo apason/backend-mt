@@ -1,6 +1,8 @@
 package fi.helsinki.cs.mobiilitiedekerho.backend.services;
 import fi.helsinki.cs.mobiilitiedekerho.backend.models.Answer;
 
+import static java.lang.System.out;
+
 import java.util.Date;
 
 import java.sql.Timestamp;
@@ -70,4 +72,70 @@ public class AnswerService {
 	}
 	return answer;
     }
+
+    public String enableAnswer(int answerId, int userId){
+	
+	String sql =
+	    "SELECT * " +
+	    "FROM answer "+
+	    "WHERE id = :aid " +
+	    "AND user_id = :uid";
+
+	System.out.print("" + answerId + " " + userId + "\n" + sql);
+	
+	try(Connection con = sql2o.open()){
+	    List<Answer> answers = con.createQuery(sql)
+		.throwOnMappingFailure(false)
+		.addParameter("aid", answerId)
+		.addParameter("uid", userId)
+		.executeAndFetch(Answer.class);
+
+	    if(answers.size() != 1)
+		return "InvalidPermissions";
+	    else{
+		sql =
+		    "UPDATE answer SET " +
+		    "loaded = NOW(), " +
+		    "enabled = true " +
+		    "WHERE id = :id";
+		
+		con.createQuery(sql)
+		    .addParameter("id", answerId)
+		    .executeUpdate();
+
+		return "Success";
+	    }
+	}
+    }
+
+
+    public String deleteAnswer(int answerId, int userId){
+	String sql =
+	    "SELECT * " +
+	    "FROM answer "+
+	    "WHERE id = :aid" +
+	    "AND user_id :uid";
+
+	try(Connection con = sql2o.open()){
+	    List<Answer> answers = con.createQuery(sql)
+		.addParameter("aid", answerId)
+		.addParameter("uid", userId)
+		.executeAndFetch(Answer.class);
+
+	    if(answers.size() != 1)
+		return "InvalidPermissions";
+	    else{
+		sql =
+		    "DELETE FROM answer " +
+		    "WHERE id = :d";
+
+		con.createQuery(sql)
+		    .addParameter("id", answerId)
+		    .executeUpdate();
+
+		return "Success";
+	    }
+	}
+    }
 }
+

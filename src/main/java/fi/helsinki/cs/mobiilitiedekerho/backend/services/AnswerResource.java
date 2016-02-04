@@ -38,17 +38,68 @@ public class AnswerResource {
 	Spark.get("/StartAnswerUpload", (req, res) -> {
 		return this.startAnswerUpload(req, res);
 	    });
+	Spark.get("/EndAnswerUpload", (req, res) -> {
+		return this.endAnswerUpload(req, res);
+	    });
+    }
+
+    private String endAnswerUpload(Request req, Response res){
+	String uploadStatus = req.queryParams("upload_status");
+	String answerIdString = req.queryParams("answer_id");
+	String userHash = req.queryParams("user_hash");
+	Integer answerId;
+
+	User user;
+
+	JsonResponse jsonResponse = new JsonResponse();
+
+	if(uploadStatus == null || answerIdString == null || userHash == null){
+	    jsonResponse.setStatus("ParameterError");
+	    return jsonResponse.toJson();
+	}
+
+	try{
+	    answerId = Integer.parseInt(answerIdString);
+	}
+	catch(Exception e){
+	    jsonResponse.setStatus("InvalidAnswerId");
+	    return jsonResponse.toJson();
+	}
+	    
+
+	user = userService.authenticateUserByHash(userHash);
+
+	if(user == null){
+	    jsonResponse.setStatus("InvalidUserHash");
+	    return jsonResponse.toJson();
+	}
+
+
+	if(uploadStatus.equals("success")){
+	    answerService.enableAnswer(answerId, user.getId());
+	    jsonResponse.setStatus("success");
+	}
+	else if(uploadStatus.equals("failure")){
+	    answerService.deleteAnswer(answerId, user.getId());
+	    jsonResponse.setStatus("success");
+	}
+	else
+	    jsonResponse.setStatus("InvalidStatus");
+	
+	return jsonResponse.toJson();
+	
     }
 
     private String startAnswerUpload(Request req, Response res){
 	String userHash = req.queryParams("user_hash");
 	String taskId   = req.queryParams("task_id");
-	User user = userService.authenticateUserByHash(userHash);
 	
 	JsonResponse jsonResponse = new JsonResponse();
 
+	User user = userService.authenticateUserByHash(userHash);
+
 	if(user == null || taskId == null){
-	    jsonResponse.setStatus("ParameterErrorOrInvalidUserHash");
+	    jsonResponse.setStatus("ParameterError"); //or invalid user hash
 	    return jsonResponse.toJson();
 	}
 
