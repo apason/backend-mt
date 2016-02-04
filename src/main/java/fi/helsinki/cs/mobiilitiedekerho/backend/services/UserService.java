@@ -120,6 +120,11 @@ public class UserService {
     }
 
     public List<User> getAllUsers(int userId) {
-        return java.util.Collections.emptyList();
+        String sql
+                = "SELECT *"
+                + "FROM user";
+        try (Connection con = sql2o.open()) {
+            return con.createQuery(sql).executeAndFetch(User.class);
+        }
     }
 }
