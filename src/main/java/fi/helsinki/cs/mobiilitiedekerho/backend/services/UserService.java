@@ -75,7 +75,7 @@ public class UserService {
 
     public boolean createAuthHashForUser(int userId) {
 
-        String newHash = this.generateRandomSHA256Hash();
+        String newHash = generateRandomSHA256Hash();
 
         String sql
                 = "UPDATE user "
