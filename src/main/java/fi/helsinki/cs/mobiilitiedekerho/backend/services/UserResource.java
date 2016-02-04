@@ -44,15 +44,15 @@ public class UserResource {
     }
 
     private String describeUser(Request req, Response res) {
-        String user_id = req.queryParams("user_id");
+        String userId = req.queryParams("user_id");
         JsonResponse jsonResponse = new JsonResponse();
 
-        if (user_id == null) {
+        if (userId == null) {
             jsonResponse.setStatus("ParameterError");
             return jsonResponse.toJson();
         }
 
-        User user = userService.getUserById(Integer.parseInt(user_id));
+        User user = userService.getUserById(Integer.parseInt(userId));
 
         if (user == null) {
             jsonResponse.setStatus("UserNotFoundError");
@@ -91,15 +91,15 @@ public class UserResource {
     }
 
     private String authenticateUserByHash(Request req, Response res) {
-        String user_hash = req.queryParams("user_hash");
+        String userHash = req.queryParams("user_hash");
         JsonResponse jsonResponse = new JsonResponse();
 
-        if (user_hash == null) {
+        if (userHash == null) {
             jsonResponse.setStatus("ParameterError");
             return jsonResponse.toJson();
         }
 
-        User user = this.userService.authenticateUserByHash(user_hash);
+        User user = this.userService.authenticateUserByHash(userHash);
 
         if (user == null) {
             return new JsonResponse().setStatus("AuthFailure").toJson();
