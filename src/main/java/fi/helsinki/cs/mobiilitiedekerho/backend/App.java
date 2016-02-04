@@ -12,11 +12,14 @@ public class App {
     public static void main(String[] args) {
         Sql2o sql2o = new Sql2o(App.configureHikariConnectionPool());
 
-        TaskResource taskResource = new TaskResource(new TaskService(sql2o));
+      TaskService   taskService   = new TaskService  (sql2o);
+      AnswerService answerService = new AnswerService(sql2o);
+      UserService   userService   = new UserService  (sql2o);
+      
+      TaskResource   taskResource   = new TaskResource  (taskService);
+      AnswerResource answerResource = new AnswerResource(answerService, userService);
+      UserResource   userResource   = new UserResource  (userService);
 
-        AnswerResource answerResource = new AnswerResource(new AnswerService(sql2o));
-
-        UserResource userResource = new UserResource(new UserService(sql2o));
     }
 
     private static HikariDataSource configureHikariConnectionPool() {
