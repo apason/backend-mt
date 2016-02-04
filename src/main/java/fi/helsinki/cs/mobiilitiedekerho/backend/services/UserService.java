@@ -119,7 +119,7 @@ public class UserService {
         }
     }
 
-    public List<User> getAllUsers(int userId) {
+    public List<User> getAllUsers() {
         String sql
                 = "SELECT *"
                 + "FROM user";
