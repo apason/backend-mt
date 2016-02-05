@@ -15,8 +15,8 @@ import java.lang.Integer;
 public class UserResource extends Resource {
 
     public UserResource(UserService userService) {
-        this.userService = userService;
-
+        super(userService);
+        
         defineRoutes();
     }
 
@@ -44,7 +44,7 @@ public class UserResource extends Resource {
             return jsonResponse.toJson();
         }
 
-        User user = userService.getUserById(Integer.parseInt(userId));
+        User user = getUserService().getUserById(Integer.parseInt(userId));
 
         if (user == null) {
             jsonResponse.setStatus("UserNotFoundError");
@@ -71,13 +71,13 @@ public class UserResource extends Resource {
             return jsonResponse.toJson();
         }
 
-        User user = userService.authenticateUser(email, password);
+        User user = getUserService().authenticateUser(email, password);
 
         if (user == null) {
             return new JsonResponse().setStatus("AuthFailure").toJson();
         } else {
-            userService.createAuthHashForUser(user.getId());
-            user = userService.getUserById(user.getId());
+            getUserService().createAuthHashForUser(user.getId());
+            user = getUserService().getUserById(user.getId());
             return new JsonResponse().setObject(user).setStatus("Success").toJson();
         }
     }
@@ -91,7 +91,7 @@ public class UserResource extends Resource {
             return jsonResponse.toJson();
         }
 
-        User user = userService.authenticateUserByHash(userHash);
+        User user = getUserService().authenticateUserByHash(userHash);
 
         if (user == null) {
             return new JsonResponse().setStatus("AuthFailure").toJson();
