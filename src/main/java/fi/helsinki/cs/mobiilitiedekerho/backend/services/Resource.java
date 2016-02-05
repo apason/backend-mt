@@ -8,14 +8,20 @@ abstract public class Resource {
 
     UserService userService;
 
+    public Resource(UserService userService){
+	this.userService = userService;
+    }
+    public Resource(){
+    }
+    
     void requireAuthentication(Request req, Response res) {
-        String authHash = req.queryParams("auth_hash");
+        String userHash = req.queryParams("user_hash");
 
-        if (authHash == null) {
+        if (userHash == null) {
             Spark.halt(401, authFailure());
         }
 
-        if (userService.authenticateUserByHash(authHash) == null) {
+        if (userService.authenticateUserByHash(userHash) == null) {
             Spark.halt(401, authFailure());
         }
     }

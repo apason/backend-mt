@@ -81,8 +81,6 @@ public class AnswerService {
 	    "WHERE id = :aid " +
 	    "AND user_id = :uid";
 
-	System.out.print("" + answerId + " " + userId + "\n" + sql);
-	
 	try(Connection con = sql2o.open()){
 	    List<Answer> answers = con.createQuery(sql)
 		.throwOnMappingFailure(false)

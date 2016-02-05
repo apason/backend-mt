@@ -12,25 +12,18 @@ import com.google.gson.JsonElement;
 import java.util.List;
 import java.lang.Integer;
 
-public class AnswerResource {
+public class AnswerResource extends Resource{
     private final AnswerService answerService;
     private final UserService userService;
 
     public AnswerResource(AnswerService answerService, UserService userService) {
+	super(userService);
 	this.answerService = answerService;
 	this.userService   = userService;
-    
-	setContentType();
     
 	defineRoutes();
     }
   
-    private void setContentType() {
-	Spark.after((req, res) -> {
-		res.type("application/json");
-	    });
-    }
-
     private void defineRoutes() {
 	Spark.get("/DescribeAnswer", (req, res) -> {
 		return this.describeAnswer(req, res);
@@ -96,10 +89,12 @@ public class AnswerResource {
 	
 	JsonResponse jsonResponse = new JsonResponse();
 
+	this.requireAuthentication(req, res);
+	
 	User user = userService.authenticateUserByHash(userHash);
 
-	if(user == null || taskId == null){
-	    jsonResponse.setStatus("ParameterError"); //or invalid user hash
+	if(taskId == null){
+	    jsonResponse.setStatus("ParameterError");
 	    return jsonResponse.toJson();
 	}
 
