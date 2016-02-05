@@ -19,8 +19,8 @@ public class App {
         AnswerService answerService = new AnswerService(sql2o);
         UserService userService = new UserService(sql2o);
 
-        TaskResource taskResource = new TaskResource(taskService, userService);
-        AnswerResource answerResource = new AnswerResource(answerService, userService);
+        TaskResource taskResource = new TaskResource(userService, taskService);
+        AnswerResource answerResource = new AnswerResource(userService, answerService);
         UserResource userResource = new UserResource(userService);
 
     }
