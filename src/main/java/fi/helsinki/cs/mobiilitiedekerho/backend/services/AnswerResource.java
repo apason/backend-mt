@@ -24,13 +24,16 @@ public class AnswerResource extends Resource{
   
     private void defineRoutes() {
 	Spark.get("/DescribeAnswer", (req, res) -> {
+                requireAuthentication(req, res);
 		return this.describeAnswer(req, res);
 	    });
 	Spark.get("/StartAnswerUpload", (req, res) -> {
-		return this.startAnswerUpload(req, res);
+		requireAuthentication(req, res);
+                return this.startAnswerUpload(req, res);
 	    });
 	Spark.get("/EndAnswerUpload", (req, res) -> {
-		return this.endAnswerUpload(req, res);
+		requireAuthentication(req, res);
+                return this.endAnswerUpload(req, res);
 	    });
     }
 
