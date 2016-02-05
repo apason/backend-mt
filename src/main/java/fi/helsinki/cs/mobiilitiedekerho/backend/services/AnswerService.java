@@ -2,8 +2,6 @@ package fi.helsinki.cs.mobiilitiedekerho.backend.services;
 
 import fi.helsinki.cs.mobiilitiedekerho.backend.models.Answer;
 
-import static java.lang.System.out;
-
 import java.util.Date;
 
 import java.sql.Timestamp;
@@ -41,7 +39,7 @@ public class AnswerService {
 	}
     }
     
-    public List<Answer> setInitialAnswer(Integer userId, Integer taskId){
+    public Answer setInitialAnswer(Integer userId, Integer taskId){
 	Date date = new Date();
 	SimpleDateFormat sdf = new SimpleDateFormat("MM+dd+yyyy+h+mm+ss+a");
 
@@ -50,7 +48,7 @@ public class AnswerService {
 	int addedKey = -1;
 	
 	String sql =
-	    "insert into answer " +
+	    "INSERT INTO answer " +
 	    "(issued, enabled, task_id, user_id, uri) " +
 	    "VALUES " +
 	    "(NOW(), false, :task_id, :user_id, :uri)";
@@ -76,7 +74,12 @@ public class AnswerService {
 		.addParameter("id", addedKey)
 		.executeAndFetch(Answer.class);
 	}
-	return answer;
+	
+        if (answer.isEmpty()) {
+            return null;
+        } else {
+            return answer.get(0);
+        }
     }
 
     public String enableAnswer(int answerId, int userId){

@@ -99,17 +99,17 @@ public class AnswerResource extends Resource{
 	    return jsonResponse.toJson();
 	}
 
-	List<Answer> answer = getAnswerService().setInitialAnswer(user.getId(), Integer.parseInt(taskId));
+	Answer answer = getAnswerService().setInitialAnswer(user.getId(), Integer.parseInt(taskId));
 
-	if(answer == null || answer.isEmpty()){
+	if(answer == null){
 	    jsonResponse.setStatus("UnexpectedError");
 	    return jsonResponse.toJson();
 	}
 
 	return jsonResponse
 	    .addPropery("task_id", taskId)
-	    .addPropery("answer_id", "" + answer.get(0).getId())
-	    .addPropery("answer_uri", answer.get(0).getUri())
+	    .addPropery("answer_id", "" + answer.getId())
+	    .addPropery("answer_uri", answer.getUri())
 	    .setStatus("Success")
 	    .toJson();
 
