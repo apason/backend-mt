@@ -14,12 +14,10 @@ import java.lang.Integer;
 
 public class AnswerResource extends Resource{
     private final AnswerService answerService;
-    private final UserService userService;
 
-    public AnswerResource(AnswerService answerService, UserService userService) {
+    public AnswerResource(UserService userService, AnswerService answerService) {
 	super(userService);
-	this.answerService = answerService;
-	this.userService   = userService;
+        this.answerService = answerService;
     
 	defineRoutes();
     }
@@ -60,7 +58,7 @@ public class AnswerResource extends Resource{
 	}
 	    
 
-	user = userService.authenticateUserByHash(userHash);
+	user = getUserService().authenticateUserByHash(userHash);
 
 	if(user == null){
 	    jsonResponse.setStatus("InvalidUserHash");
@@ -69,11 +67,11 @@ public class AnswerResource extends Resource{
 
 
 	if(uploadStatus.equals("success")){
-	    answerService.enableAnswer(answerId, user.getId());
+	    getAnswerService().enableAnswer(answerId, user.getId());
 	    jsonResponse.setStatus("success");
 	}
 	else if(uploadStatus.equals("failure")){
-	    answerService.deleteAnswer(answerId, user.getId());
+	    getAnswerService().deleteAnswer(answerId, user.getId());
 	    jsonResponse.setStatus("success");
 	}
 	else
@@ -91,14 +89,14 @@ public class AnswerResource extends Resource{
 
 	this.requireAuthentication(req, res);
 	
-	User user = userService.authenticateUserByHash(userHash);
+	User user = getUserService().authenticateUserByHash(userHash);
 
 	if(taskId == null){
 	    jsonResponse.setStatus("ParameterError");
 	    return jsonResponse.toJson();
 	}
 
-	List<Answer> answer = answerService.setInitialAnswer(user.getId(), Integer.parseInt(taskId));
+	List<Answer> answer = getAnswerService().setInitialAnswer(user.getId(), Integer.parseInt(taskId));
 
 	if(answer == null || answer.isEmpty()){
 	    jsonResponse.setStatus("UnexpectedError");
@@ -125,7 +123,7 @@ public class AnswerResource extends Resource{
 	    return jsonResponse.toJson();
 	}
 
-	List<Answer> answers = answerService.getAnswerById(Integer.parseInt(answerId));
+	List<Answer> answers = getAnswerService().getAnswerById(Integer.parseInt(answerId));
       
 	if (answers.isEmpty()) {
 	    jsonResponse.setStatus("AnswerNotFoundError");
@@ -135,5 +133,9 @@ public class AnswerResource extends Resource{
 	jsonResponse.setObject(answers.get(0));
       
 	return jsonResponse.setStatus("Success").toJson();
+    }
+
+    public AnswerService getAnswerService() {
+        return answerService;
     }
 }
