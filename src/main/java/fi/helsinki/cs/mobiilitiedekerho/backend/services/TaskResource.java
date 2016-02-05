@@ -35,14 +35,14 @@ public class TaskResource extends Resource {
             return jsonResponse.toJson();
         }
 
-        List<Task> tasks = getTaskService().getTaskById(Integer.parseInt(taskId));
+        Task task = getTaskService().getTaskById(Integer.parseInt(taskId));
 
-        if (tasks.isEmpty()) {
+        if (task == null) {
             jsonResponse.setStatus("TaskNotFoundError");
             return jsonResponse.toJson();
         }
 
-        jsonResponse.setObject(tasks.get(0));
+        jsonResponse.setObject(task);
 
         return jsonResponse.setStatus("Success").toJson();
     }
