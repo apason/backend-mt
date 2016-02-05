@@ -22,7 +22,7 @@ public class AnswerService {
 	this.sql2o = sql2o;
     }
 
-    public List<Answer> getAnswerById(int answerId) {
+    public Answer getAnswerById(int answerId) {
 	String sql =
 	    "SELECT *" +
 	    "FROM answer " +
@@ -32,7 +32,12 @@ public class AnswerService {
 	    List<Answer> answers = con.createQuery(sql)
 		.addParameter("id", answerId)
 		.executeAndFetch(Answer.class);
-	    return answers;
+            
+            if (answers.isEmpty()) {
+                return null;
+            } else {
+                return answers.get(0);
+            }
 	}
     }
     

@@ -126,14 +126,14 @@ public class AnswerResource extends Resource{
 	    return jsonResponse.toJson();
 	}
 
-	List<Answer> answers = getAnswerService().getAnswerById(Integer.parseInt(answerId));
+	Answer answer = getAnswerService().getAnswerById(Integer.parseInt(answerId));
       
-	if (answers.isEmpty()) {
+	if (answer == null) {
 	    jsonResponse.setStatus("AnswerNotFoundError");
 	    return jsonResponse.toJson();
 	}
       
-	jsonResponse.setObject(answers.get(0));
+	jsonResponse.setObject(answer);
       
 	return jsonResponse.setStatus("Success").toJson();
     }
