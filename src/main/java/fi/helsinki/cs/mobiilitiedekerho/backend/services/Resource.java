@@ -6,14 +6,12 @@ import spark.Spark;
 
 abstract public class Resource {
 
-    UserService userService;
-
-    public Resource(UserService userService){
-	this.userService = userService;
-    }
-    public Resource(){
-    }
+    private final UserService userService;
     
+    public Resource(UserService userService) {
+        this.userService = userService;
+    }
+        
     void requireAuthentication(Request req, Response res) {
         String userHash = req.queryParams("user_hash");
 
@@ -21,12 +19,16 @@ abstract public class Resource {
             Spark.halt(401, authFailure());
         }
 
-        if (userService.authenticateUserByHash(userHash) == null) {
+        if (getUserService().authenticateUserByHash(userHash) == null) {
             Spark.halt(401, authFailure());
         }
     }
 
     String authFailure() {
         return new JsonResponse().setStatus("AuthFailure").toJson();
+    }
+
+    UserService getUserService() {
+        return userService;
     }
 }
