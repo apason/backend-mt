@@ -12,10 +12,10 @@ public class TaskResource extends Resource {
 
     private final TaskService taskService;
 
-    public TaskResource(TaskService taskService, UserService userService) {
+    public TaskResource(UserService userService, TaskService taskService) {
+        super(userService);
         this.taskService = taskService;
-        this.userService = userService;
-
+        
         defineRoutes();
     }
 
@@ -35,7 +35,7 @@ public class TaskResource extends Resource {
             return jsonResponse.toJson();
         }
 
-        List<Task> tasks = taskService.getTaskById(Integer.parseInt(taskId));
+        List<Task> tasks = getTaskService().getTaskById(Integer.parseInt(taskId));
 
         if (tasks.isEmpty()) {
             jsonResponse.setStatus("TaskNotFoundError");
@@ -45,5 +45,9 @@ public class TaskResource extends Resource {
         jsonResponse.setObject(tasks.get(0));
 
         return jsonResponse.setStatus("Success").toJson();
+    }
+
+    public TaskService getTaskService() {
+        return taskService;
     }
 }
