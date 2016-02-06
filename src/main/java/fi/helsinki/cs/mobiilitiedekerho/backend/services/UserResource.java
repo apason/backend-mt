@@ -77,7 +77,7 @@ public class UserResource extends Resource {
         if (!user.isPresent()) {
             return new JsonResponse().setStatus("AuthFailure").toJson();
         } else {
-            getUserService().createAuthHashForUser(user.get().getId());
+            getUserService().createHashForUser(user.get().getId());
             user = getUserService().getUserById(user.get().getId());
             return new JsonResponse().setObject(user.get()).setStatus("Success").toJson();
         }

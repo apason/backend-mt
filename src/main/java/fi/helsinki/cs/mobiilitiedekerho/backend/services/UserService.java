@@ -74,7 +74,7 @@ public class UserService {
         }
     }
 
-    public boolean createAuthHashForUser(int userId) {
+    public boolean createHashForUser(int userId) {
 
         String newHash = generateRandomSHA256Hash();
 
