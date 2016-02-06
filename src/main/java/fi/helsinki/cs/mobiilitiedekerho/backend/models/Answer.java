@@ -3,6 +3,7 @@ import java.util.Date;
 
 public class Answer {
     private int id;
+    private Date issued;
     private Date loaded;
     private boolean enabled;
     private int task_id;
@@ -16,6 +17,14 @@ public class Answer {
     public void setId(int id) {
         this.id = id;
     }
+
+    public Date getIssued() {
+        return issued;
+    }
+
+    public void setIssued(Date issued) {
+        this.issued = issued;
+    }    
 
     public Date getLoaded() {
         return loaded;
