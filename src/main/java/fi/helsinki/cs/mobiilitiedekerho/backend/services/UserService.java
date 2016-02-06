@@ -6,6 +6,7 @@ import org.sql2o.*;
 
 import java.util.List;
 import java.security.MessageDigest;
+import java.util.Optional;
 
 public class UserService {
 
@@ -15,7 +16,7 @@ public class UserService {
         this.sql2o = sql2o;
     }
 
-    public User getUserById(int userId) {
+    public Optional<User> getUserById(int userId) {
         String sql
                 = "SELECT * "
                 + "FROM user "
@@ -27,14 +28,14 @@ public class UserService {
                     .executeAndFetch(User.class);
 
             if (users.isEmpty()) {
-                return null;
+                return Optional.empty();
             } else {
-                return users.get(0);
+                return Optional.of(users.get(0));
             }
         }
     }
 
-    public User authenticateUser(String email, String password) {
+    public Optional<User> authenticateUser(String email, String password) {
         String sql
                 = "SELECT * "
                 + "FROM user "
@@ -47,14 +48,14 @@ public class UserService {
                     .executeAndFetch(User.class);
 
             if (users.isEmpty()) {
-                return null;
+                return Optional.empty();
             } else {
-                return users.get(0);
+                return Optional.of(users.get(0));
             }
         }
     }
 
-    public User authenticateUserByHash(String userHash) {
+    public Optional<User> authenticateUserByHash(String userHash) {
         String sql
                 = "SELECT * "
                 + "FROM user "
@@ -66,9 +67,9 @@ public class UserService {
                     .executeAndFetch(User.class);
 
             if (users.isEmpty()) {
-                return null;
+                return Optional.empty();
             } else {
-                return users.get(0);
+                return Optional.of(users.get(0));
             }
         }
     }

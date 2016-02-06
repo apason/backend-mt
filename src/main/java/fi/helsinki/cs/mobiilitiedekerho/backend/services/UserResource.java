@@ -11,6 +11,7 @@ import com.google.gson.JsonElement;
 
 import java.util.List;
 import java.lang.Integer;
+import java.util.Optional;
 
 public class UserResource extends Resource {
 
@@ -44,14 +45,14 @@ public class UserResource extends Resource {
             return jsonResponse.toJson();
         }
 
-        User user = getUserService().getUserById(Integer.parseInt(userId));
+        Optional<User> user = getUserService().getUserById(Integer.parseInt(userId));
 
-        if (user == null) {
+        if (!user.isPresent()) {
             jsonResponse.setStatus("UserNotFoundError");
             return jsonResponse.toJson();
         }
 
-        jsonResponse.setObject(user);
+        jsonResponse.setObject(user.get());
 
         return jsonResponse.setStatus("Success").toJson();
     }
@@ -71,14 +72,14 @@ public class UserResource extends Resource {
             return jsonResponse.toJson();
         }
 
-        User user = getUserService().authenticateUser(email, password);
+        Optional<User> user = getUserService().authenticateUser(email, password);
 
-        if (user == null) {
+        if (!user.isPresent()) {
             return new JsonResponse().setStatus("AuthFailure").toJson();
         } else {
-            getUserService().createAuthHashForUser(user.getId());
-            user = getUserService().getUserById(user.getId());
-            return new JsonResponse().setObject(user).setStatus("Success").toJson();
+            getUserService().createAuthHashForUser(user.get().getId());
+            user = getUserService().getUserById(user.get().getId());
+            return new JsonResponse().setObject(user.get()).setStatus("Success").toJson();
         }
     }
 
@@ -91,12 +92,12 @@ public class UserResource extends Resource {
             return jsonResponse.toJson();
         }
 
-        User user = getUserService().authenticateUserByHash(userHash);
+        Optional<User> user = getUserService().authenticateUserByHash(userHash);
 
-        if (user == null) {
+        if (!user.isPresent()) {
             return new JsonResponse().setStatus("AuthFailure").toJson();
         } else {
-            return new JsonResponse().setObject(user).setStatus("Success").toJson();
+            return new JsonResponse().setObject(user.get()).setStatus("Success").toJson();
         }
     }
 }

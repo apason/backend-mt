@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import org.sql2o.*;
 
 import java.util.List;
+import java.util.Optional;
 
 public class AnswerService {
 
@@ -20,7 +21,7 @@ public class AnswerService {
 	this.sql2o = sql2o;
     }
 
-    public Answer getAnswerById(int answerId) {
+    public Optional<Answer> getAnswerById(int answerId) {
 	String sql =
 	    "SELECT *" +
 	    "FROM answer " +
@@ -32,14 +33,14 @@ public class AnswerService {
 		.executeAndFetch(Answer.class);
             
             if (answers.isEmpty()) {
-                return null;
+                return Optional.empty();
             } else {
-                return answers.get(0);
+                return Optional.of(answers.get(0));
             }
 	}
     }
     
-    public Answer setInitialAnswer(Integer userId, Integer taskId){
+    public Optional<Answer> setInitialAnswer(Integer userId, Integer taskId){
 	Date date = new Date();
 	SimpleDateFormat sdf = new SimpleDateFormat("MM+dd+yyyy+h+mm+ss+a");
 
@@ -76,9 +77,9 @@ public class AnswerService {
 	}
 	
         if (answer.isEmpty()) {
-            return null;
+            return Optional.empty();
         } else {
-            return answer.get(0);
+            return Optional.of(answer.get(0));
         }
     }
 
@@ -145,4 +146,3 @@ public class AnswerService {
 	}
     }
 }
-

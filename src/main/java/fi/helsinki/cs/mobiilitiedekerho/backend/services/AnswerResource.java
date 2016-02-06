@@ -11,6 +11,7 @@ import com.google.gson.JsonElement;
 
 import java.util.List;
 import java.lang.Integer;
+import java.util.Optional;
 
 public class AnswerResource extends Resource{
     private final AnswerService answerService;
@@ -43,7 +44,7 @@ public class AnswerResource extends Resource{
 	String userHash = req.queryParams("user_hash");
 	Integer answerId;
 
-	User user;
+	Optional<User> user;
 
 	JsonResponse jsonResponse = new JsonResponse();
 
@@ -63,19 +64,19 @@ public class AnswerResource extends Resource{
 
 	user = getUserService().authenticateUserByHash(userHash);
 
-	if(user == null){
+	if(!user.isPresent()){
 	    jsonResponse.setStatus("InvalidUserHash");
 	    return jsonResponse.toJson();
 	}
 
 
 	if(uploadStatus.equals("success")){
-	    getAnswerService().enableAnswer(answerId, user.getId());
-	    jsonResponse.setStatus("success");
+	    getAnswerService().enableAnswer(answerId, user.get().getId());
+	    jsonResponse.setStatus("Success");
 	}
 	else if(uploadStatus.equals("failure")){
-	    getAnswerService().deleteAnswer(answerId, user.getId());
-	    jsonResponse.setStatus("success");
+	    getAnswerService().deleteAnswer(answerId, user.get().getId());
+	    jsonResponse.setStatus("Success");
 	}
 	else
 	    jsonResponse.setStatus("InvalidStatus");
@@ -89,33 +90,29 @@ public class AnswerResource extends Resource{
 	String taskId   = req.queryParams("task_id");
 	
 	JsonResponse jsonResponse = new JsonResponse();
-
-	this.requireAuthentication(req, res);
 	
-	User user = getUserService().authenticateUserByHash(userHash);
+	Optional<User> user = getUserService().authenticateUserByHash(userHash);
 
 	if(taskId == null){
 	    jsonResponse.setStatus("ParameterError");
 	    return jsonResponse.toJson();
 	}
 
-	Answer answer = getAnswerService().setInitialAnswer(user.getId(), Integer.parseInt(taskId));
+	Optional<Answer> answer = getAnswerService().setInitialAnswer(user.get().getId(), Integer.parseInt(taskId));
 
-	if(answer == null){
+	if(!answer.isPresent()){
 	    jsonResponse.setStatus("UnexpectedError");
 	    return jsonResponse.toJson();
 	}
 
 	return jsonResponse
 	    .addPropery("task_id", taskId)
-	    .addPropery("answer_id", "" + answer.getId())
-	    .addPropery("answer_uri", answer.getUri())
+	    .addPropery("answer_id", "" + answer.get().getId())
+	    .addPropery("answer_uri", answer.get().getUri())
 	    .setStatus("Success")
 	    .toJson();
 
     }
-
-
     
     private String describeAnswer(Request req, Response res) {
 	String answerId = req.queryParams("answer_id");
@@ -126,14 +123,14 @@ public class AnswerResource extends Resource{
 	    return jsonResponse.toJson();
 	}
 
-	Answer answer = getAnswerService().getAnswerById(Integer.parseInt(answerId));
+	Optional<Answer> answer = getAnswerService().getAnswerById(Integer.parseInt(answerId));
       
-	if (answer == null) {
+	if (!answer.isPresent()) {
 	    jsonResponse.setStatus("AnswerNotFoundError");
 	    return jsonResponse.toJson();
 	}
       
-	jsonResponse.setObject(answer);
+	jsonResponse.setObject(answer.get());
       
 	return jsonResponse.setStatus("Success").toJson();
     }

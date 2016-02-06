@@ -7,6 +7,7 @@ import spark.Response;
 import spark.Request;
 
 import java.util.List;
+import java.util.Optional;
 
 public class TaskResource extends Resource {
 
@@ -35,14 +36,14 @@ public class TaskResource extends Resource {
             return jsonResponse.toJson();
         }
 
-        Task task = getTaskService().getTaskById(Integer.parseInt(taskId));
+        Optional<Task> task = getTaskService().getTaskById(Integer.parseInt(taskId));
 
-        if (task == null) {
+        if (!task.isPresent()) {
             jsonResponse.setStatus("TaskNotFoundError");
             return jsonResponse.toJson();
         }
 
-        jsonResponse.setObject(task);
+        jsonResponse.setObject(task.get());
 
         return jsonResponse.setStatus("Success").toJson();
     }

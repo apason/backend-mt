@@ -5,6 +5,7 @@ import fi.helsinki.cs.mobiilitiedekerho.backend.models.Task;
 import org.sql2o.*;
 
 import java.util.List;
+import java.util.Optional;
 
 public class TaskService {
 
@@ -14,7 +15,7 @@ public class TaskService {
         this.sql2o = sql2o;
     }
 
-    public Task getTaskById(int taskId) {
+    public Optional<Task> getTaskById(int taskId) {
         String sql
                 = "SELECT *"
                 + "FROM task "
@@ -25,9 +26,9 @@ public class TaskService {
                     .addParameter("id", taskId)
                     .executeAndFetch(Task.class);
             if (tasks.isEmpty()) {
-                return null;
+                return Optional.empty();
             } else {
-                return tasks.get(0);
+                return Optional.of(tasks.get(0));
             }
         }
     }
