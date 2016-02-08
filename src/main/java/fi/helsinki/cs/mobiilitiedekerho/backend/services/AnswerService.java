@@ -28,6 +28,7 @@ public class AnswerService {
 
 	try(Connection con = sql2o.open()) {
 	    List<Answer> answers = con.createQuery(sql)
+		.throwOnMappingFailure(false)
 		.addParameter("id", answerId)
 		.executeAndFetch(Answer.class);
             

@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.lang.Integer;
 
 public class AnswerResource extends Resource{
@@ -120,7 +121,8 @@ public class AnswerResource extends Resource{
     private String describeAnswer(Request req, Response res) {
 	String answerId = req.queryParams("answer_id");
 	JsonResponse jsonResponse = new JsonResponse();
-	
+
+	ArrayList<Answer> answers = new ArrayList<Answer>();
 	if (answerId == null) {
 	    jsonResponse.setStatus("ParameterError");
 	    return jsonResponse.toJson();
@@ -132,8 +134,10 @@ public class AnswerResource extends Resource{
 	    jsonResponse.setStatus("AnswerNotFoundError");
 	    return jsonResponse.toJson();
 	}
-      
-	jsonResponse.setObject(answer);
+
+	answers.add(answer);
+	
+	jsonResponse.setObject(answers);
       
 	return jsonResponse.setStatus("Success").toJson();
     }

@@ -56,9 +56,9 @@ public class JsonResponse {
 
     public String toJson() {
         Gson gson = new Gson();
-        JsonElement jsonElement = new JsonObject();
+        JsonObject jsonElement = new JsonObject();
         if (this.object != null) {
-            jsonElement = gson.toJsonTree(this.object);
+            jsonElement.add("objects", gson.toJsonTree(this.object));
         }
         for (int i = 0; i < this.properties.size(); i++) {
             jsonElement.getAsJsonObject().addProperty(this.properties.get(i), this.values.get(i));
