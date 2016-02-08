@@ -7,6 +7,7 @@ import spark.Response;
 import spark.Request;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Optional;
 
 public class TaskResource extends Resource {
@@ -31,6 +32,8 @@ public class TaskResource extends Resource {
         String taskId = req.queryParams("task_id");
         JsonResponse jsonResponse = new JsonResponse();
 
+	ArrayList<Task> tasks = new ArrayList<Task>();
+
         if (taskId == null) {
             jsonResponse.setStatus("ParameterError");
             return jsonResponse.toJson();
@@ -43,7 +46,9 @@ public class TaskResource extends Resource {
             return jsonResponse.toJson();
         }
 
-        jsonResponse.setObject(task.get());
+	tasks.add(task.get());
+	
+        jsonResponse.setObject(tasks);
 
         return jsonResponse.setStatus("Success").toJson();
     }

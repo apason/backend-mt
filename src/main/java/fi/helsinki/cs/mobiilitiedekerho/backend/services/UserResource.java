@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.lang.Integer;
 import java.util.Optional;
 
@@ -39,6 +40,7 @@ public class UserResource extends Resource {
     private String describeUser(Request req, Response res) {
         String userId = req.queryParams("user_id");
         JsonResponse jsonResponse = new JsonResponse();
+	ArrayList<User> users = new ArrayList<User>();
 
         if (userId == null) {
             jsonResponse.setStatus("ParameterError");
@@ -52,7 +54,8 @@ public class UserResource extends Resource {
             return jsonResponse.toJson();
         }
 
-        jsonResponse.setObject(user.get());
+	users.add(user.get());
+        jsonResponse.setObject(users);
 
         return jsonResponse.setStatus("Success").toJson();
     }

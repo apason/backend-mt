@@ -120,6 +120,7 @@ public class AnswerResource extends Resource{
 	JsonResponse jsonResponse = new JsonResponse();
 
 	ArrayList<Answer> answers = new ArrayList<Answer>();
+	
 	if (answerId == null) {
 	    jsonResponse.setStatus("ParameterError");
 	    return jsonResponse.toJson();
@@ -132,9 +133,9 @@ public class AnswerResource extends Resource{
 	    return jsonResponse.toJson();
 	}
 
-	answers.add(answer);
+	answers.add(answer.get());
 	
-	jsonResponse.setObject(answer.get());
+	jsonResponse.setObject(answers);
       
 	return jsonResponse.setStatus("Success").toJson();
     }
