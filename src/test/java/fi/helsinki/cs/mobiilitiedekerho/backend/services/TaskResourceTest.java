@@ -16,6 +16,14 @@ import java.util.Date;
 import static org.mockito.Mockito.*;
 
 public class TaskResourceTest extends TestCase {
+    
+    private UserService userService;
+    private TaskService taskService;
+    private TaskResource taskResource;
+    
+    private Request req;
+    private Response res;
+    
 
     public TaskResourceTest(String testName)
     {
@@ -26,17 +34,16 @@ public class TaskResourceTest extends TestCase {
     {
         return new TestSuite(TaskResourceTest.class);
     }
+    
+    protected void setUp() {
+        taskService = mock(TaskService.class);
+        userService = mock(UserService.class);
+        
+        req = mock(Request.class);
+        res = mock(Response.class);
+        
+        when(req.queryParams("task_id")).thenReturn("1");        
 
-    public void testDescribeTask()
-    {
-        TaskService taskService = mock(TaskService.class);
-        UserService userService = mock(UserService.class);
-        
-        Request req = mock(Request.class);
-        Response res = mock(Response.class);
-        
-        when(req.queryParams("task_id")).thenReturn("1");
-        
         Task task = new Task();
         task.setId(1);
         task.setUri("uri.mp4");
@@ -44,8 +51,11 @@ public class TaskResourceTest extends TestCase {
         
         when(taskService.getTaskById(1)).thenReturn(Optional.of(task));
         
-        TaskResource taskResource = new TaskResource(userService, taskService);
-        
+        taskResource = new TaskResource(userService, taskService);         
+    }
+
+    public void testDescribeTask()
+    {         
         String jsonResponse = taskResource.describeTask(req, res);
         
         String jsonExpected = "{\"objects\":[{\"id\":1,\"uri\":\"uri.mp4\","
