@@ -1,9 +1,6 @@
-package fi.helsinki.cs.mobiilitiedekerho.backend;
+package fi.helsinki.cs.mobiilitiedekerho.backend.services;
 
 import fi.helsinki.cs.mobiilitiedekerho.backend.models.*;
-import fi.helsinki.cs.mobiilitiedekerho.backend.services.TaskResource;
-import fi.helsinki.cs.mobiilitiedekerho.backend.services.TaskService;
-import fi.helsinki.cs.mobiilitiedekerho.backend.services.UserService;
 
 import spark.Request;
 import spark.Response;
