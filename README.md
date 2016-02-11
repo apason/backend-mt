@@ -1,6 +1,8 @@
 Mobiilitiedekerhon backend.
 
-How to compile the project?
+#Sprint 2#
+
+##How to compile the project?##
 
 - mvn compile
 
@@ -11,3 +13,4 @@ How to run the project?
 or
 
 - run the shell script: "run_backend.sh"
+
