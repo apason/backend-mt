@@ -4,8 +4,6 @@ import fi.helsinki.cs.mobiilitiedekerho.backend.models.Answer;
 
 import java.util.Date;
 
-import java.sql.Timestamp;
-
 import java.text.SimpleDateFormat;
 
 import org.sql2o.*;
