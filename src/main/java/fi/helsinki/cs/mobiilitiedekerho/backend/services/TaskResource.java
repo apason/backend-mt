@@ -28,7 +28,7 @@ public class TaskResource extends Resource {
         });
     }
 
-    private String describeTask(Request req, Response res) {
+    String describeTask(Request req, Response res) {
         String taskId = req.queryParams("task_id");
         JsonResponse jsonResponse = new JsonResponse();
 
