@@ -40,9 +40,7 @@ public class TaskResourceTest extends TestCase {
         userService = mock(UserService.class);
         
         req = mock(Request.class);
-        res = mock(Response.class);
-        
-        when(req.queryParams("task_id")).thenReturn("1");        
+        res = mock(Response.class);       
 
         Task task = new Task();
         task.setId(1);
@@ -50,16 +48,31 @@ public class TaskResourceTest extends TestCase {
         task.setLoaded(new Date(0));
         
         when(taskService.getTaskById(1)).thenReturn(Optional.of(task));
+        when(taskService.getTaskById(2)).thenReturn(Optional.empty());
         
-        taskResource = new TaskResource(userService, taskService);         
+        taskResource = new TaskResource(userService, taskService);
     }
 
-    public void testDescribeTask()
-    {         
+    public void testDescribeTaskSuccess() {         
+        when(req.queryParams("task_id")).thenReturn("1"); 
+        
         String jsonResponse = taskResource.describeTask(req, res);
         
         String jsonExpected = "{\"objects\":[{\"id\":1,\"uri\":\"uri.mp4\","
                 + "\"loaded\":\"Jan 1, 1970 2:00:00 AM\"}],\"status\":\"Success\"}";
         assertEquals(jsonResponse, jsonExpected);
-    }    
+        
+        jsonResponse = taskResource.describeTask(req, res);
+    }
+
+    public void testDescribeTaskNotFound() {         
+        when(req.queryParams("task_id")).thenReturn("2"); 
+        
+        String jsonResponse = taskResource.describeTask(req, res);
+        
+        String jsonExpected = "{\"status\":\"TaskNotFoundError\"}";
+        assertEquals(jsonResponse, jsonExpected);
+        
+        jsonResponse = taskResource.describeTask(req, res);
+    }
 }
