@@ -18,7 +18,7 @@ public class UserResource extends Resource {
 
     public UserResource(UserService userService) {
         super(userService);
-        
+
         defineRoutes();
     }
 
@@ -35,12 +35,17 @@ public class UserResource extends Resource {
         Spark.get("/AuthenticateUserByHash", (req, res) -> {
             return authenticateUserByHash(req, res);
         });
+
+        Spark.get("/GetAuthToken", (req, res) -> {
+            return getAuthToken(req, res);
+        });
+
     }
 
     private String describeUser(Request req, Response res) {
         String userId = req.queryParams("user_id");
         JsonResponse jsonResponse = new JsonResponse();
-	ArrayList<User> users = new ArrayList<User>();
+        ArrayList<User> users = new ArrayList<User>();
 
         if (userId == null) {
             jsonResponse.setStatus("ParameterError");
@@ -54,7 +59,7 @@ public class UserResource extends Resource {
             return jsonResponse.toJson();
         }
 
-	users.add(user.get());
+        users.add(user.get());
         jsonResponse.setObject(users);
 
         return jsonResponse.setStatus("Success").toJson();
@@ -103,4 +108,22 @@ public class UserResource extends Resource {
             return new JsonResponse().setObject(user.get()).setStatus("Success").toJson();
         }
     }
+
+    private String getAuthToken(Request req, Response res) {
+        // Generates a JSON Web Token for the client.
+        // If email and password are set in GET, authenticates the user.
+        
+        return "";
+    }
+
+
+    private String generateAnonymousToken(String client_ip) {
+        // Generates an anonymous auth token. Stores client ip
+        // in token.
+        return "";
+    }
+    
+    private String generateAuthenticatedToken(String client_ip) {
+        return "";
+    }    
 }

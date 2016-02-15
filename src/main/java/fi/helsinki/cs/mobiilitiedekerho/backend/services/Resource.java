@@ -7,11 +7,11 @@ import spark.Spark;
 abstract public class Resource {
 
     private final UserService userService;
-    
+
     public Resource(UserService userService) {
         this.userService = userService;
     }
-        
+
     void requireAuthentication(Request req, Response res) {
         String userHash = req.queryParams("user_hash");
 
@@ -22,6 +22,16 @@ abstract public class Resource {
         if (getUserService().authenticateUserByHash(userHash) == null) {
             Spark.halt(401, authFailure());
         }
+    }
+
+    void requireAuthenticatedUser(Request req, Response res) {
+    }
+
+    void requireAnonymousUser(Request req, Response res) {
+    }
+    
+    boolean checkAuthToken(Request req, Response res) {
+        return false;
     }
 
     String authFailure() {
