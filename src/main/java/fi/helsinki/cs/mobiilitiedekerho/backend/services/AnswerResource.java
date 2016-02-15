@@ -36,7 +36,7 @@ public class AnswerResource extends Resource {
         });
     }
 
-    private String endAnswerUpload(Request req, Response res) {
+    String endAnswerUpload(Request req, Response res) {
         String uploadStatus = req.queryParams("upload_status");
         String answerIdString = req.queryParams("answer_id");
         String userHash = req.queryParams("user_hash");
@@ -79,7 +79,7 @@ public class AnswerResource extends Resource {
 
     }
 
-    private String startAnswerUpload(Request req, Response res) {
+    String startAnswerUpload(Request req, Response res) {
         String userHash = req.queryParams("user_hash");
         String taskId = req.queryParams("task_id");
 
@@ -108,7 +108,7 @@ public class AnswerResource extends Resource {
 
     }
 
-    private String describeAnswer(Request req, Response res) {
+    String describeAnswer(Request req, Response res) {
         String answerId = req.queryParams("answer_id");
         JsonResponse jsonResponse = new JsonResponse();
 
