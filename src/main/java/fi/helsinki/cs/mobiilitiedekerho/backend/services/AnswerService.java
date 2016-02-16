@@ -19,6 +19,9 @@ public class AnswerService {
 	this.sql2o = sql2o;
     }
 
+    // Returns an answer from the database.
+    // If the answer is found, returns Optional<Answer> with the answer object.
+    // Otherwise returns an empty Optional<Answer>.
     public Optional<Answer> getAnswerById(int answerId) {
 	String sql =
 	    "SELECT *" +
@@ -115,7 +118,7 @@ public class AnswerService {
 	}
     }
 
-
+    // Deletes an answer from the database.
     public String deleteAnswer(int answerId, int userId){
 	String sql =
 	    "SELECT * " +

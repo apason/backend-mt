@@ -21,13 +21,16 @@ public class TaskResource extends Resource {
         defineRoutes();
     }
 
+    // Defines routes for TaskResource.
     private void defineRoutes() {
         Spark.get("/DescribeTask", (req, res) -> {
-            requireAuthentication(req, res);
+            requireAuthenticatedUser(req, res);
             return describeTask(req, res);
         });
     }
 
+    // Describes the task indicated by task_id.
+    // If the task is not found, returns status: TaskNotFoundError.
     String describeTask(Request req, Response res) {
         String taskId = req.queryParams("task_id");
         JsonResponse jsonResponse = new JsonResponse();
