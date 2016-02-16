@@ -33,14 +33,21 @@ public class TaskResource extends Resource {
     // If the task is not found, returns status: TaskNotFoundError.
     String describeTask(Request req, Response res) {
         String taskId = req.queryParams("task_id");
+        int taskIdInt;
         JsonResponse jsonResponse = new JsonResponse();
-
 	ArrayList<Task> tasks = new ArrayList<Task>();
 
         if (taskId == null) {
-            jsonResponse.setStatus("ParameterError");
-            return jsonResponse.toJson();
+            return jsonResponse.setStatus("ParameterError").toJson();
         }
+        
+        try {
+            taskIdInt = Integer.parseInt(taskId);
+        } catch (Exception e) {
+            return jsonResponse.setStatus("ParameterError").toJson();
+        }
+        
+        
 
         Optional<Task> task = getTaskService().getTaskById(Integer.parseInt(taskId));
 

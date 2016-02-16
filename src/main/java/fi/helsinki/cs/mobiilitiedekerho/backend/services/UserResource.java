@@ -36,12 +36,18 @@ public class UserResource extends Resource {
     // user_id parameter.
     private String describeUser(Request req, Response res) {
         String userId = req.queryParams("user_id");
+        int userIdInt;
         JsonResponse jsonResponse = new JsonResponse();
         ArrayList<User> users = new ArrayList<User>();
 
         if (userId == null) {
-            jsonResponse.setStatus("ParameterError");
-            return jsonResponse.toJson();
+            return jsonResponse.setStatus("ParameterError").toJson();
+        }
+        
+        try {
+            userIdInt = Integer.parseInt(userId);
+        } catch (Exception e) {
+            return jsonResponse.setStatus("ParameterError").toJson();
         }
 
         Optional<User> user = getUserService()
