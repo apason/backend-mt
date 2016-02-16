@@ -25,10 +25,12 @@ public class App {
         TaskService taskService = new TaskService(sql2o);
         AnswerService answerService = new AnswerService(sql2o);
         UserService userService = new UserService(sql2o, key);
+        CategoryService categoryService = new CategoryService(sql2o);
 
         TaskResource taskResource = new TaskResource(userService, taskService);
         AnswerResource answerResource = new AnswerResource(userService, answerService);
         UserResource userResource = new UserResource(userService);
+        CategoryResource categoryResource = new CategoryResource(userService, categoryService);
 
     }
 

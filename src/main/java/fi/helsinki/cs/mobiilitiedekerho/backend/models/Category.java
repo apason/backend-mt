@@ -11,6 +11,7 @@ public class Category {
     private String iconName;
     private String iconAnimatedName;
     private String BGName;
+    private String name;
     private Date loaded;
 
     
@@ -50,6 +51,15 @@ public class Category {
         this.BGName = BGName;
     }
 
+    
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+    
     
     public Date getLoaded() {
         return loaded;
