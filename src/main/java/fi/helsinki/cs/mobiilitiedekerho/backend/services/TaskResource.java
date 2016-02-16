@@ -24,7 +24,7 @@ public class TaskResource extends Resource {
     // Defines routes for TaskResource.
     private void defineRoutes() {
         Spark.get("/DescribeTask", (req, res) -> {
-            requireAuthenticatedUser(req, res);
+            requireAnonymousUser(req, res);
             return describeTask(req, res);
         });
     }
