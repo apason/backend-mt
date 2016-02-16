@@ -11,3 +11,5 @@ How to run the project?
 or
 
 - run the shell script: "run_backend.sh"
+
+
