@@ -43,6 +43,13 @@ public class CategoryResource extends Resource {
             jsonResponse.setStatus("ParameterError");
             return jsonResponse.toJson();
         }
+        
+        try {
+            taskIdInt = Integer.parseInt(categoryId);
+        } catch (Exception e) {
+            return jsonResponse.setStatus("ParameterError").toJson();
+        }
+        
 
         Optional<Category> category = getCategoryService().getCategoryById(Integer.parseInt(categoryId));
 
