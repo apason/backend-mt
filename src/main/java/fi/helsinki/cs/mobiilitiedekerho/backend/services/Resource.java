@@ -31,7 +31,7 @@ abstract public class Resource {
         String userType = Jwts.parser().setSigningKey(getUserService().getSecretKey()).parseClaimsJws(authToken).getBody().get("user_type", String.class);
         
         if (!userType.equals("authenticated")) {
-            Spark.halt(401, authenticationFailure());
+            Spark.halt(401, authorizationFailure());
         }
         
         int userId = Jwts.parser().setSigningKey(getUserService().getSecretKey()).parseClaimsJws(authToken).getBody().get("user_id", Integer.class);
@@ -39,7 +39,7 @@ abstract public class Resource {
         Optional<User> u = getUserService().getUserById(userId);
         
         if (!u.isPresent()) {
-            Spark.halt(401, authenticationFailure());
+            Spark.halt(401, authorizationFailure());
         }
         
         return u.get();
@@ -67,6 +67,10 @@ abstract public class Resource {
     String authenticationFailure() {
         return new JsonResponse().setStatus("AuthenticationFailure").toJson();
     }
+    
+    String authorizationFailure() {
+        return new JsonResponse().setStatus("AuthorizationFailure").toJson();
+    }    
     
     String tokenError() {
         return new JsonResponse().setStatus("TokenError").toJson();
