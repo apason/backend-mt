@@ -112,6 +112,8 @@ public class UserService {
             if (users.isEmpty()) {
                 return Optional.empty();
             } else {
+                // Unset user password hash in object.
+                users.get(0).setPassword("");
                 return Optional.of(users.get(0));
             }
         }
