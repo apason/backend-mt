@@ -47,7 +47,7 @@ public class TaskService {
         }
     }
 
-    // Lists all task from the dabase.
+    // Lists all tasks from the dabase.
     public List<Task> getAllTasks() {
         String sql
                 = "SELECT *"
