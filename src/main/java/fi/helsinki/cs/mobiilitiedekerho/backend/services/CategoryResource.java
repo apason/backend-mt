@@ -16,7 +16,7 @@ public class CategoryResource extends Resource {
     private final CategoryService categoryService;
     
     
-    public AnswerResource(UserService userService, CategoryService categoryService) {
+    public CategoryResource(UserService userService, CategoryService categoryService) {
         super(userService);
         this.categoryService = categoryService;
 
@@ -33,7 +33,7 @@ public class CategoryResource extends Resource {
     
     // Describes an category indicated by caetgory_id.
     // If the category is not found, returns status: CategoryNotFoundError.
-    private String describeCategory {
+    private String describeCategory() {
     
         String categoryId = req.queryParams("category_id");
         int categoryIdInt;
