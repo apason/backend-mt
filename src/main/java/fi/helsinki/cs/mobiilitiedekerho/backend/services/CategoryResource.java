@@ -28,6 +28,7 @@ public class CategoryResource extends Resource {
         Spark.get("/DescribeCategory", (req, res) -> {
             requireAnonymousUser(req, res);
             return this.describeCategory(req, res);
+        });
     }
     
     // Describes an category indicated by caetgory_id.
@@ -35,23 +36,23 @@ public class CategoryResource extends Resource {
     private String describeCategory {
     
         String categoryId = req.queryParams("category_id");
+        int categoryIdInt;
         JsonResponse jsonResponse = new JsonResponse();
 
         ArrayList<Category> categories = new ArrayList<Category>();
 
         if (categoryId == null) {
-            jsonResponse.setStatus("ParameterError");
-            return jsonResponse.toJson();
+            return jsonResponse.setStatus("ParameterError").toJson();
         }
         
         try {
-            taskIdInt = Integer.parseInt(categoryId);
+            categoryIdInt =  Integer.parseInt(categoryId);;
         } catch (Exception e) {
             return jsonResponse.setStatus("ParameterError").toJson();
         }
         
 
-        Optional<Category> category = getCategoryService().getCategoryById(Integer.parseInt(categoryId));
+        Optional<Category> category = getCategoryService().getCategoryById(categoryIdInt);
 
         if (!category.isPresent()) {
             jsonResponse.setStatus("CategoryNotFoundError");

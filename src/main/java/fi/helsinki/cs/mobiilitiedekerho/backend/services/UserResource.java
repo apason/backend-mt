@@ -50,8 +50,7 @@ public class UserResource extends Resource {
             return jsonResponse.setStatus("ParameterError").toJson();
         }
 
-        Optional<User> user = getUserService()
-                .getUserById(Integer.parseInt(userId));
+        Optional<User> user = getUserService().getUserById(userIdInt);
 
         if (!user.isPresent()) {
             jsonResponse.setStatus("UserNotFoundError");

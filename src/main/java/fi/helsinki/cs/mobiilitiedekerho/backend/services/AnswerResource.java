@@ -42,6 +42,7 @@ public class AnswerResource extends Resource {
     // Returns the new answer id and an URI for the client to upload to.
     String startAnswerUpload(Request req, Response res, User user) {
         String taskId = req.queryParams("task_id");
+        int taskIdInt;
 
         JsonResponse jsonResponse = new JsonResponse();
 
@@ -49,8 +50,14 @@ public class AnswerResource extends Resource {
             jsonResponse.setStatus("ParameterError");
             return jsonResponse.toJson();
         }
+        
+        try {
+           taskIdInt = Integer.parseInt(taskId);
+        } catch (Exception e) {
+            return jsonResponse.setStatus("ParameterError").toJson();
+        }
 
-        Optional<Answer> answer = getAnswerService().setInitialAnswer(user.getId(), Integer.parseInt(taskId));
+        Optional<Answer> answer = getAnswerService().setInitialAnswer(user.getId(), taskIdInt);
 
         if (!answer.isPresent()) {
             jsonResponse.setStatus("UnexpectedError");
@@ -106,6 +113,7 @@ public class AnswerResource extends Resource {
     // If the answer is not found, returns status: AnswerNotFoundError.
     String describeAnswer(Request req, Response res) {
         String answerId = req.queryParams("answer_id");
+        Integer answerIdInt;
         JsonResponse jsonResponse = new JsonResponse();
 
         ArrayList<Answer> answers = new ArrayList<Answer>();
@@ -114,8 +122,14 @@ public class AnswerResource extends Resource {
             jsonResponse.setStatus("ParameterError");
             return jsonResponse.toJson();
         }
+        
+        try {
+           answerIdInt = Integer.parseInt(answersId);
+        } catch (Exception e) {
+            return jsonResponse.setStatus("ParameterError").toJson();
+        }
 
-        Optional<Answer> answer = getAnswerService().getAnswerById(Integer.parseInt(answerId));
+        Optional<Answer> answer = getAnswerService().getAnswerById(answerIdInt);
 
         if (!answer.isPresent()) {
             jsonResponse.setStatus("AnswerNotFoundError");

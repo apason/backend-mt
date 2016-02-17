@@ -49,7 +49,7 @@ public class TaskResource extends Resource {
         
         
 
-        Optional<Task> task = getTaskService().getTaskById(Integer.parseInt(taskId));
+        Optional<Task> task = getTaskService().getTaskById(taskIdInt);
 
         if (!task.isPresent()) {
             jsonResponse.setStatus("TaskNotFoundError");
