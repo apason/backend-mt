@@ -2,6 +2,7 @@ package fi.helsinki.cs.mobiilitiedekerho.backend.models;
 
 
 import java.util.Date;
+import java.util.ArrayList;
 
 
 
@@ -13,6 +14,7 @@ public class Category {
     private String BGName;
     private String name;
     private Date loaded;
+    private ArrayList<Task> tasks;
 
     
     
@@ -68,5 +70,19 @@ public class Category {
     public void setLoaded(Date loaded) {
         this.loaded = loaded;
     }
+    
+    
+    public ArrayList<Task> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(ArrayList<Task> tasks) {
+        this.tasks = tasks;
+    }
+    
+    public void addTask(Task task) {
+        tasks.add(task);
+    }
+    
     
 }
