@@ -21,78 +21,43 @@ public class AnswerResource extends Resource {
         defineRoutes();
     }
 
+    // Defines routes for AnswerResource.
     private void defineRoutes() {
         Spark.get("/DescribeAnswer", (req, res) -> {
-            requireAuthentication(req, res);
+            requireAnonymousUser(req, res);
             return this.describeAnswer(req, res);
         });
         Spark.get("/StartAnswerUpload", (req, res) -> {
-            requireAuthentication(req, res);
-            return this.startAnswerUpload(req, res);
+            User u = requireAuthenticatedUser(req, res);
+            return this.startAnswerUpload(req, res, u);
         });
         Spark.get("/EndAnswerUpload", (req, res) -> {
-            requireAuthentication(req, res);
-            return this.endAnswerUpload(req, res);
+            User u = requireAuthenticatedUser(req, res);
+            return this.endAnswerUpload(req, res, u);
         });
     }
-
-    String endAnswerUpload(Request req, Response res) {
-        String uploadStatus = req.queryParams("upload_status");
-        String answerIdString = req.queryParams("answer_id");
-        String userHash = req.queryParams("user_hash");
-        Integer answerId;
-
-        Optional<User> user;
-
-        JsonResponse jsonResponse = new JsonResponse();
-
-        if (uploadStatus == null || answerIdString == null || userHash == null) {
-            jsonResponse.setStatus("ParameterError");
-            return jsonResponse.toJson();
-        }
-
-        try {
-            answerId = Integer.parseInt(answerIdString);
-        } catch (Exception e) {
-            jsonResponse.setStatus("InvalidAnswerId");
-            return jsonResponse.toJson();
-        }
-
-        user = getUserService().authenticateUserByHash(userHash);
-
-        if (!user.isPresent()) {
-            jsonResponse.setStatus("InvalidUserHash");
-            return jsonResponse.toJson();
-        }
-
-        if (uploadStatus.equals("success")) {
-            getAnswerService().enableAnswer(answerId, user.get().getId());
-            jsonResponse.setStatus("Success");
-        } else if (uploadStatus.equals("failure")) {
-            getAnswerService().deleteAnswer(answerId, user.get().getId());
-            jsonResponse.setStatus("Success");
-        } else {
-            jsonResponse.setStatus("InvalidStatus");
-        }
-
-        return jsonResponse.toJson();
-
-    }
-
-    String startAnswerUpload(Request req, Response res) {
-        String userHash = req.queryParams("user_hash");
+    
+    // Starts answer upload.
+    // Creates the answer in the database.
+    // Returns the new answer id and an URI for the client to upload to.
+    String startAnswerUpload(Request req, Response res, User user) {
         String taskId = req.queryParams("task_id");
+        int taskIdInt;
 
         JsonResponse jsonResponse = new JsonResponse();
-
-        Optional<User> user = getUserService().authenticateUserByHash(userHash);
 
         if (taskId == null) {
             jsonResponse.setStatus("ParameterError");
             return jsonResponse.toJson();
         }
+        
+        try {
+           taskIdInt = Integer.parseInt(taskId);
+        } catch (Exception e) {
+            return jsonResponse.setStatus("ParameterError").toJson();
+        }
 
-        Optional<Answer> answer = getAnswerService().setInitialAnswer(user.get().getId(), Integer.parseInt(taskId));
+        Optional<Answer> answer = getAnswerService().setInitialAnswer(user.getId(), taskIdInt);
 
         if (!answer.isPresent()) {
             jsonResponse.setStatus("UnexpectedError");
@@ -107,9 +72,48 @@ public class AnswerResource extends Resource {
                 .toJson();
 
     }
+    
+    // Ends the answer upload.
+    // If upload was successful, updates the database.
+    // If upload failed, removes the row from the database.
+    String endAnswerUpload(Request req, Response res, User user) {
+        String uploadStatus = req.queryParams("upload_status");
+        String answerIdString = req.queryParams("answer_id");
+        Integer answerId;
 
+        JsonResponse jsonResponse = new JsonResponse();
+
+        if (uploadStatus == null || answerIdString == null) {
+            jsonResponse.setStatus("ParameterError");
+            return jsonResponse.toJson();
+        }
+
+        try {
+            answerId = Integer.parseInt(answerIdString);
+        } catch (Exception e) {
+            jsonResponse.setStatus("InvalidAnswerId");
+            return jsonResponse.toJson();
+        }
+
+        if (uploadStatus.equals("success")) {
+            getAnswerService().enableAnswer(answerId, user.getId());
+            jsonResponse.setStatus("Success");
+        } else if (uploadStatus.equals("failure")) {
+            getAnswerService().deleteAnswer(answerId, user.getId());
+            jsonResponse.setStatus("Success");
+        } else {
+            jsonResponse.setStatus("InvalidStatus");
+        }
+
+        return jsonResponse.toJson();
+
+    }
+
+    // Describes an answer indicated by answer_id.
+    // If the answer is not found, returns status: AnswerNotFoundError.
     String describeAnswer(Request req, Response res) {
         String answerId = req.queryParams("answer_id");
+        Integer answerIdInt;
         JsonResponse jsonResponse = new JsonResponse();
 
         ArrayList<Answer> answers = new ArrayList<Answer>();
@@ -118,8 +122,14 @@ public class AnswerResource extends Resource {
             jsonResponse.setStatus("ParameterError");
             return jsonResponse.toJson();
         }
+        
+        try {
+           answerIdInt = Integer.parseInt(answersId);
+        } catch (Exception e) {
+            return jsonResponse.setStatus("ParameterError").toJson();
+        }
 
-        Optional<Answer> answer = getAnswerService().getAnswerById(Integer.parseInt(answerId));
+        Optional<Answer> answer = getAnswerService().getAnswerById(answerIdInt);
 
         if (!answer.isPresent()) {
             jsonResponse.setStatus("AnswerNotFoundError");

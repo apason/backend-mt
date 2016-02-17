@@ -7,24 +7,34 @@ import org.sql2o.Sql2o;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import spark.Spark;
+import java.security.Key;
+import io.jsonwebtoken.impl.crypto.MacProvider;
 
 public class App {
 
+    // Backend initialization.
     public static void main(String[] args) {
+        // Sql2o object for the services
         Sql2o sql2o = new Sql2o(App.configureHikariConnectionPool());
+        
+        // Generates a secret key for JSON Web Token signatures.
+        Key key = MacProvider.generateKey();
 
         SparkConfiguration();
                 
         TaskService taskService = new TaskService(sql2o);
         AnswerService answerService = new AnswerService(sql2o);
-        UserService userService = new UserService(sql2o);
+        UserService userService = new UserService(sql2o, key);
+        CategoryService categoryService = new CategoryService(sql2o);
 
         TaskResource taskResource = new TaskResource(userService, taskService);
         AnswerResource answerResource = new AnswerResource(userService, answerService);
         UserResource userResource = new UserResource(userService);
+        CategoryResource categoryResource = new CategoryResource(userService, categoryService);
 
     }
 
+    // Configures Hikari Connection Pool.
     private static HikariDataSource configureHikariConnectionPool() {
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(DbConfiguration.DB_JDBC_URL);
@@ -35,7 +45,8 @@ public class App {
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
         return new HikariDataSource(config);
     }
-
+    
+    // Sets response type to application/json.
     private static void SparkConfiguration() {
         Spark.before((req, res) -> {
             res.type("application/json");

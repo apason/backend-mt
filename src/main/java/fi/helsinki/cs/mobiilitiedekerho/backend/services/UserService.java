@@ -1,40 +1,37 @@
 package fi.helsinki.cs.mobiilitiedekerho.backend.services;
 
 import fi.helsinki.cs.mobiilitiedekerho.backend.models.User;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.JwtException;
+import java.security.Key;
 
 import org.sql2o.*;
 
 import java.util.List;
 import java.security.MessageDigest;
+import java.util.Date;
 import java.util.Optional;
 
 public class UserService {
 
     private final Sql2o sql2o;
+    private final Key secretKey;
 
-    public UserService(Sql2o sql2o) {
+    public UserService(Sql2o sql2o, Key key) {
         this.sql2o = sql2o;
+        this.secretKey = key;
+    }    
+
+    public Key getSecretKey() {
+        return secretKey;
     }
 
-    public Optional<User> getUserById(int userId) {
-        String sql
-                = "SELECT * "
-                + "FROM user "
-                + "WHERE id = :id";
-
-        try (Connection con = sql2o.open()) {
-            List<User> users = con.createQuery(sql)
-                    .addParameter("id", userId)
-                    .executeAndFetch(User.class);
-
-            if (users.isEmpty()) {
-                return Optional.empty();
-            } else {
-                return Optional.of(users.get(0));
-            }
-        }
-    }
-
+    // Authenticates the user with email and password.
+    // If authentication is successful, returns an Optional<User> with the user object.
+    // Otherwise returns an empty Optional<User>.
+    
     public Optional<User> authenticateUser(String email, String password) {
         String sql
                 = "SELECT * "
@@ -54,72 +51,75 @@ public class UserService {
             }
         }
     }
+    
+    // Generates a JSON Web Token for an anonymous user.
+    // Returns the token.
+    public String generateAnonymousToken(String client_ip) {
 
-    public Optional<User> authenticateUserByHash(String userHash) {
+        String token = Jwts.builder()
+                .setIssuedAt(new Date())
+                .claim("user_type", "anonymous")
+                .claim("client_ip", client_ip)
+                .signWith(SignatureAlgorithm.HS256, getSecretKey())
+                .compact();
+
+        return token;
+    }
+
+    // Generates a JSON Web Token for an authenticated user.
+    // Stores information about the user in the data section of the token.
+    // Returns the generated token.
+    public String generateAuthenticatedToken(User u, String client_ip) {
+        String token = Jwts.builder()
+                .setIssuedAt(new Date())
+                .claim("user_type", "authenticated")
+                .claim("user_id", u.getId())
+                .claim("client_ip", client_ip)
+                .signWith(SignatureAlgorithm.HS256, getSecretKey())
+                .compact();
+
+        return token;
+    }
+
+    // Validates a JSON Web Token.
+    // Checks the signature.
+    // If token validates, returns true.
+    // Otherwise, returns false.
+    // This method does not check the payload data.
+    boolean validateToken(String token) {
+        try {
+            Jwts.parser().setSigningKey(getSecretKey()).parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    
+    // Returns an user from the database.
+    // If the user is found, returns Optional<User> with the user object.
+    // Otherwise returns an empty Optional<User>.
+    public Optional<User> getUserById(int userId) {
         String sql
                 = "SELECT * "
                 + "FROM user "
-                + "WHERE hash = :hash";
+                + "WHERE id = :id";
 
         try (Connection con = sql2o.open()) {
             List<User> users = con.createQuery(sql)
-                    .addParameter("hash", userHash)
+                    .addParameter("id", userId)
                     .executeAndFetch(User.class);
 
             if (users.isEmpty()) {
                 return Optional.empty();
             } else {
+                // Unset user password hash in object.
+                users.get(0).setPassword("");
                 return Optional.of(users.get(0));
             }
         }
-    }
-
-    public boolean createHashForUser(int userId) {
-
-        String newHash = generateRandomSHA256Hash();
-
-        String sql
-                = "UPDATE user "
-                + "SET hash = :hash "
-                + "WHERE id = :id";
-
-        try (Connection con = sql2o.open()) {
-            con.createQuery(sql)
-                    .addParameter("hash", newHash)
-                    .addParameter("id", userId)
-                    .executeUpdate();
-        }
-
-        return true;
-    }
-
-    private String generateRandomSHA256Hash() {
-        // Generate a new random sha-256 hash to be stored
-        // in the user database.
-        java.util.Random random = new java.util.Random();
-        int randomInteger = random.nextInt();
-
-        String base = Integer.toString(randomInteger);
-
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(base.getBytes("UTF-8"));
-            StringBuffer hexString = new StringBuffer();
-
-            for (int i = 0; i < hash.length; i++) {
-                String hex = Integer.toHexString(0xff & hash[i]);
-                if (hex.length() == 1) {
-                    hexString.append('0');
-                }
-                hexString.append(hex);
-            }
-
-            return hexString.toString();
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
+    }  
+    
+    // Returns a list of all users in the database.
     public List<User> getAllUsers() {
         String sql
                 = "SELECT *"
@@ -127,5 +127,5 @@ public class UserService {
         try (Connection con = sql2o.open()) {
             return con.createQuery(sql).executeAndFetch(User.class);
         }
-    }
+    }    
 }

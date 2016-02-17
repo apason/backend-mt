@@ -1,18 +1,11 @@
 package fi.helsinki.cs.mobiilitiedekerho.backend.services;
 
 import fi.helsinki.cs.mobiilitiedekerho.backend.models.User;
-
-import spark.Spark;
-import spark.Response;
-import spark.Request;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-
-import java.util.List;
 import java.util.ArrayList;
-import java.lang.Integer;
 import java.util.Optional;
+import spark.Request;
+import spark.Response;
+import spark.Spark;
 
 public class UserResource extends Resource {
 
@@ -22,37 +15,42 @@ public class UserResource extends Resource {
         defineRoutes();
     }
 
+    // Defines routes for UserResource.
     private void defineRoutes() {
         Spark.get("/DescribeUser", (req, res) -> {
-            requireAuthentication(req, res);
+            requireAuthenticatedUser(req, res);
             return describeUser(req, res);
-        });
-
-        Spark.get("/AuthenticateUser", (req, res) -> {
-            return authenticateUser(req, res);
-        });
-
-        Spark.get("/AuthenticateUserByHash", (req, res) -> {
-            return authenticateUserByHash(req, res);
         });
 
         Spark.get("/GetAuthToken", (req, res) -> {
             return getAuthToken(req, res);
         });
-
+        
+        Spark.get("/DescribeCurrentUser", (req, res) -> {
+            User u = requireAuthenticatedUser(req, res);
+           return describeCurrentUser(req, res, u); 
+        });
     }
 
+    // Describes the user indicated by
+    // user_id parameter.
     private String describeUser(Request req, Response res) {
         String userId = req.queryParams("user_id");
+        int userIdInt;
         JsonResponse jsonResponse = new JsonResponse();
         ArrayList<User> users = new ArrayList<User>();
 
         if (userId == null) {
-            jsonResponse.setStatus("ParameterError");
-            return jsonResponse.toJson();
+            return jsonResponse.setStatus("ParameterError").toJson();
+        }
+        
+        try {
+            userIdInt = Integer.parseInt(userId);
+        } catch (Exception e) {
+            return jsonResponse.setStatus("ParameterError").toJson();
         }
 
-        Optional<User> user = getUserService().getUserById(Integer.parseInt(userId));
+        Optional<User> user = getUserService().getUserById(userIdInt);
 
         if (!user.isPresent()) {
             jsonResponse.setStatus("UserNotFoundError");
@@ -64,66 +62,43 @@ public class UserResource extends Resource {
 
         return jsonResponse.setStatus("Success").toJson();
     }
-
-    private String authenticateUser(Request req, Response res) {
-        String email = req.queryParams("email");
-        String password = req.queryParams("password");
-        JsonResponse jsonResponse = new JsonResponse();
-
-        if (email == null) {
-            jsonResponse.setStatus("ParameterError");
-            return jsonResponse.toJson();
-        }
-
-        if (password == null) {
-            jsonResponse.setStatus("ParameterError");
-            return jsonResponse.toJson();
-        }
-
-        Optional<User> user = getUserService().authenticateUser(email, password);
-
-        if (!user.isPresent()) {
-            return new JsonResponse().setStatus("AuthFailure").toJson();
-        } else {
-            getUserService().createHashForUser(user.get().getId());
-            user = getUserService().getUserById(user.get().getId());
-            return new JsonResponse().setObject(user.get()).setStatus("Success").toJson();
-        }
-    }
-
-    private String authenticateUserByHash(Request req, Response res) {
-        String userHash = req.queryParams("user_hash");
-        JsonResponse jsonResponse = new JsonResponse();
-
-        if (userHash == null) {
-            jsonResponse.setStatus("ParameterError");
-            return jsonResponse.toJson();
-        }
-
-        Optional<User> user = getUserService().authenticateUserByHash(userHash);
-
-        if (!user.isPresent()) {
-            return new JsonResponse().setStatus("AuthFailure").toJson();
-        } else {
-            return new JsonResponse().setObject(user.get()).setStatus("Success").toJson();
-        }
-    }
-
+    
+    // Generates a JSON Web Token for the client.
+    // If email and password are set in GET, authenticates the user.
+    // If they are not set, generates an anonymous token.
+    // Returns status: AuthenticationFailure if authentication fails.
     private String getAuthToken(Request req, Response res) {
-        // Generates a JSON Web Token for the client.
-        // If email and password are set in GET, authenticates the user.
+
+        String auth_token = "";
+        String email = req.queryParams("email");
+        String password = req.queryParams(("password"));
+
+        if (email != null && password != null) {
+
+            Optional<User> u = getUserService()
+                    .authenticateUser(email, password);
+
+            if (!u.isPresent()) {
+                return authenticationFailure();
+            } else {
+                auth_token = this.getUserService().generateAuthenticatedToken(u.get(), req.ip());
+                return new JsonResponse()
+                        .addPropery("auth_token", auth_token)
+                        .setStatus("Success")
+                        .toJson();
+            }
+        }
         
-        return "";
-    }
+        auth_token = getUserService().generateAnonymousToken(req.ip());
 
-
-    private String generateAnonymousToken(String client_ip) {
-        // Generates an anonymous auth token. Stores client ip
-        // in token.
-        return "";
+        return new JsonResponse()
+                .addPropery("auth_token", auth_token)
+                .setStatus("Success")
+                .toJson();
     }
     
-    private String generateAuthenticatedToken(String client_ip) {
-        return "";
-    }    
+    // Describes the current user indicated by the auth token.
+    private String describeCurrentUser(Request req, Response res, User user) {
+        return new JsonResponse().setObject(user).setStatus("Success").toJson();
+    }
 }
