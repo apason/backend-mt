@@ -47,7 +47,11 @@ public class UserService {
             if (users.isEmpty()) {
                 return Optional.empty();
             } else {
-                return Optional.of(users.get(0));
+                if (users.get(0).isEnabled()) {
+                    return Optional.of(users.get(0));
+                } else {
+                    return Optional.empty();
+                }
             }
         }
     }
