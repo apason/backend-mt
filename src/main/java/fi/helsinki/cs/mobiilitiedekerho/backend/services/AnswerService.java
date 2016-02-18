@@ -1,6 +1,7 @@
 package fi.helsinki.cs.mobiilitiedekerho.backend.services;
 
 import fi.helsinki.cs.mobiilitiedekerho.backend.models.Answer;
+import fi.helsinki.cs.mobiilitiedekerho.backend.models.Task;
 
 import java.util.Date;
 
@@ -41,15 +42,66 @@ public class AnswerService {
             }
 	}
     }
+
+    //checks if the answer with given id exists and is enabled
+    private boolean taskExists(int taskId){
+	String sql =
+	    "SELECT * FROM task " +
+	    "WHERE id = :task_id";
+
+	try(Connection con = sql2o.open()){
+	    List<Task> task = con.createQuery(sql)
+		.throwOnMappingFailure(false)
+		.addParameter("task_id", taskId)
+		.executeAndFetch(Task.class);
+	    
+	    if(!task.isEmpty() /*&&
+		task.get(0).isEnabled()*/) return true;
+	    else                        return false;
+	}
+	catch(Exception e){
+	    return false;
+	}
+    }
+
+    //checks if the answer is owned by given user
+    private boolean answerExists(int answerId, int userId){
+	String sql =
+	    "SELECT * " +
+	    "FROM answer "+
+	    "WHERE id = :aid " +
+	    "AND user_id = :uid";
+
+	try(Connection con = sql2o.open()){
+	    List<Answer> answers = con.createQuery(sql)
+		.throwOnMappingFailure(false)
+		.addParameter("aid", answerId)
+		.addParameter("uid", userId)
+		.executeAndFetch(Answer.class);
+
+	    if(answers.size() != 1)
+		return false;
+	    return true;
+	}
+	catch(Exception e){
+	    return false;
+	}
+    }
     
+    //handles StartAnswerUpload api-call.
     public Optional<Answer> setInitialAnswer(Integer userId, Integer taskId){
 	Date date = new Date();
 	SimpleDateFormat sdf = new SimpleDateFormat("MM+dd+yyyy+h+mm+ss+a");
 
 	List<Answer> answer;
 
+	//first we need to check that the task exists and is enabled
+	if(!taskExists(taskId))
+	    return Optional.empty();
+
 	int addedKey = -1;
-	
+
+	//create new disabled answer instance to be uploaded
 	String sql =
 	    "INSERT INTO answer " +
 	    "(issued, enabled, task_id, user_id, uri) " +
@@ -66,6 +118,7 @@ public class AnswerService {
 		.getKey(Integer.class);
 	}
 
+	//get that created answer and return it
 	sql =
 	    "SELECT * " +
 	    "FROM answer " +
@@ -85,66 +138,51 @@ public class AnswerService {
         }
     }
 
+    //this method is used when user calls EndAnswerUpload
+    //to inform the end of his upload.
     public String enableAnswer(int answerId, int userId){
-	
-	String sql =
-	    "SELECT * " +
-	    "FROM answer "+
-	    "WHERE id = :aid " +
-	    "AND user_id = :uid";
-
-	try(Connection con = sql2o.open()){
-	    List<Answer> answers = con.createQuery(sql)
-		.throwOnMappingFailure(false)
-		.addParameter("aid", answerId)
-		.addParameter("uid", userId)
-		.executeAndFetch(Answer.class);
-
-	    if(answers.size() != 1)
-		return "InvalidPermissions";
-	    else{
-		sql =
-		    "UPDATE answer SET " +
-		    "loaded = NOW(), " +
-		    "enabled = true " +
-		    "WHERE id = :id";
+	if(!answerExists(answerId, userId))
+	   return "InvalidPermissions";
+	else{
+	    String sql =
+		"UPDATE answer SET " +
+		"loaded = NOW(), " +
+		"enabled = true " +
+		"WHERE id = :id";
 		
+	    try(Connection con = sql2o.open()){
 		con.createQuery(sql)
-		    .addParameter("id", answerId)
-		    .executeUpdate();
+		.addParameter("id", answerId)
+		.executeUpdate();
 
 		return "Success";
+	    }
+	    catch(Exception e){
+		return "DatabaseError";
 	    }
 	}
     }
 
     // Deletes an answer from the database.
     public String deleteAnswer(int answerId, int userId){
-	String sql =
-	    "SELECT * " +
-	    "FROM answer "+
-	    "WHERE id = :aid" +
-	    "AND user_id :uid";
+	if(!answerExists(answerId, userId))
+	    return "InvalidPermissions";
+	else{
+	    String sql =
+		"DELETE FROM answer " +
+		"WHERE id = :id";
 
-	try(Connection con = sql2o.open()){
-	    List<Answer> answers = con.createQuery(sql)
-		.addParameter("aid", answerId)
-		.addParameter("uid", userId)
-		.executeAndFetch(Answer.class);
-
-	    if(answers.size() != 1)
-		return "InvalidPermissions";
-	    else{
-		sql =
-		    "DELETE FROM answer " +
-		    "WHERE id = :d";
-
+	    try(Connection con = sql2o.open()){		
 		con.createQuery(sql)
 		    .addParameter("id", answerId)
 		    .executeUpdate();
 
 		return "Success";
 	    }
+	    catch(Exception e){
+		return "DatabaseError";
+	    }
 	}
     }
 }
+

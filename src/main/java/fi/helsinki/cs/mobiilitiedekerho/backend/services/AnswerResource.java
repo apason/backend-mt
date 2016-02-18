@@ -29,7 +29,6 @@ public class AnswerResource extends Resource {
         });
         Spark.get("/StartAnswerUpload", (req, res) -> {
             User u = requireAuthenticatedUser(req, res);
-	    //require 
             return this.startAnswerUpload(req, res, u);
         });
         Spark.get("/EndAnswerUpload", (req, res) -> {
@@ -50,8 +49,8 @@ public class AnswerResource extends Resource {
         if (taskId == null) {
             jsonResponse.setStatus("ParameterError");
             return jsonResponse.toJson();
-        }
-        
+	}
+              
         try {
            taskIdInt = Integer.parseInt(taskId);
         } catch (Exception e) {
@@ -61,17 +60,16 @@ public class AnswerResource extends Resource {
         Optional<Answer> answer = getAnswerService().setInitialAnswer(user.getId(), taskIdInt);
 
         if (!answer.isPresent()) {
-            jsonResponse.setStatus("UnexpectedError");
+            jsonResponse.setStatus("ParameterError");
             return jsonResponse.toJson();
         }
 
         return jsonResponse
-                .addPropery("task_id", taskId)
-                .addPropery("answer_id", "" + answer.get().getId())
-                .addPropery("answer_uri", answer.get().getUri())
-                .setStatus("Success")
-                .toJson();
-
+	    .addPropery("task_id", taskId)
+	    .addPropery("answer_id", "" + answer.get().getId())
+	    .addPropery("answer_uri", answer.get().getUri())
+	    .setStatus("Success")
+	    .toJson();
     }
     
     // Ends the answer upload.
@@ -92,16 +90,19 @@ public class AnswerResource extends Resource {
         try {
             answerId = Integer.parseInt(answerIdString);
         } catch (Exception e) {
-            jsonResponse.setStatus("InvalidAnswerId");
+            jsonResponse.setStatus("ParameterError");
             return jsonResponse.toJson();
         }
 
         if (uploadStatus.equals("success")) {
-            getAnswerService().enableAnswer(answerId, user.getId());
-            jsonResponse.setStatus("Success");
+            jsonResponse
+		.setStatus(getAnswerService()
+			   .enableAnswer(answerId, user.getId()));
+	    
         } else if (uploadStatus.equals("failure")) {
-            getAnswerService().deleteAnswer(answerId, user.getId());
-            jsonResponse.setStatus("Success");
+            jsonResponse
+		.setStatus(getAnswerService()
+				   .deleteAnswer(answerId, user.getId()));
         } else {
             jsonResponse.setStatus("InvalidStatus");
         }
