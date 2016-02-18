@@ -29,6 +29,7 @@ public class AnswerResource extends Resource {
         });
         Spark.get("/StartAnswerUpload", (req, res) -> {
             User u = requireAuthenticatedUser(req, res);
+	    //require 
             return this.startAnswerUpload(req, res, u);
         });
         Spark.get("/EndAnswerUpload", (req, res) -> {
@@ -124,7 +125,7 @@ public class AnswerResource extends Resource {
         }
         
         try {
-           answerIdInt = Integer.parseInt(answersId);
+           answerIdInt = Integer.parseInt(answerId);
         } catch (Exception e) {
             return jsonResponse.setStatus("ParameterError").toJson();
         }

@@ -45,7 +45,7 @@ abstract public class Resource {
         return u.get();
     }
 
-    // Checks if the auth token is a valid anonymous token.
+    // Checks if the auth token is a valid token.
     void requireAnonymousUser(Request req, Response res) {
         checkAuthToken(req, res);
     }
