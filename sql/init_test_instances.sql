@@ -5,21 +5,21 @@
 
 # 3 user examples. 2 active and one banned. One active has already a token assigned.
 INSERT INTO user 
-	(id, password, enabled, email, token, create_time)
+	(id, email, password, enabled, token, create_time)
 	VALUES 
-	(1, "password1", true, "matti.meikalainen@gmail.com", "tokeniii", NOW())
+	(1, "matti.meikalainen@gmail.com", "password1", true, "tokeniii", NOW())
 ;
 
 INSERT INTO user 
-	(id, password, enabled, email, create_time) 
+	(id, email, password, enabled, token, create_time)
 	VALUES
-	(2, "password2", true, "maija.meikalainen@helsinki.fi", NOW())
+	(2, "maija.meikalainen@helsinki.fi", "password2", true, "maija.meikalainen@helsinki.fi", NOW())
 ;
 
 INSERT INTO user
-	(id, password, enabled, email, create_time)
+	(id, email, password, enabled, token, create_time)
 	VALUES
-	(3, "password3", false, "trolli@peikko.banned", NOW())
+	(3, "trolli@peikko.banned", "password3", false, "trolli@peikko.banned", NOW())
 ;
 
 # 2 tesst categories. (note that background images are not uploaded to server yet.
