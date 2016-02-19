@@ -3,11 +3,11 @@
 
 # Users and categories does not depend on any other tables so those are created first
 
-# 3 user examples. 2 active and one banned.
+# 3 user examples. 2 active and one banned. One active has already a token assigned.
 INSERT INTO user 
-	(id, password, enabled, email, create_time)
+	(id, password, enabled, email, token, create_time)
 	VALUES 
-	(1, "password1", true, "matti.meikalainen@gmail.com", NOW())
+	(1, "password1", true, "matti.meikalainen@gmail.com", "tokeniii", NOW())
 ;
 
 INSERT INTO user 

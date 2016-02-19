@@ -25,9 +25,10 @@ CREATE TABLE IF NOT EXISTS category
 CREATE TABLE IF NOT EXISTS user
 (
     id INT NOT NULL AUTO_INCREMENT,
+    email VARCHAR(60) NOT NULL,
     password VARCHAR(128) NOT NULL,
     enabled TINYINT(1) NOT NULL,
-    email VARCHAR(60),
+    token VARCHAR(1000)
     create_time DATETIME,
     PRIMARY KEY(id)
 );
