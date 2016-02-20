@@ -9,14 +9,11 @@ import java.util.ArrayList;
 public class Category {
 
     private int id;
-    private String iconName;
-    private String iconAnimatedName;
-    private String BGName;
+    private String iconUri;
+    private String iconAnimatedUri;
+    private String BGUri;
     private String name;
     private Date loaded;
-    private ArrayList<Task> tasks;
-
-    
     
     public int getId() {
         return id;
@@ -27,30 +24,30 @@ public class Category {
     }
 
     
-    public String getIconName() {
-        return iconName;
+    public String getIconUri() {
+        return iconUri;
     }
 
-    public void setIconName(String iconName) {
-        this.iconName = iconName;
+    public void setIconUri(String iconUri) {
+        this.iconUri = iconUri;
     }
     
     
-    public String getIconAnimatedName() {
-        return iconAnimatedName;
-    }
-
-    public void seticonAnimatedName(String iconAnimatedName) {
-        this.iconAnimatedName = iconAnimatedName;
-    }
-    
-    
-    public String getBGName() {
-        return BGName;
+    public String getIconAnimatedUri() {
+        return iconAnimatedUri;
     }
 
-    public void setBGName(String BGName) {
-        this.BGName = BGName;
+    public void seticonAnimatedUri(String iconAnimatedUri) {
+        this.iconAnimatedUri = iconAnimatedUri;
+    }
+    
+    
+    public String getBGUri() {
+        return BGUri;
+    }
+
+    public void setBGUri(String BGUri) {
+        this.BGUri = BGUri;
     }
 
     
@@ -70,19 +67,4 @@ public class Category {
     public void setLoaded(Date loaded) {
         this.loaded = loaded;
     }
-    
-    
-    public ArrayList<Task> getTasks() {
-        return tasks;
-    }
-
-    public void setTasks(ArrayList<Task> tasks) {
-        this.tasks = tasks;
-    }
-    
-    public void addTask(Task task) {
-        tasks.add(task);
-    }
-    
-    
 }

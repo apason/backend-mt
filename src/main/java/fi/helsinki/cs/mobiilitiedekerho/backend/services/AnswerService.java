@@ -12,6 +12,8 @@ import org.sql2o.*;
 import java.util.List;
 import java.util.Optional;
 
+import static java.lang.System.out;
+
 public class AnswerService {
 
     private final Sql2o sql2o;
@@ -55,8 +57,8 @@ public class AnswerService {
 		.addParameter("task_id", taskId)
 		.executeAndFetch(Task.class);
 	    
-	    if(!task.isEmpty() /*&&
-		task.get(0).isEnabled()*/) return true;
+	    if(!task.isEmpty() &&
+	       task.get(0).isEnabled()) return true;
 	    else                        return false;
 	}
 	catch(Exception e){
@@ -130,7 +132,7 @@ public class AnswerService {
 		.addParameter("id", addedKey)
 		.executeAndFetch(Answer.class);
 	}
-	
+
         if (answer.isEmpty()) {
             return Optional.empty();
         } else {

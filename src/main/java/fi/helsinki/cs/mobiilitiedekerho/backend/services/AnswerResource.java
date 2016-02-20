@@ -10,6 +10,8 @@ import spark.Request;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import static java.lang.System.out;
+
 public class AnswerResource extends Resource {
 
     private final AnswerService answerService;

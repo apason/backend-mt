@@ -7,9 +7,9 @@ CREATE TABLE IF NOT EXISTS answer
     issued DATETIME NOT NULL,
     loaded DATETIME,
     enabled TINYINT(1) NOT NULL,
-    task_id INT,
-    user_id INT,
-    uri VARCHAR(255),
+    task_id INT NOT NULL,
+    user_id INT NOT NULL,
+    uri VARCHAR(255) NOT NULL,
     PRIMARY KEY(id)
 );
 
@@ -27,16 +27,16 @@ CREATE TABLE IF NOT EXISTS user
     id INT NOT NULL AUTO_INCREMENT,
     password VARCHAR(128) NOT NULL,
     enabled TINYINT(1) NOT NULL,
-    email VARCHAR(60),
-    create_time DATETIME,
+    email VARCHAR(60) NOT NULL,
+    create_time DATETIME NOT NULL,
     PRIMARY KEY(id)
 );
 
 CREATE TABLE IF NOT EXISTS task
 (
     id INT NOT NULL AUTO_INCREMENT,
-    uri VARCHAR(255),
-    loaded DATETIME,
+    uri VARCHAR(255) NOT NULL,
+    loaded DATETIME NOT NULL,
     enabled TINYINT(1) NOT NULL,
     category_id INT NOT NULL,
     PRIMARY KEY(id)
@@ -58,3 +58,4 @@ ALTER TABLE task
     ADD FOREIGN KEY (category_id)
     REFERENCES category(id)
 ;
+

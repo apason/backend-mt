@@ -9,7 +9,7 @@ import spark.Request;
 
 import java.util.ArrayList;
 import java.util.Optional;
-
+import java.util.List;
 
 public class CategoryResource extends Resource {
 
@@ -26,9 +26,19 @@ public class CategoryResource extends Resource {
     // Defines routes for CategoryResource.
     private void defineRoutes() {
         Spark.get("/DescribeCategory", (req, res) -> {
-            requireAnonymousUser(req, res);
+	    requireAnonymousUser(req, res);
             return this.describeCategory(req, res);
         });
+	Spark.get("/DescribeCategories", (req, res) -> {
+	    requireAnonymousUser(req, res);
+	    return this.DescribeCategories(req, res);
+	});
+    }
+
+    private String DescribeCategories(Request req, Response res){
+	JsonResponse jsonResponse = new JsonResponse();
+	List<Category> categories = getCategoryService().getAllCategories();
+	return jsonResponse.setStatus("Success").setObject(categories).toJson();
     }
     
     // Describes an category indicated by caetgory_id.

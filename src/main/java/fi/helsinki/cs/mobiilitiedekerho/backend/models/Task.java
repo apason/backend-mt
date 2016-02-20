@@ -5,6 +5,7 @@ public class Task {
   private int id;
   private String uri;
   private Date loaded;
+    private boolean enabled;
 
     public int getId() {
         return id;
@@ -28,5 +29,17 @@ public class Task {
 
     public void setLoaded(Date loaded) {
         this.loaded = loaded;
+    }
+
+    public void enable(){
+	enabled = true;
+    }
+
+    public void disable(){
+	enabled = false;
+    }
+
+    public boolean isEnabled(){
+	return enabled;
     }
 }
