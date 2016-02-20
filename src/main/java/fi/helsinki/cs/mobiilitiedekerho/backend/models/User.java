@@ -3,10 +3,10 @@ import java.util.Date;
 
 public class User {
     private int id;
-    private String password;
-    private String hash;
-    private boolean enabled;
     private String email;
+    private String password;
+    private boolean enabled;
+    private String token;
     private Date create_time;
 
     public int getId() {
@@ -25,12 +25,12 @@ public class User {
         this.password = password;
     }
 
-    public String getHash() {
-        return hash;
+    public String getToken() {
+        return token;
     }
 
-    public void setHash(String hash) {
-        this.hash = hash;
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public boolean isEnabled() {
