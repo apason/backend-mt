@@ -2,7 +2,6 @@ package fi.helsinki.cs.mobiilitiedekerho.backend.models;
 
 
 import java.util.Date;
-import java.util.ArrayList;
 
 
 
