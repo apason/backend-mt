@@ -28,7 +28,6 @@ CREATE TABLE IF NOT EXISTS user
     email VARCHAR(60) NOT NULL,
     password VARCHAR(128) NOT NULL,
     enabled TINYINT(1) NOT NULL,
-    email VARCHAR(60) NOT NULL,
     create_time DATETIME NOT NULL,
     PRIMARY KEY(id)
 );
