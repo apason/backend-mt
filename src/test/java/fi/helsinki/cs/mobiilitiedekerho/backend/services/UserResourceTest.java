@@ -18,7 +18,6 @@ import static org.mockito.Mockito.*;
 public class UserResourceTest extends TestCase {
     
     private UserService userService;
-    private UserService userService;
     private UserResource userResource;
     
     private Request req;
@@ -36,7 +35,6 @@ public class UserResourceTest extends TestCase {
     }
     
     protected void setUp() {
-        taskService = mock(TaskService.class);
         userService = mock(UserService.class);
         
         req = mock(Request.class);
@@ -45,14 +43,19 @@ public class UserResourceTest extends TestCase {
         User user = new User();
         user.setId(1);
         user.setEmail("test@testistania.test");
-        user.setPassword("passu");
+        user.setPassword("salasana");
         user.setEnabled(true);
         user.setCreate_time(new Date(0));
         
-        when(userService.getTaskById(1)).thenReturn(Optional.of(user));
-        when(userService.getTaskById(2)).thenReturn(Optional.empty());
         
-        userResource = new UserResource(userService, userService);
+        // We mock userService, which sets password to an empty string
+        // before returning the object.
+        user.setPassword("");
+        
+        when(userService.getUserById(1)).thenReturn(Optional.of(user));
+        when(userService.getUserById(2)).thenReturn(Optional.empty());
+        
+        userResource = new UserResource(userService);
     }
 
     public void testDescribeUserSuccess() {         
@@ -60,8 +63,7 @@ public class UserResourceTest extends TestCase {
         
         String jsonResponse = userResource.describeUser(req, res);
         
-        String jsonExpected = "{\"objects\":[{\"id\":1,\"email\":\"test@testistania.test\",\"password\"\":passu\",\"enabled\":true,"
-                + "\"create_time\":\"Jan 1, 1970 2:00:00 AM\"}],\"status\":\"Success\"}";
+        String jsonExpected = "{\"objects\":[{\"id\":1,\"email\":\"test@testistania.test\",\"password\":\"\",\"enabled\":true,\"create_time\":\"Jan 1, 1970 2:00:00 AM\"}],\"status\":\"Success\"}";
         assertEquals(jsonResponse, jsonExpected);
         
         jsonResponse = userResource.describeUser(req, res);

@@ -58,8 +58,7 @@ public class TaskResourceTest extends TestCase {
         
         String jsonResponse = taskResource.describeTask(req, res);
         
-        String jsonExpected = "{\"objects\":[{\"id\":1,\"uri\":\"uri.mp4\","
-                + "\"loaded\":\"Jan 1, 1970 2:00:00 AM\"}],\"status\":\"Success\"}";
+        String jsonExpected = "{\"objects\":[{\"id\":1,\"uri\":\"uri.mp4\",\"loaded\":\"Jan 1, 1970 2:00:00 AM\",\"enabled\":false}],\"status\":\"Success\"}";
         assertEquals(jsonResponse, jsonExpected);
         
         jsonResponse = taskResource.describeTask(req, res);

@@ -36,7 +36,7 @@ public class CategoryResourceTest extends TestCase {
     }
     
     protected void setUp() {
-        taskService = mock(TaskService.class);
+        categoryService = mock(CategoryService.class);
         userService = mock(UserService.class);
         
         req = mock(Request.class);
@@ -47,8 +47,8 @@ public class CategoryResourceTest extends TestCase {
         category.setName("testia");
         category.setLoaded(new Date(0));
         
-        when(categoryService.getTaskById(1)).thenReturn(Optional.of(category));
-        when(categoryService.getTaskById(2)).thenReturn(Optional.empty());
+        when(categoryService.getCategoryById(1)).thenReturn(Optional.of(category));
+        when(categoryService.getCategoryById(2)).thenReturn(Optional.empty());
         
         categoryResource = new CategoryResource(userService, categoryService);
     }
