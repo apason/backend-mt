@@ -43,7 +43,7 @@ public class CategoryResource extends Resource {
     
     // Describes an category indicated by caetgory_id.
     // If the category is not found, returns status: CategoryNotFoundError.
-    private String describeCategory(Request req, Response res) {
+    String describeCategory(Request req, Response res) {
     
         String categoryId = req.queryParams("category_id");
         int categoryIdInt;
@@ -80,5 +80,4 @@ public class CategoryResource extends Resource {
     public CategoryService getCategoryService() {
         return categoryService;
     }
-    
 }

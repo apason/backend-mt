@@ -34,7 +34,7 @@ public class UserResource extends Resource {
 
     // Describes the user indicated by
     // user_id parameter.
-    private String describeUser(Request req, Response res) {
+    String describeUser(Request req, Response res) {
         String userId = req.queryParams("user_id");
         int userIdInt;
         JsonResponse jsonResponse = new JsonResponse();
@@ -67,7 +67,7 @@ public class UserResource extends Resource {
     // If email and password are set in GET, authenticates the user.
     // If they are not set, generates an anonymous token.
     // Returns status: AuthenticationFailure if authentication fails.
-    private String getAuthToken(Request req, Response res) {
+    String getAuthToken(Request req, Response res) {
 
         String auth_token = "";
         String email = req.queryParams("email");
