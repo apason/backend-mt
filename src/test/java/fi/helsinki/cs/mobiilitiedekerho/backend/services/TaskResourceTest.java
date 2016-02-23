@@ -47,6 +47,7 @@ public class TaskResourceTest extends TestCase {
         task.setUri("uri.mp4");
         task.setLoaded(new Date(0));
         task.setInfo("tehtävä");
+        task.setCategory_id(1);
         
         when(taskService.getTaskById(1)).thenReturn(Optional.of(task));
         when(taskService.getTaskById(2)).thenReturn(Optional.empty());
@@ -59,7 +60,7 @@ public class TaskResourceTest extends TestCase {
         
         String jsonResponse = taskResource.describeTask(req, res);
         
-        String jsonExpected = "{\"objects\":[{\"id\":1,\"uri\":\"uri.mp4\",\"loaded\":\"Jan 1, 1970 2:00:00 AM\",\"enabled\":false,\"info\":\"tehtävä\"}],\"status\":\"Success\"}";
+        String jsonExpected = "{\"objects\":[{\"id\":1,\"uri\":\"uri.mp4\",\"loaded\":\"Jan 1, 1970 2:00:00 AM\",\"enabled\":false,\"info\":\"tehtävä\",\"category_id\":1}],\"status\":\"Success\"}";
         assertEquals(jsonResponse, jsonExpected);
         
         jsonResponse = taskResource.describeTask(req, res);
