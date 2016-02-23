@@ -35,7 +35,7 @@ INSERT INTO category
 	(2, 'fysiikka', 'fys.png')
 ;
 
-# 3 task examples. (note that only the first has a correct uri field)
+# 3 task examples. (note that only the first has a correct uri field) One has default value (not assigned) in field info.
 INSERT INTO task
 	(id, loaded, uri, category_id, enabled, info)
 	VALUES
@@ -49,9 +49,9 @@ INSERT INTO task
 ;
 
 INSERT INTO task
-	(id, loaded, uri, category_id, enabled, info)
+	(id, loaded, uri, category_id, enabled)
 	VALUES
-	(3, NOW(), 'explosion.mp4', 2, true, "tehtävä3")
+	(3, NOW(), 'explosion.mp4', 2, true)
 ;
 
 # A few test answers for enabled users (note that all instances does not have correct uri

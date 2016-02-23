@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS task
     loaded DATETIME NOT NULL,
     enabled TINYINT(1) NOT NULL,
     category_id INT NOT NULL,
-    info VARCHAR(1000),
+    info VARCHAR(1000) NOT NULL DEFAULT 'Ei ole saatavilla kuvausta tehtävälle.' ”?,
     PRIMARY KEY(id)
 );
 
