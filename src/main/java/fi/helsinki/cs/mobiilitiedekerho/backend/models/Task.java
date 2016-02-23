@@ -1,12 +1,17 @@
 package fi.helsinki.cs.mobiilitiedekerho.backend.models;
+
 import java.util.Date;
 
-public class Task {
-  private int id;
-  private String uri;
-  private Date loaded;
-    private boolean enabled;
 
+public class Task {
+    
+    private int id;
+    private String uri;
+    private Date loaded;
+    private boolean enabled;
+    private String info;
+
+    
     public int getId() {
         return id;
     }
@@ -41,5 +46,13 @@ public class Task {
 
     public boolean isEnabled(){
 	return enabled;
+    }
+    
+    public void setInfo(String info) {
+        this.info = info;
+    }
+    
+    public String getInfo() {
+        return info;
     }
 }

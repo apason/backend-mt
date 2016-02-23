@@ -39,15 +39,15 @@ public class TaskService {
     // Saves the task to the database.
     public void saveTask(Task task) {
         String sql
-                = "INSERT INTO task(uri, loaded) "
-                + "VALUES (:uri, :loaded)";
+                = "INSERT INTO task(uri, loaded, enabled, info) "
+                + "VALUES (:uri, :loaded, :enabled, :info)";
 
         try (Connection con = sql2o.open()) {
             con.createQuery(sql).bind(task).executeUpdate();
         }
     }
 
-    // Lists all tasks from the dabase.
+    // Lists all tasks from the database.
     public List<Task> getAllTasks() {
         String sql
                 = "SELECT *"

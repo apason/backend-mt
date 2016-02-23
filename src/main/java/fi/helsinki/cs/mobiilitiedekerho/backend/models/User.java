@@ -1,7 +1,10 @@
 package fi.helsinki.cs.mobiilitiedekerho.backend.models;
+
 import java.util.Date;
 
+
 public class User {
+
     private int id;
     private String email;
     private String password;
@@ -9,6 +12,7 @@ public class User {
     private String token;
     private Date create_time;
 
+    
     public int getId() {
         return id;
     }

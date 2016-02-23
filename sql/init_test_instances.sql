@@ -37,21 +37,21 @@ INSERT INTO category
 
 # 3 task examples. (note that only the first has a correct uri field)
 INSERT INTO task
-	(id, loaded, uri, category_id, enabled)
+	(id, loaded, uri, category_id, enabled, info)
 	VALUES
-	(1, NOW(), 'VID_20160201_150600.mp4', 1, true)
+	(1, NOW(), 'VID_20160201_150600.mp4', 1, true, "tehtävä1")
 ;
 
 INSERT INTO task
-	(id, loaded, uri, category_id, enabled)
+	(id, loaded, uri, category_id, enabled, info)
 	VALUES
-	(2, NOW(), 'not_working_yet.mp4', 1, false)
+	(2, NOW(), 'not_working_yet.mp4', 1, false, "tehtävä2")
 ;
 
 INSERT INTO task
-	(id, loaded, uri, category_id, enabled)
+	(id, loaded, uri, category_id, enabled, info)
 	VALUES
-	(3, NOW(), 'explosion.mp4', 2, true)
+	(3, NOW(), 'explosion.mp4', 2, true, "tehtävä3")
 ;
 
 # A few test answers for enabled users (note that all instances does not have correct uri

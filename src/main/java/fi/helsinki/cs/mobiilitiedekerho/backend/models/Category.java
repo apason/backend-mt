@@ -1,8 +1,6 @@
 package fi.helsinki.cs.mobiilitiedekerho.backend.models;
 
-
 import java.util.Date;
-
 
 
 public class Category {
@@ -13,6 +11,7 @@ public class Category {
     private String BGUri;
     private String name;
     private Date loaded;
+    
     
     public int getId() {
         return id;
