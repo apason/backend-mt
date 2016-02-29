@@ -1,6 +1,6 @@
 Mobiilitiedekerhon backend.
 
-#Sprint 2#
+#Sprint 3#
 
 ##How to compile the project?##
 
