@@ -1,7 +1,10 @@
 package fi.helsinki.cs.mobiilitiedekerho.backend.models;
+
 import java.util.Date;
 
+
 public class Answer {
+
     private int id;
     private Date issued;
     private Date loaded;
@@ -10,6 +13,7 @@ public class Answer {
     private int user_id;
     private String uri;
 
+    
     public int getId() {
         return id;
     }

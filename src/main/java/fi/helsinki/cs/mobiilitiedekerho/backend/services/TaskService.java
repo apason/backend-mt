@@ -15,6 +15,9 @@ public class TaskService {
         this.sql2o = sql2o;
     }
 
+    // Returns a task from the database by task_id.
+    // If the task is found, returns Optional<Task> with the task object.
+    // Otherwise, returns an empty Optional<Task>
     public Optional<Task> getTaskById(int taskId) {
         String sql
                 = "SELECT *"
@@ -32,17 +35,19 @@ public class TaskService {
             }
         }
     }
-
+    
+    // Saves the task to the database.
     public void saveTask(Task task) {
         String sql
-                = "INSERT INTO task(uri, loaded) "
-                + "VALUES (:uri, :loaded)";
+                = "INSERT INTO task(uri, loaded, enabled, info, category_id) "
+                + "VALUES (:uri, :loaded, :enabled, :info, :category_id)";
 
         try (Connection con = sql2o.open()) {
             con.createQuery(sql).bind(task).executeUpdate();
         }
     }
 
+    // Lists all tasks from the database.
     public List<Task> getAllTasks() {
         String sql
                 = "SELECT *"
