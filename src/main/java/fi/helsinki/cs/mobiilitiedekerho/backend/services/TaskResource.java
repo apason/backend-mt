@@ -27,6 +27,11 @@ public class TaskResource extends Resource {
             requireAnonymousUser(req, res);
             return describeTask(req, res);
         });
+        
+        Spark.get("/DescribeCategoryTasks", (res, req) -> {
+            requireAnonymousUser(res, req);
+            return describeGategoryTasks(res, req);
+        });
     }
 
     // Describes the task indicated by task_id.
@@ -57,6 +62,35 @@ public class TaskResource extends Resource {
         }
 
 	tasks.add(task.get());
+	
+        jsonResponse.setObject(tasks);
+
+        return jsonResponse.setStatus("Success").toJson();
+    }
+    
+    // Describes tasks of the category indicated by category_id.
+    // If no tasks are not found, returns status: TaskNotFoundError.
+    String describeGategoryTasks(Request req, Response res) {
+        String categoryId = req.queryParams("category_id");
+        int categoryIdInt;
+        JsonResponse jsonResponse = new JsonResponse();
+
+        if (categoryId == null) {
+            return jsonResponse.setStatus("ParameterError").toJson();
+        }
+        
+        try {
+            categoryIdInt = Integer.parseInt(categoryId);
+        } catch (Exception e) {
+            return jsonResponse.setStatus("ParameterError").toJson();
+        }
+        
+        ArrayList<Task> tasks = (ArrayList<Task>) getTaskService().GetTasksByCategory(categoryIdInt);
+
+        if (tasks.isEmpty()) {
+            jsonResponse.setStatus("TaskNotFoundError");
+            return jsonResponse.toJson();
+        }
 	
         jsonResponse.setObject(tasks);
 
