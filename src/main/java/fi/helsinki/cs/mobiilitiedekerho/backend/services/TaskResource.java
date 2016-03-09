@@ -85,7 +85,7 @@ public class TaskResource extends Resource {
             return jsonResponse.setStatus("ParameterError").toJson();
         }
         
-        ArrayList<Task> tasks = (ArrayList<Task>) getTaskService().GetTasksByCategory(categoryIdInt);
+        ArrayList<Task> tasks = (ArrayList<Task>) getTaskService().getTasksByCategory(categoryIdInt);
 
         if (tasks.isEmpty()) {
             jsonResponse.setStatus("TaskNotFoundError");
