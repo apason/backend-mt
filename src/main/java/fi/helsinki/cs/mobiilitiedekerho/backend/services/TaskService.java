@@ -57,7 +57,8 @@ public class TaskService {
         }
     }
     
-    public List<Task> GetTasksByCategory(int categoryId) {
+    // Returns a list of tasks in a category.
+    public List<Task> getTasksByCategory(int categoryId) {
         String sql
                 = "SELECT *"
                 + "FROM task "
