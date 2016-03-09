@@ -29,6 +29,12 @@ public class AnswerResource extends Resource {
             requireAnonymousUser(req, res);
             return this.describeAnswer(req, res);
         });
+        
+        Spark.get("/DescribeTaskAnswers", (req, res) -> {
+            requireAnonymousUser(req, res);
+            return this.describeTaskAnswers(req, res);
+        });
+        
         Spark.get("/StartAnswerUpload", (req, res) -> {
             User u = requireAuthenticatedUser(req, res);
             return this.startAnswerUpload(req, res, u);
@@ -147,6 +153,37 @@ public class AnswerResource extends Resource {
         return jsonResponse.setStatus("Success").toJson();
     }
 
+    // Describes all answers associated with the task indicated by task_id.
+    // If no answers are found, returns status: AnswerNotFoundError.
+    String describeTaskAnswers(Request req, Response res) {
+        String taskId = req.queryParams("task_id");
+        Integer taskIdInt;
+        JsonResponse jsonResponse = new JsonResponse();
+
+        ArrayList<Answer> answers = new ArrayList<Answer>();
+
+        if (taskId == null) {
+            jsonResponse.setStatus("ParameterError");
+            return jsonResponse.toJson();
+        }
+        
+        try {
+           taskIdInt = Integer.parseInt(taskId);
+        } catch (Exception e) {
+            return jsonResponse.setStatus("ParameterError").toJson();
+        }
+
+        answers = (ArrayList<Answer>) getAnswerService().getAnswersByTask(taskIdInt);
+
+        if (answers.isEmpty()) {
+            jsonResponse.setStatus("AnswerNotFoundError");
+            return jsonResponse.toJson();
+        }
+
+        jsonResponse.setObject(answers);
+
+        return jsonResponse.setStatus("Success").toJson();
+    }
     public AnswerService getAnswerService() {
         return answerService;
     }

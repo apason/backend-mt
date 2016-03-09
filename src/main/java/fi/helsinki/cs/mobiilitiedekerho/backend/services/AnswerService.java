@@ -186,5 +186,19 @@ public class AnswerService {
 	    }
 	}
     }
-}
+    
+    // Returns a list of answers to a task.
+    public List<Answer> getAnswersByTask(int taskId) {
+        String sql
+                = "SELECT *"
+                + "FROM answer "
+                + "WHERE task_id = :task_id";
 
+        try (Connection con = sql2o.open()) {
+            List<Answer> answers = con.createQuery(sql)
+                    .addParameter("task_id", taskId)
+                    .executeAndFetch(Answer.class);
+            return answers;
+        }        
+    }
+}
