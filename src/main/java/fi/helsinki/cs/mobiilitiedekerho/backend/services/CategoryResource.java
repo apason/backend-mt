@@ -41,7 +41,7 @@ public class CategoryResource extends Resource {
 	return jsonResponse.setStatus("Success").setObject(categories).toJson();
     }
     
-    // Describes an category indicated by caetgory_id.
+    // Describes an category indicated by category_id.
     // If the category is not found, returns status: CategoryNotFoundError.
     String describeCategory(Request req, Response res) {
     

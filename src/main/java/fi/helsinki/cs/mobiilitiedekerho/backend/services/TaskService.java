@@ -56,4 +56,19 @@ public class TaskService {
             return con.createQuery(sql).executeAndFetch(Task.class);
         }
     }
+    
+    // Returns a list of tasks in a category.
+    public List<Task> getTasksByCategory(int categoryId) {
+        String sql
+                = "SELECT *"
+                + "FROM task "
+                + "WHERE category_id = :category_id";
+
+        try (Connection con = sql2o.open()) {
+            List<Task> tasks = con.createQuery(sql)
+                    .addParameter("category_id", categoryId)
+                    .executeAndFetch(Task.class);
+            return tasks;
+        }        
+    }
 }
