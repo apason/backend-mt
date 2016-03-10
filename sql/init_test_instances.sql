@@ -22,6 +22,25 @@ INSERT INTO user
 	(3, "trolli@peikko.banned", "password3", false, "trolli@peikko.banned", NOW())
 ;
 
+# 3 subuser examples pointing to different users. Two of them have the same nick but pointing to diferent user.
+INSERT INTO subuser
+    (id, user_id, nick, create_time)
+    VALUES 
+    (1, 1, "nick", NOW())
+;
+
+INSERT INTO subuser
+    (id, user_id, nick, create_time)
+    VALUES 
+    (2, 1, "anonymous-lapsi", NOW())
+;
+
+INSERT INTO subuser
+    (id, user_id, nick, create_time)
+    VALUES 
+    (3, 2, "nick", NOW())
+;
+
 # 2 tesst categories. (note that background images are not uploaded to server yet.
 INSERT INTO category
 	(id, name, bg_uri)
@@ -54,7 +73,7 @@ INSERT INTO task
 	(3, NOW(), 'explosion.mp4', 2, true)
 ;
 
-# A few test answers for enabled users (note that all instances does not have correct uri
+# A few test answers for enabled users (note that all instances does not have correct uri)
 INSERT INTO answer
 	(issued, id, loaded, enabled, task_id, user_id, uri)
 	VALUES

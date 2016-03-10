@@ -32,6 +32,17 @@ CREATE TABLE IF NOT EXISTS user
     PRIMARY KEY(id)
 );
 
+
+CREATE TABLE IF NOT EXISTS subuser
+(
+    id INT NOT NULL AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    nick VARCHAR(50) NOT NULL,
+    create_time DATETIME NOT NULL,
+    PRIMARY KEY(id)
+);)
+
+
 CREATE TABLE IF NOT EXISTS task
 (
     id INT NOT NULL AUTO_INCREMENT,
@@ -58,5 +69,10 @@ ALTER TABLE answer
 ALTER TABLE task
     ADD FOREIGN KEY (category_id)
     REFERENCES category(id)
+;
+
+ALTER TABLE subuser
+    ADD FOREIGN KEY (user_id)
+    REFERENCES user(id)
 ;
 
