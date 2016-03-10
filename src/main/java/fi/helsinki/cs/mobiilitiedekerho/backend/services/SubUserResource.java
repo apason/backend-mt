@@ -50,22 +50,6 @@ public class SubUserResource extends Resource {
     // Creates a new user pointing to the user in question.
     String CreateSubUser(Request req, Response res, User user) {
         int userIdInt = user.getId();
-        String subUserId = req.queryParams("subuser_id");
-        int subUserIDInt;
-        
-        JsonResponse jsonResponse = new JsonResponse();
-        
-        
-        if (subUserID== null) {
-            jsonResponse.setStatus("ParameterError");
-            return jsonResponse.toJson();
-        }
-              
-        try {
-           subUserIDInt = Integer.parseInt(subUserID);
-        } catch (Exception e) {
-            return jsonResponse.setStatus("ParameterError").toJson();
-        }
 
         //TODO
         
@@ -74,7 +58,7 @@ public class SubUserResource extends Resource {
     }
     
     // Deletes the wanted SubUser pointing to the user in question.
-    private String deleteSubUSer(Request req, Response res, User user) {
+    String deleteSubUSer(Request req, Response res, User user) {
         int userIdInt = user.getId();
         String subUserId = req.queryParams("subuser_id");
         int subUserIDInt;

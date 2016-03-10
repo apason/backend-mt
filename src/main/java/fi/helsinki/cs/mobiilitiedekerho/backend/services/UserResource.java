@@ -98,7 +98,7 @@ public class UserResource extends Resource {
     }
     
     // Describes the current user indicated by the auth token.
-    private String describeCurrentUser(Request req, Response res, User user) {
+    String describeCurrentUser(Request req, Response res, User user) {
         return new JsonResponse().setObject(user).setStatus("Success").toJson();
     }
 }
