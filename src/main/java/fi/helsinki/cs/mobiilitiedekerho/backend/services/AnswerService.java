@@ -91,7 +91,7 @@ public class AnswerService {
     }
     
     //handles StartAnswerUpload api-call.
-    public Optional<Answer> setInitialAnswer(Integer userId, Integer taskId){
+    public Optional<Answer> setInitialAnswer(Integer subUserId, Integer taskId){
 	Date date = new Date();
 	SimpleDateFormat sdf = new SimpleDateFormat("MM+dd+yyyy+h+mm+ss+a");
 
@@ -106,7 +106,7 @@ public class AnswerService {
 	//create new disabled answer instance to be uploaded
 	String sql =
 	    "INSERT INTO answer " +
-	    "(issued, enabled, task_id, user_id, uri) " +
+	    "(issued, enabled, task_id, subuser_id, uri) " +
 	    "VALUES " +
 	    "(NOW(), false, :task_id, :user_id, :uri)";
 
@@ -114,8 +114,8 @@ public class AnswerService {
 	
 	    addedKey  = con.createQuery(sql, true)
 		.addParameter("task_id", taskId)
-		.addParameter("user_id", userId)
-		.addParameter("uri", userId + "+" + taskId + "+" + sdf.format(date) + ".mp4")
+		.addParameter("user_id", subUserId)
+		.addParameter("uri", subUserId + "+" + taskId + "+" + sdf.format(date) + ".mp4")
 		.executeUpdate()
 		.getKey(Integer.class);
 	}

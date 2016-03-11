@@ -37,9 +37,11 @@ public class AnswerResource extends Resource {
         
         Spark.get("/StartAnswerUpload", (req, res) -> {
             User u = requireAuthenticatedUser(req, res);
-            return this.startAnswerUpload(req, res, u);
+	    Integer subUserId = Integer.parseInt(req.queryParams("subuser_id"));
+	    requireSubUser(u, subUserId);
+            return this.startAnswerUpload(req, res, subUserId);
         });
-        Spark.get("/EndAnswerUpload", (req, res) -> {
+	Spark.get("/EndAnswerUpload", (req, res) -> {
             User u = requireAuthenticatedUser(req, res);
             return this.endAnswerUpload(req, res, u);
         });
@@ -48,7 +50,7 @@ public class AnswerResource extends Resource {
     // Starts answer upload.
     // Creates the answer in the database.
     // Returns the new answer id and an URI for the client to upload to.
-    String startAnswerUpload(Request req, Response res, User user) {
+    String startAnswerUpload(Request req, Response res, int subUserId) {
         String taskId = req.queryParams("task_id");
         int taskIdInt;
 
@@ -65,7 +67,7 @@ public class AnswerResource extends Resource {
             return jsonResponse.setStatus("ParameterError").toJson();
         }
 
-        Optional<Answer> answer = getAnswerService().setInitialAnswer(user.getId(), taskIdInt);
+        Optional<Answer> answer = getAnswerService().setInitialAnswer(subUserId, taskIdInt);
 
         if (!answer.isPresent()) {
             jsonResponse.setStatus("ParameterError");

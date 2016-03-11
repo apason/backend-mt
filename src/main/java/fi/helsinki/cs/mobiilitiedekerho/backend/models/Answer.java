@@ -10,7 +10,7 @@ public class Answer {
     private Date loaded;
     private boolean enabled;
     private int task_id;
-    private int user_id;
+    private int subuser_id;
     private String uri;
 
     
@@ -54,12 +54,12 @@ public class Answer {
         this.task_id = task_id;
     }
 
-    public int getUser_id() {
-        return user_id;
+    public int getSubUser_id() {
+        return subuser_id;
     }
 
-    public void setUser_id(int user_id) {
-        this.user_id = user_id;
+    public void setSubUser_id(int user_id) {
+        this.subuser_id = subuser_id;
     }
 
     public String getUri() {

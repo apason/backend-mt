@@ -1,6 +1,7 @@
 package fi.helsinki.cs.mobiilitiedekerho.backend.services;
 
 import fi.helsinki.cs.mobiilitiedekerho.backend.models.User;
+import fi.helsinki.cs.mobiilitiedekerho.backend.models.Subuser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
@@ -26,6 +27,32 @@ public class UserService {
 
     public Key getSecretKey() {
         return secretKey;
+    }
+
+    //rename?
+    public boolean requireSubUser(User u, Integer subuserId){
+	
+	if(subuserId == null) return false;
+	
+	String sql
+	    = "SELECT * "
+	    + "FROM subuser "
+	    + "WHERE id = :id "
+	    + "AND user_id = :uid";
+	
+	try (Connection con = sql2o.open()) {
+	    List<Subuser> user = con.createQuery(sql)
+		.addParameter("id", subuserId)
+		.addParameter("uid", u.getId())
+		.executeAndFetch(Subuser.class);
+
+	    if(user.isEmpty())
+		return false;
+	    else
+		return true;
+	    
+	    //catch?
+	}
     }
 
     // Authenticates the user with email and password.

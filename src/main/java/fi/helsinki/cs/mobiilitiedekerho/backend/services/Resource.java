@@ -18,6 +18,16 @@ abstract public class Resource {
         this.userService = userService;
     }
 
+    /*
+     * This function checks whether the given subuser_id
+     * belongs to the given user. If it does not, spart.halt()
+     * is used, so no return value is needed
+     */
+    void requireSubUser(User u, Integer subuserId){
+	if(!userService.requireSubUser(u, subuserId))
+	    Spark.halt(401, subUserError());
+    }
+
     // Checks if the user is authenticated with an auth token.
     // First validates the tokens signature.
     // On errors (invalid signature, invalid token format),
@@ -63,6 +73,10 @@ abstract public class Resource {
             Spark.halt(401, tokenError());
         }
     }
+
+   String subUserError(){
+       return new JsonResponse().setStatus("SubuserError").toJson();
+   }
 
     String authenticationFailure() {
         return new JsonResponse().setStatus("AuthenticationFailure").toJson();
