@@ -50,7 +50,7 @@ public class SubUserResource extends Resource {
     // Creates a new user pointing to the user in question.
     String CreateSubUser(Request req, Response res, User user) {
         int userIdInt = user.getId();
-
+        JsonResponse jsonResponse = new JsonResponse();
         //TODO
         
         
