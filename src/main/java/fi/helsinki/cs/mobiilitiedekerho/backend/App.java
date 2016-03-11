@@ -21,10 +21,10 @@ public class App {
         Key key = MacProvider.generateKey();
 
         SparkConfiguration();
-                
+
+	UserService userService = new UserService(sql2o, key);
         TaskService taskService = new TaskService(sql2o);
-        AnswerService answerService = new AnswerService(sql2o);
-        UserService userService = new UserService(sql2o, key);
+        AnswerService answerService = new AnswerService(sql2o, userService);
         CategoryService categoryService = new CategoryService(sql2o);
 
         TaskResource taskResource = new TaskResource(userService, taskService);

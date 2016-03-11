@@ -107,12 +107,12 @@ public class AnswerResource extends Resource {
         if (uploadStatus.equals("success")) {
             jsonResponse
 		.setStatus(getAnswerService()
-			   .enableAnswer(answerId, user.getId()));
+			   .enableAnswer(answerId, user));
 	    
         } else if (uploadStatus.equals("failure")) {
             jsonResponse
 		.setStatus(getAnswerService()
-				   .deleteAnswer(answerId, user.getId()));
+			   .deleteAnswer(answerId, user));
         } else {
             jsonResponse.setStatus("InvalidStatus");
         }

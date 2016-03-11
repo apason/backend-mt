@@ -54,11 +54,11 @@ public class Answer {
         this.task_id = task_id;
     }
 
-    public int getSubUser_id() {
+    public int getSubUserId() {
         return subuser_id;
     }
 
-    public void setSubUser_id(int user_id) {
+    public void setSubUserId(int user_id) {
         this.subuser_id = subuser_id;
     }
 

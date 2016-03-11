@@ -2,6 +2,9 @@ package fi.helsinki.cs.mobiilitiedekerho.backend.services;
 
 import fi.helsinki.cs.mobiilitiedekerho.backend.models.Answer;
 import fi.helsinki.cs.mobiilitiedekerho.backend.models.Task;
+import fi.helsinki.cs.mobiilitiedekerho.backend.models.User;
+
+import fi.helsinki.cs.mobiilitiedekerho.backend.services.UserService;
 
 import java.util.Date;
 
@@ -17,9 +20,11 @@ import static java.lang.System.out;
 public class AnswerService {
 
     private final Sql2o sql2o;
+    private UserService userService;
 
-    public AnswerService(Sql2o sql2o) {
+    public AnswerService(Sql2o sql2o, UserService userService) {
 	this.sql2o = sql2o;
+	this.userService = userService;
     }
 
     // Returns an answer from the database.
@@ -67,23 +72,24 @@ public class AnswerService {
     }
 
     //checks if the answer is owned by given user
-    private boolean answerExists(int answerId, int userId){
-	String sql =
-	    "SELECT * " +
-	    "FROM answer "+
-	    "WHERE id = :aid " +
-	    "AND user_id = :uid";
+    private boolean answerExists(int answerId, User user){
 
 	try(Connection con = sql2o.open()){
-	    List<Answer> answers = con.createQuery(sql)
+
+	    String sql =
+		"SELECT * " +
+		"FROM answer "+
+		"WHERE id = :aid";
+	    
+	    List<Answer> answer = con.createQuery(sql)
 		.throwOnMappingFailure(false)
 		.addParameter("aid", answerId)
-		.addParameter("uid", userId)
 		.executeAndFetch(Answer.class);
 
-	    if(answers.size() != 1)
+	    if(answer.size() != 1)
 		return false;
-	    return true;
+
+	    return userService.requireSubUser(user, answer.get(0).getSubUserId());
 	}
 	catch(Exception e){
 	    return false;
@@ -142,8 +148,8 @@ public class AnswerService {
 
     //this method is used when user calls EndAnswerUpload
     //to inform the end of his upload.
-    public String enableAnswer(int answerId, int userId){
-	if(!answerExists(answerId, userId))
+    public String enableAnswer(int answerId, User user){
+	if(!answerExists(answerId, user))
 	   return "InvalidPermissions";
 	else{
 	    String sql =
@@ -166,8 +172,8 @@ public class AnswerService {
     }
 
     // Deletes an answer from the database.
-    public String deleteAnswer(int answerId, int userId){
-	if(!answerExists(answerId, userId))
+    public String deleteAnswer(int answerId, User user){
+	if(!answerExists(answerId, user))
 	    return "InvalidPermissions";
 	else{
 	    String sql =
