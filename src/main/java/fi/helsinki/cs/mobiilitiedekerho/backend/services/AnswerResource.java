@@ -41,9 +41,15 @@ public class AnswerResource extends Resource {
 	    requireSubUser(u, subUserId);
             return this.startAnswerUpload(req, res, subUserId);
         });
+        
 	Spark.get("/EndAnswerUpload", (req, res) -> {
             User u = requireAuthenticatedUser(req, res);
             return this.endAnswerUpload(req, res, u);
+        });
+        
+        Spark.get("/DescribeSubUserAnswers", (req, res) -> {
+            requireAnonymousUser(req, res); //TODO: Depends actually of the "privacy-level" of the SubUser's (parent) user.
+            return this.describeSubUserAnswers(req, res);
         });
     }
     
@@ -186,6 +192,38 @@ public class AnswerResource extends Resource {
 
         return jsonResponse.setStatus("Success").toJson();
     }
+    
+    // Describes all answers associated with the SubUser indicated by subuser_id.
+    // If no answers are found, returns status: NoAnswersFromSubUser.
+    String describeSubUserAnswers(Request req, Response res) {
+        String subUserId = req.queryParams("subuser_id");
+        Integer subUserIdInt;
+        JsonResponse jsonResponse = new JsonResponse();
+        
+        if (subUserId == null) {
+            jsonResponse.setStatus("ParameterError");
+            return jsonResponse.toJson();
+        }
+        
+        try {
+           subUserIdInt = Integer.parseInt(subUserId);
+        } catch (Exception e) {
+            return jsonResponse.setStatus("ParameterError").toJson();
+        }
+        
+        ArrayList<Answer> answers = new ArrayList<Answer>();
+        answers = (ArrayList<Answer>) getAnswerService().getAnswersBySubUser(subUserIdInt);
+        
+        if (answers.isEmpty()) {
+            jsonResponse.setStatus("NoAnswersFromSubUser");
+            return jsonResponse.toJson();
+        }
+        
+        jsonResponse.setObject(answers);
+
+        return jsonResponse.setStatus("Success").toJson();
+    }
+    
     public AnswerService getAnswerService() {
         return answerService;
     }

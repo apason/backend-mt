@@ -207,4 +207,20 @@ public class AnswerService {
             return answers;
         }        
     }
+    
+    // Returns a list of the answers of the SubUser as a parameter.
+    public List<Answer> getAnswersBySubUser(int subUserId) {
+        String sql
+                = "SELECT *"
+                + "FROM answer "
+                + "WHERE subuser_id = :subuser_id";
+
+        try (Connection con = sql2o.open()) {
+            List<Answer> answers = con.createQuery(sql)
+                    .addParameter("subuser_id", subUserId)
+                    .executeAndFetch(Answer.class);
+            return answers;
+        }        
+    }
+    
 }
