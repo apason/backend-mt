@@ -194,7 +194,7 @@ public class AnswerResource extends Resource {
     }
     
     // Describes all answers associated with the SubUser indicated by subuser_id.
-    // If no answers are found, returns status: NoAnswersFromSubUser.
+    // If no answers are found, returns status: AnswerNotFoundError.
     String describeSubUserAnswers(Request req, Response res) {
         String subUserId = req.queryParams("subuser_id");
         Integer subUserIdInt;
@@ -215,7 +215,7 @@ public class AnswerResource extends Resource {
         answers = (ArrayList<Answer>) getAnswerService().getAnswersBySubUser(subUserIdInt);
         
         if (answers.isEmpty()) {
-            jsonResponse.setStatus("NoAnswersFromSubUser");
+            jsonResponse.setStatus("AnswerNotFoundError");
             return jsonResponse.toJson();
         }
         
