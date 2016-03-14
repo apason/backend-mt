@@ -44,7 +44,7 @@ public class AnswerResourceTest extends TestCase {
 
         Answer answer = new Answer();
         answer.setId(1);
-        answer.setUser_id(1);
+        answer.setSubUserId(1);
         answer.setTask_id(1);
         answer.setUri("video.mp4");
         answer.setIssued(new Date(0));

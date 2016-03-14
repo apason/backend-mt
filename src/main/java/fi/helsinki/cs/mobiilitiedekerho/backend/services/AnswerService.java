@@ -127,6 +127,7 @@ public class AnswerService {
 	}
 
 	//get that created answer and return it
+	//this could be a separate function
 	sql =
 	    "SELECT * " +
 	    "FROM answer " +

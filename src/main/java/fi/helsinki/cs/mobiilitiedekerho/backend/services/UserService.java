@@ -29,6 +29,89 @@ public class UserService {
         return secretKey;
     }
 
+    public boolean userExists(String email){
+	String sql
+	    = "SELECT * FROM user "
+	    + "WHERE email = :email";
+
+	try (Connection con = sql2o.open()){
+	    List<User> user = con.createQuery(sql)
+		.addParameter("email", email)
+		.executeAndFetch(User.class);
+
+	    return !user.isEmpty();
+	}
+    }
+
+    public boolean createUser(String email, String password){
+	String sql
+	    = "INSERT INTO user "
+	    + "(email, password, enabled, create_time)"
+	    + "VALUES"
+	    + "(:email, :password, true, NOW())";
+
+	try (Connection con = sql2o.open()){
+	    Integer newKey = con.createQuery(sql)
+		.addParameter("email", email)
+		.addParameter("password", password)
+		.executeUpdate()
+		.getKey(Integer.class);
+	   
+	    if(newKey != null)
+		return true;
+	}
+	return false;
+    }
+    
+    public List<Subuser> getSubUsers(User u){
+	String sql 
+	    = "SELECT * "
+	    + "FROM subuser "
+	    + "WHERE user_id = :uid";
+	try (Connection con = sql2o.open()) {
+	    List<Subuser> users = con.createQuery(sql)
+		.addParameter("uid", u.getId())
+		.executeAndFetch(Subuser.class);
+
+	    return users;
+	}
+    }
+    
+    public int createSubUser(User u, String nick){
+	
+	String sql
+	    = "INSERT INTO subuser "
+	    + "(nick, user_id) "
+	    + "VALUES "
+	    + "(:nick, :puid)";
+
+	try (Connection con = sql2o.open()) {
+	    Integer newKey = con.createQuery(sql, true)
+		.addParameter("nick", nick)
+		.addParameter("puid", u.getId())
+		.executeUpdate()
+		.getKey(Integer.class);
+
+	    return newKey;
+	}	
+    }
+
+    public List<Subuser> getSubUserById(int suid){
+	String sql =
+	    "Select * " +
+	    "FROM subuser " +
+	    "WHERE id = :id";
+
+	try(Connection con = sql2o.open()){
+	    List<Subuser> user = con.createQuery(sql)
+		.throwOnMappingFailure(false)
+		.addParameter("id", suid)
+		.executeAndFetch(Subuser.class);
+	    
+	    return user;
+	}
+    }
+	
     //rename?
     public boolean requireSubUser(User u, Integer subuserId){
 	

@@ -1,7 +1,9 @@
 package fi.helsinki.cs.mobiilitiedekerho.backend.services;
 
 import fi.helsinki.cs.mobiilitiedekerho.backend.models.User;
+import fi.helsinki.cs.mobiilitiedekerho.backend.models.Subuser;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import spark.Request;
 import spark.Response;
@@ -30,6 +32,66 @@ public class UserResource extends Resource {
             User u = requireAuthenticatedUser(req, res);
            return describeCurrentUser(req, res, u); 
         });
+
+        Spark.get("/CreateSubUser", (req, res) -> {
+            User u = requireAuthenticatedUser(req, res);
+           return createSubUser(req, res, u); 
+        });
+
+	//under construction
+	Spark.get("/DescribeSubUser", (req, res) -> {
+	    User u = requireAuthenticatedUser(req, res);
+	    return "asd";//describeSubUser(req, res, u); 
+        });
+	//under construction
+	Spark.get("/CreateUser", (req,res) -> {
+	    requireAnonymousUser(req, res);
+	    return createUser(req, res);
+	});
+		
+    }
+
+    //email salasana token
+    String createUser(Request req, Response res){
+	JsonResponse jsonResponse = new JsonResponse();
+
+	String user_email = req.queryParams("user_email");
+	String user_pass  = req.queryParams("user_password");
+
+	if(user_email == null || user_pass == null)
+	    return jsonResponse.setStatus("ParameterError").toJson();
+
+	if(getUserService().userExists(user_email))
+	    return jsonResponse.setStatus("DuplicateUserError").toJson();
+
+	if(getUserService().createUser(user_email, user_pass))
+	    return jsonResponse.setStatus("Success").toJson();
+	
+	return jsonResponse.setStatus("UnexpectedError").toJson();
+    }
+
+    String createSubUser (Request req, Response res, User user){
+	JsonResponse jsonResponse = new JsonResponse();
+	String subuserNick = req.queryParams("subuser_nick");
+	int newKey;
+
+	if(subuserNick == null)
+	    return jsonResponse.setStatus("ParameterError").toJson();
+
+	List<Subuser> users = getUserService().getSubUsers(user);
+	//only 3 subusers allowed
+	if(users.size() >=3)
+	    return jsonResponse.setStatus("SubuserQuantityError").toJson();
+
+	//no duplicates allowed
+	for(Subuser su : users)
+	    if(su.getNick().equals(subuserNick))
+		return jsonResponse.setStatus("SubuserDuplicateNickError").toJson();
+
+	newKey = getUserService().createSubUser(user, subuserNick);
+
+	return jsonResponse.setStatus("Success")
+	    .setObject(getUserService().getSubUserById(newKey)).toJson();
     }
 
     // Describes the user indicated by
