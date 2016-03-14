@@ -3,6 +3,7 @@ package fi.helsinki.cs.mobiilitiedekerho.backend.services;
 import fi.helsinki.cs.mobiilitiedekerho.backend.models.Answer;
 import fi.helsinki.cs.mobiilitiedekerho.backend.models.Task;
 import fi.helsinki.cs.mobiilitiedekerho.backend.models.User;
+import fi.helsinki.cs.mobiilitiedekerho.backend.models.Subuser;
 
 import fi.helsinki.cs.mobiilitiedekerho.backend.services.UserService;
 
@@ -89,7 +90,7 @@ public class AnswerService {
 	    if(answer.size() != 1)
 		return false;
 
-	    return userService.requireSubUser(user, answer.get(0).getSubUserId());
+	    return userService.requireSubUser(user, answer.get(0).getSubUserId()) != null;
 	}
 	catch(Exception e){
 	    return false;
@@ -97,7 +98,7 @@ public class AnswerService {
     }
     
     //handles StartAnswerUpload api-call.
-    public Optional<Answer> setInitialAnswer(Integer subUserId, Integer taskId){
+    public Optional<Answer> setInitialAnswer(Subuser subUser, Integer taskId){
 	Date date = new Date();
 	SimpleDateFormat sdf = new SimpleDateFormat("MM+dd+yyyy+h+mm+ss+a");
 
@@ -120,8 +121,8 @@ public class AnswerService {
 	
 	    addedKey  = con.createQuery(sql, true)
 		.addParameter("task_id", taskId)
-		.addParameter("user_id", subUserId)
-		.addParameter("uri", subUserId + "+" + taskId + "+" + sdf.format(date) + ".mp4")
+		.addParameter("user_id", subUser.getId())
+		.addParameter("uri", subUser.getId() + "+" + taskId + "+" + sdf.format(date) + ".mp4")
 		.executeUpdate()
 		.getKey(Integer.class);
 	}

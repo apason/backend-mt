@@ -29,20 +29,16 @@ public class UserService {
         return secretKey;
     }
 
-    public boolean userExists(String email){
-	String sql
-	    = "SELECT * FROM user "
-	    + "WHERE email = :email";
+    /*
+     * All following methods are main API methods called immidiately
+     * from UserResources methods of same name.
+     */
 
-	try (Connection con = sql2o.open()){
-	    List<User> user = con.createQuery(sql)
-		.addParameter("email", email)
-		.executeAndFetch(User.class);
-
-	    return !user.isEmpty();
-	}
-    }
-
+    
+    
+    /*
+     * Main api call
+     */
     public boolean createUser(String email, String password){
 	String sql
 	    = "INSERT INTO user "
@@ -61,22 +57,11 @@ public class UserService {
 		return true;
 	}
 	return false;
-    }
-    
-    public List<Subuser> getSubUsers(User u){
-	String sql 
-	    = "SELECT * "
-	    + "FROM subuser "
-	    + "WHERE user_id = :uid";
-	try (Connection con = sql2o.open()) {
-	    List<Subuser> users = con.createQuery(sql)
-		.addParameter("uid", u.getId())
-		.executeAndFetch(Subuser.class);
+     }
 
-	    return users;
-	}
-    }
-    
+    /*
+     * Main api call
+     */
     public int createSubUser(User u, String nick){
 	
 	String sql
@@ -95,6 +80,41 @@ public class UserService {
 	    return newKey;
 	}	
     }
+    
+
+
+
+
+
+
+    public boolean userExists(String email){
+	String sql
+	    = "SELECT * FROM user "
+	    + "WHERE email = :email";
+
+	try (Connection con = sql2o.open()){
+	    List<User> user = con.createQuery(sql)
+		.addParameter("email", email)
+		.executeAndFetch(User.class);
+
+	    return !user.isEmpty();
+	}
+    }
+   
+    public List<Subuser> getSubUsers(User u){
+	String sql 
+	    = "SELECT * "
+	    + "FROM subuser "
+	    + "WHERE user_id = :uid";
+	try (Connection con = sql2o.open()) {
+	    List<Subuser> users = con.createQuery(sql)
+		.addParameter("uid", u.getId())
+		.executeAndFetch(Subuser.class);
+
+	    return users;
+	}
+    }
+
 
     public List<Subuser> getSubUserById(int suid){
 	String sql =
@@ -113,9 +133,9 @@ public class UserService {
     }
 	
     //rename?
-    public boolean requireSubUser(User u, Integer subuserId){
+    public Subuser requireSubUser(User u, Integer subuserId){
 	
-	if(subuserId == null) return false;
+	if(subuserId == null) return null;
 	
 	String sql
 	    = "SELECT * "
@@ -130,9 +150,9 @@ public class UserService {
 		.executeAndFetch(Subuser.class);
 
 	    if(user.isEmpty())
-		return false;
+		return null;
 	    else
-		return true;
+		return user.get(0);
 	    
 	    //catch?
 	}

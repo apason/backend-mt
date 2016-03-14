@@ -2,6 +2,7 @@ package fi.helsinki.cs.mobiilitiedekerho.backend.services;
 
 import fi.helsinki.cs.mobiilitiedekerho.backend.models.Answer;
 import fi.helsinki.cs.mobiilitiedekerho.backend.models.User;
+import fi.helsinki.cs.mobiilitiedekerho.backend.models.Subuser;
 
 import spark.Spark;
 import spark.Response;
@@ -37,9 +38,8 @@ public class AnswerResource extends Resource {
         
         Spark.get("/StartAnswerUpload", (req, res) -> {
             User u = requireAuthenticatedUser(req, res);
-	    Integer subUserId = Integer.parseInt(req.queryParams("subuser_id"));
-	    requireSubUser(u, subUserId);
-            return this.startAnswerUpload(req, res, subUserId);
+	    Subuser subUser = requireSubUser(req, res, u);
+            return this.startAnswerUpload(req, res, subUser);
         });
         
 	Spark.get("/EndAnswerUpload", (req, res) -> {
@@ -56,7 +56,7 @@ public class AnswerResource extends Resource {
     // Starts answer upload.
     // Creates the answer in the database.
     // Returns the new answer id and an URI for the client to upload to.
-    String startAnswerUpload(Request req, Response res, int subUserId) {
+    String startAnswerUpload(Request req, Response res, Subuser subUser) {
         String taskId = req.queryParams("task_id");
         int taskIdInt;
 
@@ -73,7 +73,7 @@ public class AnswerResource extends Resource {
             return jsonResponse.setStatus("ParameterError").toJson();
         }
 
-        Optional<Answer> answer = getAnswerService().setInitialAnswer(subUserId, taskIdInt);
+        Optional<Answer> answer = getAnswerService().setInitialAnswer(subUser, taskIdInt);
 
         if (!answer.isPresent()) {
             jsonResponse.setStatus("ParameterError");

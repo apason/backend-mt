@@ -29,21 +29,21 @@ public class UserResource extends Resource {
         });
         
         Spark.get("/DescribeCurrentUser", (req, res) -> {
-            User u = requireAuthenticatedUser(req, res);
-           return describeCurrentUser(req, res, u); 
+            User user = requireAuthenticatedUser(req, res);
+           return describeCurrentUser(req, res, user); 
         });
 
         Spark.get("/CreateSubUser", (req, res) -> {
-            User u = requireAuthenticatedUser(req, res);
-           return createSubUser(req, res, u); 
+            User user = requireAuthenticatedUser(req, res);
+           return createSubUser(req, res, user); 
         });
 
-	//under construction
 	Spark.get("/DescribeSubUser", (req, res) -> {
-	    User u = requireAuthenticatedUser(req, res);
-	    return "asd";//describeSubUser(req, res, u); 
+	    User user = requireAuthenticatedUser(req, res);
+	    Subuser subUser = requireSubUser(req, res, user);
+	    return describeSubUser(req, res, user, subUser);
         });
-	//under construction
+
 	Spark.get("/CreateUser", (req,res) -> {
 	    requireAnonymousUser(req, res);
 	    return createUser(req, res);
@@ -51,7 +51,16 @@ public class UserResource extends Resource {
 		
     }
 
-    //email salasana token
+    //parameter error ????
+    String describeSubUser(Request req, Response res, User user, Subuser subUser){
+	ArrayList<Subuser> subUsers = new ArrayList<Subuser>();
+	JsonResponse jsonResponse = new JsonResponse();
+	
+	subUsers.add(subUser);	
+	return jsonResponse.setStatus("Success")
+	    .setObject(subUsers).toJson();
+    }
+
     String createUser(Request req, Response res){
 	JsonResponse jsonResponse = new JsonResponse();
 
