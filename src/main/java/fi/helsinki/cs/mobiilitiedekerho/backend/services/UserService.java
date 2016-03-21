@@ -200,6 +200,41 @@ public class UserService {
         return token;
     }
 
+    public void deleteSubUser(String subuserId){
+	String sql
+	    = "DELETE FROM answer "
+	    + "WHERE subuser_id = :suid";
+
+	try(Connection con = sql2o.open()){
+	    con.createQuery(sql)
+		.addParameter("suid", Integer.parseInt(subuserId))
+		.executeUpdate();
+
+	    sql
+		= "DELETE FROM subuser "
+		+ "WHERE id = :suid";
+
+	    con.createQuery(sql)
+		.addParameter("suid", Integer.parseInt(subuserId))
+		.executeUpdate();
+	}
+    }
+
+    public List<Subuser> describeSubUsers(User user){
+	List<Subuser> users;
+	String sql
+	    = "SELECT * FROM subuser "
+	    + "WHERE user_id = :uid";
+
+	try(Connection con = sql2o.open()){
+	    users = con.createQuery(sql)
+		.addParameter("uid", user.getId())
+		.executeAndFetch(Subuser.class);
+
+	    return users;
+	}
+    }
+
     // Generates a JSON Web Token for an authenticated user.
     // Stores information about the user in the data section of the token.
     // Returns the generated token.

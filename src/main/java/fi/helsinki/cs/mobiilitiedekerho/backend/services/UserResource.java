@@ -48,7 +48,24 @@ public class UserResource extends Resource {
 	    requireAnonymousUser(req, res);
 	    return createUser(req, res);
 	});
-		
+
+	Spark.get("/DeleteSubUser", (req,res) -> {
+	    User user = requireAuthenticatedUser(req, res);
+	    Subuser subUser = requireSubUser(req, res, user);
+	    return deleteSubUser(req, res);
+	});
+
+	Spark.get("/DescribeSubUsers", (req,res) -> {
+	    User user = requireAuthenticatedUser(req, res);
+	    return describeSubUsers(req, res, user);
+	});
+    }
+
+    //It can be assumed that the subuser exist (requireSubUser() in defineRoutes
+    String deleteSubUser(Request req, Response res){
+	JsonResponse jsonResponse = new JsonResponse();
+	getUserService().deleteSubUser(req.queryParams("subuser_id"));
+	return jsonResponse.setStatus("Success").toJson();
     }
 
     //parameter error ????
@@ -59,6 +76,16 @@ public class UserResource extends Resource {
 	subUsers.add(subUser);	
 	return jsonResponse.setStatus("Success")
 	    .setObject(subUsers).toJson();
+    }
+
+    String describeSubUsers(Request req, Response res, User user){
+	JsonResponse jsonResponse = new JsonResponse();
+	List<Subuser> users = getUserService().describeSubUsers(user);
+	if(users == null || users.isEmpty())
+	    return jsonResponse.setStatus("NoSubUsersFound").toJson();
+
+	return jsonResponse.setStatus("Success")
+	    .setObject(users).toJson();
     }
 
     String createUser(Request req, Response res){
