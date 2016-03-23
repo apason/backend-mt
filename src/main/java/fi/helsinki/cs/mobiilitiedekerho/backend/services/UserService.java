@@ -1,6 +1,7 @@
 package fi.helsinki.cs.mobiilitiedekerho.backend.services;
 
 import fi.helsinki.cs.mobiilitiedekerho.backend.models.User;
+import fi.helsinki.cs.mobiilitiedekerho.backend.models.Subuser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
@@ -26,6 +27,135 @@ public class UserService {
 
     public Key getSecretKey() {
         return secretKey;
+    }
+
+    /*
+     * All following methods are main API methods called immidiately
+     * from UserResources methods of same name.
+     */
+
+    
+    
+    /*
+     * Main api call
+     */
+    public boolean createUser(String email, String password){
+	String sql
+	    = "INSERT INTO user "
+	    + "(email, password, enabled, create_time)"
+	    + "VALUES"
+	    + "(:email, :password, true, NOW())";
+
+	try (Connection con = sql2o.open()){
+	    Integer newKey = con.createQuery(sql)
+		.addParameter("email", email)
+		.addParameter("password", password)
+		.executeUpdate()
+		.getKey(Integer.class);
+	   
+	    if(newKey != null)
+		return true;
+	}
+	return false;
+     }
+
+    /*
+     * Main api call
+     */
+    public int createSubUser(User u, String nick){
+	
+	String sql
+	    = "INSERT INTO subuser "
+	    + "(nick, user_id) "
+	    + "VALUES "
+	    + "(:nick, :puid)";
+
+	try (Connection con = sql2o.open()) {
+	    Integer newKey = con.createQuery(sql, true)
+		.addParameter("nick", nick)
+		.addParameter("puid", u.getId())
+		.executeUpdate()
+		.getKey(Integer.class);
+
+	    return newKey;
+	}	
+    }
+    
+
+
+
+
+
+
+    public boolean userExists(String email){
+	String sql
+	    = "SELECT * FROM user "
+	    + "WHERE email = :email";
+
+	try (Connection con = sql2o.open()){
+	    List<User> user = con.createQuery(sql)
+		.addParameter("email", email)
+		.executeAndFetch(User.class);
+
+	    return !user.isEmpty();
+	}
+    }
+   
+    public List<Subuser> getSubUsers(User u){
+	String sql 
+	    = "SELECT * "
+	    + "FROM subuser "
+	    + "WHERE user_id = :uid";
+	try (Connection con = sql2o.open()) {
+	    List<Subuser> users = con.createQuery(sql)
+		.addParameter("uid", u.getId())
+		.executeAndFetch(Subuser.class);
+
+	    return users;
+	}
+    }
+
+
+    public List<Subuser> getSubUserById(int suid){
+	String sql =
+	    "Select * " +
+	    "FROM subuser " +
+	    "WHERE id = :id";
+
+	try(Connection con = sql2o.open()){
+	    List<Subuser> user = con.createQuery(sql)
+		.throwOnMappingFailure(false)
+		.addParameter("id", suid)
+		.executeAndFetch(Subuser.class);
+	    
+	    return user;
+	}
+    }
+	
+    //rename?
+    public Subuser requireSubUser(User u, Integer subuserId){
+	
+	if(subuserId == null) return null;
+	
+	String sql
+	    = "SELECT * "
+	    + "FROM subuser "
+	    + "WHERE id = :id "
+	    + "AND user_id = :uid";
+	
+	try (Connection con = sql2o.open()) {
+	    List<Subuser> user = con.createQuery(sql)
+		.addParameter("id", subuserId)
+		.addParameter("uid", u.getId())
+		.executeAndFetch(Subuser.class);
+
+	    if(user.isEmpty())
+		return null;
+	    else
+		return user.get(0);
+	    
+	    //catch?
+	}
     }
 
     // Authenticates the user with email and password.
@@ -68,6 +198,41 @@ public class UserService {
                 .compact();
 
         return token;
+    }
+
+    public void deleteSubUser(String subuserId){
+	String sql
+	    = "DELETE FROM answer "
+	    + "WHERE subuser_id = :suid";
+
+	try(Connection con = sql2o.open()){
+	    con.createQuery(sql)
+		.addParameter("suid", Integer.parseInt(subuserId))
+		.executeUpdate();
+
+	    sql
+		= "DELETE FROM subuser "
+		+ "WHERE id = :suid";
+
+	    con.createQuery(sql)
+		.addParameter("suid", Integer.parseInt(subuserId))
+		.executeUpdate();
+	}
+    }
+
+    public List<Subuser> describeSubUsers(User user){
+	List<Subuser> users;
+	String sql
+	    = "SELECT * FROM subuser "
+	    + "WHERE user_id = :uid";
+
+	try(Connection con = sql2o.open()){
+	    users = con.createQuery(sql)
+		.addParameter("uid", user.getId())
+		.executeAndFetch(Subuser.class);
+
+	    return users;
+	}
     }
 
     // Generates a JSON Web Token for an authenticated user.

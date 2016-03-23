@@ -8,6 +8,7 @@ import io.jsonwebtoken.Jwts;
 
 
 import fi.helsinki.cs.mobiilitiedekerho.backend.models.User;
+import fi.helsinki.cs.mobiilitiedekerho.backend.models.Subuser;
 import java.util.Optional;
 
 abstract public class Resource {
@@ -16,6 +17,26 @@ abstract public class Resource {
 
     public Resource(UserService userService) {
         this.userService = userService;
+    }
+
+    /*
+     * This function checks whether the given (req) subuser_id
+     * belongs to the given user. If it does not, spart.halt()
+     * is used. Otherwise Subuser object of that id is returned.
+     */
+    Subuser requireSubUser(Request req, Response res, User u){
+	String subUserIdString = req.queryParams("subuser_id");
+	if(subUserIdString == null)
+	    Spark.halt(401, parameterError());
+	Integer subUserId = Integer.parseInt(subUserIdString);
+	if(subUserId == null)
+	    Spark.halt(401, subUserError());
+	
+	Subuser subUser   =  userService.requireSubUser(u, subUserId);
+	if(subUser == null)
+	    Spark.halt(401, subUserError());
+
+	return subUser;
     }
 
     // Checks if the user is authenticated with an auth token.
@@ -63,6 +84,10 @@ abstract public class Resource {
             Spark.halt(401, tokenError());
         }
     }
+
+   String subUserError(){
+       return new JsonResponse().setStatus("SubuserError").toJson();
+   }
 
     String authenticationFailure() {
         return new JsonResponse().setStatus("AuthenticationFailure").toJson();

@@ -2,6 +2,10 @@ package fi.helsinki.cs.mobiilitiedekerho.backend.services;
 
 import fi.helsinki.cs.mobiilitiedekerho.backend.models.Answer;
 import fi.helsinki.cs.mobiilitiedekerho.backend.models.Task;
+import fi.helsinki.cs.mobiilitiedekerho.backend.models.User;
+import fi.helsinki.cs.mobiilitiedekerho.backend.models.Subuser;
+
+import fi.helsinki.cs.mobiilitiedekerho.backend.services.UserService;
 
 import java.util.Date;
 
@@ -17,9 +21,11 @@ import static java.lang.System.out;
 public class AnswerService {
 
     private final Sql2o sql2o;
+    private UserService userService;
 
-    public AnswerService(Sql2o sql2o) {
+    public AnswerService(Sql2o sql2o, UserService userService) {
 	this.sql2o = sql2o;
+	this.userService = userService;
     }
 
     // Returns an answer from the database.
@@ -67,23 +73,24 @@ public class AnswerService {
     }
 
     //checks if the answer is owned by given user
-    private boolean answerExists(int answerId, int userId){
-	String sql =
-	    "SELECT * " +
-	    "FROM answer "+
-	    "WHERE id = :aid " +
-	    "AND user_id = :uid";
+    private boolean answerExists(int answerId, User user){
 
 	try(Connection con = sql2o.open()){
-	    List<Answer> answers = con.createQuery(sql)
+
+	    String sql =
+		"SELECT * " +
+		"FROM answer "+
+		"WHERE id = :aid";
+	    
+	    List<Answer> answer = con.createQuery(sql)
 		.throwOnMappingFailure(false)
 		.addParameter("aid", answerId)
-		.addParameter("uid", userId)
 		.executeAndFetch(Answer.class);
 
-	    if(answers.size() != 1)
+	    if(answer.size() != 1)
 		return false;
-	    return true;
+
+	    return userService.requireSubUser(user, answer.get(0).getSubUserId()) != null;
 	}
 	catch(Exception e){
 	    return false;
@@ -91,7 +98,7 @@ public class AnswerService {
     }
     
     //handles StartAnswerUpload api-call.
-    public Optional<Answer> setInitialAnswer(Integer userId, Integer taskId){
+    public Optional<Answer> setInitialAnswer(Subuser subUser, Integer taskId){
 	Date date = new Date();
 	SimpleDateFormat sdf = new SimpleDateFormat("MM+dd+yyyy+h+mm+ss+a");
 
@@ -106,7 +113,7 @@ public class AnswerService {
 	//create new disabled answer instance to be uploaded
 	String sql =
 	    "INSERT INTO answer " +
-	    "(issued, enabled, task_id, user_id, uri) " +
+	    "(issued, enabled, task_id, subuser_id, uri) " +
 	    "VALUES " +
 	    "(NOW(), false, :task_id, :user_id, :uri)";
 
@@ -114,13 +121,14 @@ public class AnswerService {
 	
 	    addedKey  = con.createQuery(sql, true)
 		.addParameter("task_id", taskId)
-		.addParameter("user_id", userId)
-		.addParameter("uri", userId + "+" + taskId + "+" + sdf.format(date) + ".mp4")
+		.addParameter("user_id", subUser.getId())
+		.addParameter("uri", subUser.getId() + "+" + taskId + "+" + sdf.format(date) + ".mp4")
 		.executeUpdate()
 		.getKey(Integer.class);
 	}
 
 	//get that created answer and return it
+	//this could be a separate function
 	sql =
 	    "SELECT * " +
 	    "FROM answer " +
@@ -142,8 +150,8 @@ public class AnswerService {
 
     //this method is used when user calls EndAnswerUpload
     //to inform the end of his upload.
-    public String enableAnswer(int answerId, int userId){
-	if(!answerExists(answerId, userId))
+    public String enableAnswer(int answerId, User user){
+	if(!answerExists(answerId, user))
 	   return "InvalidPermissions";
 	else{
 	    String sql =
@@ -166,8 +174,8 @@ public class AnswerService {
     }
 
     // Deletes an answer from the database.
-    public String deleteAnswer(int answerId, int userId){
-	if(!answerExists(answerId, userId))
+    public String deleteAnswer(int answerId, User user){
+	if(!answerExists(answerId, user))
 	    return "InvalidPermissions";
 	else{
 	    String sql =
@@ -201,4 +209,20 @@ public class AnswerService {
             return answers;
         }        
     }
+    
+    // Returns a list of the answers of the SubUser as a parameter.
+    public List<Answer> getAnswersBySubUser(int subUserId) {
+        String sql
+                = "SELECT *"
+                + "FROM answer "
+                + "WHERE subuser_id = :subuser_id";
+
+        try (Connection con = sql2o.open()) {
+            List<Answer> answers = con.createQuery(sql)
+                    .addParameter("subuser_id", subUserId)
+                    .executeAndFetch(Answer.class);
+            return answers;
+        }        
+    }
+    
 }

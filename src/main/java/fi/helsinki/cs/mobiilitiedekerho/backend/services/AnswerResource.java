@@ -2,6 +2,7 @@ package fi.helsinki.cs.mobiilitiedekerho.backend.services;
 
 import fi.helsinki.cs.mobiilitiedekerho.backend.models.Answer;
 import fi.helsinki.cs.mobiilitiedekerho.backend.models.User;
+import fi.helsinki.cs.mobiilitiedekerho.backend.models.Subuser;
 
 import spark.Spark;
 import spark.Response;
@@ -37,18 +38,25 @@ public class AnswerResource extends Resource {
         
         Spark.get("/StartAnswerUpload", (req, res) -> {
             User u = requireAuthenticatedUser(req, res);
-            return this.startAnswerUpload(req, res, u);
+	    Subuser subUser = requireSubUser(req, res, u);
+            return this.startAnswerUpload(req, res, subUser);
         });
-        Spark.get("/EndAnswerUpload", (req, res) -> {
+        
+	Spark.get("/EndAnswerUpload", (req, res) -> {
             User u = requireAuthenticatedUser(req, res);
             return this.endAnswerUpload(req, res, u);
+        });
+        
+        Spark.get("/DescribeSubUserAnswers", (req, res) -> {
+            requireAnonymousUser(req, res); //TODO: Depends actually of the "privacy-level" of the SubUser's (parent) user.
+            return this.describeSubUserAnswers(req, res);
         });
     }
     
     // Starts answer upload.
     // Creates the answer in the database.
     // Returns the new answer id and an URI for the client to upload to.
-    String startAnswerUpload(Request req, Response res, User user) {
+    String startAnswerUpload(Request req, Response res, Subuser subUser) {
         String taskId = req.queryParams("task_id");
         int taskIdInt;
 
@@ -65,7 +73,7 @@ public class AnswerResource extends Resource {
             return jsonResponse.setStatus("ParameterError").toJson();
         }
 
-        Optional<Answer> answer = getAnswerService().setInitialAnswer(user.getId(), taskIdInt);
+        Optional<Answer> answer = getAnswerService().setInitialAnswer(subUser, taskIdInt);
 
         if (!answer.isPresent()) {
             jsonResponse.setStatus("ParameterError");
@@ -105,12 +113,12 @@ public class AnswerResource extends Resource {
         if (uploadStatus.equals("success")) {
             jsonResponse
 		.setStatus(getAnswerService()
-			   .enableAnswer(answerId, user.getId()));
+			   .enableAnswer(answerId, user));
 	    
         } else if (uploadStatus.equals("failure")) {
             jsonResponse
 		.setStatus(getAnswerService()
-				   .deleteAnswer(answerId, user.getId()));
+			   .deleteAnswer(answerId, user));
         } else {
             jsonResponse.setStatus("InvalidStatus");
         }
@@ -184,6 +192,38 @@ public class AnswerResource extends Resource {
 
         return jsonResponse.setStatus("Success").toJson();
     }
+    
+    // Describes all answers associated with the SubUser indicated by subuser_id.
+    // If no answers are found, returns status: AnswerNotFoundError.
+    String describeSubUserAnswers(Request req, Response res) {
+        String subUserId = req.queryParams("subuser_id");
+        Integer subUserIdInt;
+        JsonResponse jsonResponse = new JsonResponse();
+        
+        if (subUserId == null) {
+            jsonResponse.setStatus("ParameterError");
+            return jsonResponse.toJson();
+        }
+        
+        try {
+           subUserIdInt = Integer.parseInt(subUserId);
+        } catch (Exception e) {
+            return jsonResponse.setStatus("ParameterError").toJson();
+        }
+        
+        ArrayList<Answer> answers = new ArrayList<Answer>();
+        answers = (ArrayList<Answer>) getAnswerService().getAnswersBySubUser(subUserIdInt);
+        
+        if (answers.isEmpty()) {
+            jsonResponse.setStatus("AnswerNotFoundError");
+            return jsonResponse.toJson();
+        }
+        
+        jsonResponse.setObject(answers);
+
+        return jsonResponse.setStatus("Success").toJson();
+    }
+    
     public AnswerService getAnswerService() {
         return answerService;
     }
