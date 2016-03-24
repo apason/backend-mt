@@ -6,7 +6,6 @@ import java.util.Date;
 public class Task {
     
     private int id;
-    private String uri;
     private Date loaded;
     private boolean enabled;
     private String info;
@@ -19,14 +18,6 @@ public class Task {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getUri() {
-        return uri;
-    }
-
-    public void setUri(String uri) {
-        this.uri = uri;
     }
 
     public Date getLoaded() {
