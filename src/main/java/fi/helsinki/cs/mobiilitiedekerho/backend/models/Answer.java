@@ -58,7 +58,7 @@ public class Answer {
         return subuser_id;
     }
 
-    public void setSubUserId(int user_id) {
+    public void setSubUserId(int subuser_id) {
         this.subuser_id = subuser_id;
     }
 
