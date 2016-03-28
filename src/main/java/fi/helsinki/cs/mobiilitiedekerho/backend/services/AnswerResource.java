@@ -83,7 +83,6 @@ public class AnswerResource extends Resource {
         return jsonResponse
 	    .addPropery("task_id", taskId)
 	    .addPropery("answer_id", "" + answer.get().getId())
-	    .addPropery("answer_uri", answer.get().getUri())
 	    .setStatus("Success")
 	    .toJson();
     }
