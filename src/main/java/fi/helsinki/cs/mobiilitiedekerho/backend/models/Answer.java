@@ -11,6 +11,7 @@ public class Answer {
     private boolean enabled;
     private int task_id;
     private int subuser_id;
+    private String uri;
 
     
     public int getId() {
@@ -59,5 +60,13 @@ public class Answer {
 
     public void setSubUserId(int subuser_id) {
         this.subuser_id = subuser_id;
+    }
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 }
