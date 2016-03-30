@@ -62,18 +62,18 @@ public class UserResource extends Resource {
 
 	Spark.get("/CheckTokenIntegrity", (req, res) -> {
 	    checkAuthToken(req, res);
-	    return checkTokenIUntegrity(req, res);
+	    return checkTokenIntegrity(req, res);
         });
 		
     }
 
-    String checkTokenIntegrity(Request res, Response res){
+    String checkTokenIntegrity(Request req, Response res){
 	JsonResponse jsonResponse = new JsonResponse();
 	
-	String authToken = Req.queryParams("auth_token");
+	String authToken = req.queryParams("auth_token");
 	String userType = getUserType(authToken);
 
-	return jsonResponse.setStatus(userType);
+	return jsonResponse.setStatus(userType).toJson();
     }
 
     //It can be assumed that the subuser exist (requireSubUser() in defineRoutes
