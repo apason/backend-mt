@@ -39,6 +39,14 @@ abstract public class Resource {
 	return subUser;
     }
 
+    String getUserType(String authToken){
+	return Jwts.parser()
+	    .setSigningKey(getUserService().getSecretKey())
+	    .parseClaimsJws(authToken)
+	    .getBody()
+	    .get("user_type", String.class);
+    }
+
     // Checks if the user is authenticated with an auth token.
     // First validates the tokens signature.
     // On errors (invalid signature, invalid token format),
@@ -49,7 +57,7 @@ abstract public class Resource {
         
         String authToken = req.queryParams("auth_token");
         
-        String userType = Jwts.parser().setSigningKey(getUserService().getSecretKey()).parseClaimsJws(authToken).getBody().get("user_type", String.class);
+        String userType = getUserType(authToken);
         
         if (!userType.equals("authenticated")) {
             Spark.halt(401, authorizationFailure());
