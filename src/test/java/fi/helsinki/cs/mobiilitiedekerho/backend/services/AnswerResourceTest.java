@@ -44,11 +44,12 @@ public class AnswerResourceTest extends TestCase {
 
         Answer answer = new Answer();
         answer.setId(1);
-        answer.setSubUserId(1);
+        answer.setSubuser_id(1);
         answer.setTask_id(1);
         answer.setUri("video.mp4");
-        answer.setIssued(new Date(0));
-        answer.setLoaded(new Date(0));
+        answer.setCreated(new Date(0));
+        answer.setUploaded(true);
+        answer.setEnabled(true);
         
         when(answerService.getAnswerById(1)).thenReturn(Optional.of(answer));
         when(answerService.getAnswerById(2)).thenReturn(Optional.empty());
