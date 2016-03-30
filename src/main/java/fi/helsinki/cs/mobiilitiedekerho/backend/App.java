@@ -49,7 +49,7 @@ public class App {
     // Sets response type to application/json.
     private static void SparkConfiguration() {
         Spark.before((req, res) -> {
-            res.type("application/json");
+            res.type("application/json;charset=utf-8");
         });
     }
 }
