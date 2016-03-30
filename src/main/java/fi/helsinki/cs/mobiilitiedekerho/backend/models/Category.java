@@ -6,13 +6,13 @@ import java.util.Date;
 public class Category {
 
     private int id;
-    private String iconUri;
-    private String iconAnimatedUri;
-    private String BGUri;
+    private Date created;
+    private boolean uploaded;
+    private boolean enabled;
     private String name;
-    private Date loaded;
-    
-    
+    private String bg_uri;
+    private String icon_uri;
+
     public int getId() {
         return id;
     }
@@ -21,34 +21,30 @@ public class Category {
         this.id = id;
     }
 
-    
-    public String getIconUri() {
-        return iconUri;
+    public Date getCreated() {
+        return created;
     }
 
-    public void setIconUri(String iconUri) {
-        this.iconUri = iconUri;
-    }
-    
-    
-    public String getIconAnimatedUri() {
-        return iconAnimatedUri;
+    public void setCreated(Date created) {
+        this.created = created;
     }
 
-    public void seticonAnimatedUri(String iconAnimatedUri) {
-        this.iconAnimatedUri = iconAnimatedUri;
-    }
-    
-    
-    public String getBGUri() {
-        return BGUri;
+    public boolean isUploaded() {
+        return uploaded;
     }
 
-    public void setBGUri(String BGUri) {
-        this.BGUri = BGUri;
+    public void setUploaded(boolean uploaded) {
+        this.uploaded = uploaded;
     }
 
-    
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
     public String getName() {
         return name;
     }
@@ -56,13 +52,20 @@ public class Category {
     public void setName(String name) {
         this.name = name;
     }
-    
-    
-    public Date getLoaded() {
-        return loaded;
+
+    public String getBg_uri() {
+        return bg_uri;
     }
 
-    public void setLoaded(Date loaded) {
-        this.loaded = loaded;
+    public void setBg_uri(String bg_uri) {
+        this.bg_uri = bg_uri;
+    }
+
+    public String getIcon_uri() {
+        return icon_uri;
+    }
+
+    public void setIcon_uri(String icon_uri) {
+        this.icon_uri = icon_uri;
     }
 }

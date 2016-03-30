@@ -1,11 +1,14 @@
 package fi.helsinki.cs.mobiilitiedekerho.backend.models;
 
+import java.util.Date;
+
 public class Subuser {
 
     private int id;
-    private String nick;
     private int user_id;
-    
+    private Date created;
+    private String nick;
+
     public int getId() {
         return id;
     }
@@ -14,19 +17,27 @@ public class Subuser {
         this.id = id;
     }
 
-    public String getNick(){
-	return this.nick;
+    public int getUser_id() {
+        return user_id;
     }
 
-    public void setNick(String nick){
-	this.nick = nick;
+    public void setUser_id(int user_id) {
+        this.user_id = user_id;
     }
 
-    public int getUserId(){
-	return user_id;
+    public Date getCreated() {
+        return created;
     }
 
-    public void setUserId(int user_id){
-	this.user_id = user_id;
+    public void setCreated(Date created) {
+        this.created = created;
+    }
+
+    public String getNick() {
+        return nick;
+    }
+
+    public void setNick(String nick) {
+        this.nick = nick;
     }
 }

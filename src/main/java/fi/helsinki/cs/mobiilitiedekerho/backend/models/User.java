@@ -6,13 +6,11 @@ import java.util.Date;
 public class User {
 
     private int id;
+    private Date created;
+    private boolean enabled;
     private String email;
     private String password;
-    private boolean enabled;
-    private String token;
-    private Date create_time;
 
-    
     public int getId() {
         return id;
     }
@@ -21,20 +19,12 @@ public class User {
         this.id = id;
     }
 
-    public String getPassword() {
-        return password;
+    public Date getCreated() {
+        return created;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
+    public void setCreated(Date created) {
+        this.created = created;
     }
 
     public boolean isEnabled() {
@@ -53,11 +43,12 @@ public class User {
         this.email = email;
     }
 
-    public Date getCreate_time() {
-        return create_time;
+    public String getPassword() {
+        return password;
     }
 
-    public void setCreate_time(Date create_time) {
-        this.create_time = create_time;
+    public void setPassword(String password) {
+        this.password = password;
     }
+    
 }
