@@ -58,6 +58,7 @@ public class AnswerResource extends Resource {
     // Returns the new answer id and an URI for the client to upload to.
     String startAnswerUpload(Request req, Response res, Subuser subUser) {
         String taskId = req.queryParams("task_id");
+        String fileType = req.queryParams("file_type");
         int taskIdInt;
 
         JsonResponse jsonResponse = new JsonResponse();
@@ -66,14 +67,31 @@ public class AnswerResource extends Resource {
             jsonResponse.setStatus("ParameterError");
             return jsonResponse.toJson();
 	}
-              
+
+        if (fileType == null) {
+            jsonResponse.setStatus("ParameterError");
+            return jsonResponse.toJson();
+	}
+        
+        if ( !( fileType.equals("mp4") ||
+                fileType.equals("webm") ||
+                fileType.equals("mkv") ||
+                fileType.equals("jpeg") ||
+                fileType.equals("jpg") ||
+                fileType.equals("png")
+                )) {
+            jsonResponse.setStatus("FileTypeError");
+            return jsonResponse.toJson();
+        }
+        
+        
         try {
            taskIdInt = Integer.parseInt(taskId);
         } catch (Exception e) {
             return jsonResponse.setStatus("ParameterError").toJson();
         }
 
-        Optional<Answer> answer = getAnswerService().setInitialAnswer(subUser, taskIdInt);
+        Optional<Answer> answer = getAnswerService().setInitialAnswer(subUser, taskIdInt, fileType);
 
         if (!answer.isPresent()) {
             jsonResponse.setStatus("ParameterError");
