@@ -42,10 +42,10 @@ public class UserResourceTest extends TestCase {
 
         User user = new User();
         user.setId(1);
-        user.setEmail("test@testistania.test");
-        user.setPassword("salasana");
-        user.setEnabled(true);
         user.setCreated(new Date(0));
+        user.setEnabled(true);
+        user.setEmail("testi@testika.test");
+        user.setPassword("password123");
         
         
         // We mock userService, which sets password to an empty string
@@ -63,9 +63,9 @@ public class UserResourceTest extends TestCase {
         
         String jsonResponse = userResource.describeUser(req, res);
         
-        String jsonExpected = "{\"objects\":[{\"id\":1,\"email\":\"test@testistania.test\",\"password\":\"\",\"enabled\":true,\"create_time\":\"Jan 1, 1970 2:00:00 AM\"}],\"status\":\"Success\"}";
-        // assertEquals(jsonResponse, jsonExpected);
-        assertTrue(true);
+        String jsonExpected = "{\"objects\":[{\"id\":1,\"create_time\":\"Jan 1, 1970 2:00:00 AM\",\"enabled\":true,\"email\":\"testi@testika.test\",\"password\":\"password123\"}],\"status\":\"Success\"}";
+        
+        assertEquals(jsonResponse, jsonExpected);
         
     }
 
@@ -75,7 +75,7 @@ public class UserResourceTest extends TestCase {
         String jsonResponse = userResource.describeUser(req, res);
         
         String jsonExpected = "{\"status\":\"UserNotFoundError\"}";
-        // assertEquals(jsonResponse, jsonExpected);
-        assertTrue(true);
+        
+        assertEquals(jsonResponse, jsonExpected);
     }
 }

@@ -44,12 +44,12 @@ public class AnswerResourceTest extends TestCase {
 
         Answer answer = new Answer();
         answer.setId(1);
-        answer.setSubuser_id(1);
         answer.setTask_id(1);
-        answer.setUri("video.mp4");
+        answer.setSubuser_id(1);
         answer.setCreated(new Date(0));
         answer.setUploaded(true);
         answer.setEnabled(true);
+        answer.setUri("answer_suid_1_id_1.webm");
         
         when(answerService.getAnswerById(1)).thenReturn(Optional.of(answer));
         when(answerService.getAnswerById(2)).thenReturn(Optional.empty());
@@ -62,11 +62,9 @@ public class AnswerResourceTest extends TestCase {
         
         String jsonResponse = answerResource.describeAnswer(req, res);
         
-        String jsonExpected = "";
+        String jsonExpected = "{\"objects\":[{\"id\":1,\"task_id\":1,\"subuser_id\":1,\"created\":\"Jan 1, 1970 2:00:00 AM\",\"uploaded\":true,\"enabled\":true,\"uri\":\"answer_suid_1_id_1.webm\"}],\"status\":\"Success\"}";
         
-        // assertEquals(jsonResponse, jsonExpected);
-        
-        assertTrue(true);
+        assertEquals(jsonResponse, jsonExpected);
     }
 
     public void testDescribeAnswerkNotFound() {         
@@ -75,8 +73,7 @@ public class AnswerResourceTest extends TestCase {
         String jsonResponse = answerResource.describeAnswer(req, res);
         
         String jsonExpected = "{\"status\":\"AnswerNotFound\"}";
-        // assertEquals(jsonResponse, jsonExpected);
         
-        assertTrue(true);
+        assertEquals(jsonResponse, jsonExpected);
     }
 }

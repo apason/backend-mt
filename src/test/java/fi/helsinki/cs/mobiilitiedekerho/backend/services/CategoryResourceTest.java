@@ -44,8 +44,12 @@ public class CategoryResourceTest extends TestCase {
 
         Category category = new Category();
         category.setId(1);
-        category.setName("testia");
         category.setCreated(new Date(0));
+        category.setUploaded(true);
+        category.setEnabled(true);
+        category.setName("Fysiikka");
+        category.setBg_uri("category_bg_id_1.png");
+        category.setIcon_uri("category_icon_id_1.png");
         
         when(categoryService.getCategoryById(1)).thenReturn(Optional.of(category));
         when(categoryService.getCategoryById(2)).thenReturn(Optional.empty());
@@ -58,10 +62,9 @@ public class CategoryResourceTest extends TestCase {
         
         String jsonResponse = categoryResource.describeCategory(req, res);
         
-        String jsonExpected = "{\"objects\":[{\"id\":1,\"name\":\"testia\","
-                + "\"loaded\":\"Jan 1, 1970 2:00:00 AM\"}],\"status\":\"Success\"}";
-        // assertEquals(jsonResponse, jsonExpected);
-        assertTrue(true);
+        String jsonExpected = "{\"objects\":[{\"id\":1,\"created\":\"Jan 1, 1970 2:00:00 AM\",\"uploaded\":true,\"enabled\":true,\"name\":\"Fysiikka\",\"bg_uri\":\"category_bg_id_1.png\",\"icon_uri\":\"category_icon_id_1.png\"}],\"status\":\"Success\"}";
+                
+        assertEquals(jsonResponse, jsonExpected);
     }
 
     public void testDescribeCategoryNotFound() {         
@@ -70,7 +73,7 @@ public class CategoryResourceTest extends TestCase {
         String jsonResponse = categoryResource.describeCategory(req, res);
         
         String jsonExpected = "{\"status\":\"CategoryNotFoundError\"}";
-        // assertEquals(jsonResponse, jsonExpected);    
-        assertTrue(true);
+        
+        assertEquals(jsonResponse, jsonExpected);    
     }
 }
