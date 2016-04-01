@@ -6,11 +6,12 @@ import java.util.Date;
 public class Like {
 
     private int id;
-    private String likeType; //E.G "task" for a task-like and "answer" for a answer-like. If only those two then a boolean would be enought (though there may be more).
-    private int liked_id;
     private int subuser_id;
+    private int liked_id;
     private Date loaded;
+    private String likeType; //E.G "task" for a task-like and "answer" for a answer-like. If only those two then a boolean would be enought (though there may be more).
 
+    
     
     public int getId() {
         return id;
@@ -21,12 +22,12 @@ public class Like {
     }
     
     
-    public String getlikeType() {
-        return likeType;
+    public int getSubUserId() {
+        return subuser_id;
     }
 
-    public void setlikeType(String likeType) {
-        this.likeType = likeType;
+    public void setSubUserId(int subuser_id) {
+        this.subuser_id = subuser_id;
     }
     
 
@@ -38,15 +39,6 @@ public class Like {
         this.liked_id = liked_id;
     }
     
-
-    public int getSubUserId() {
-        return subuser_id;
-    }
-
-    public void setSubUserId(int subuser_id) {
-        this.subuser_id = subuser_id;
-    }
-    
     
     public Date getLoaded() {
         return loaded;
@@ -56,4 +48,13 @@ public class Like {
         this.loaded = loaded;
     }
     
+    
+    public String getlikeType() {
+        return likeType;
+    }
+
+    public void setlikeType(String likeType) {
+        this.likeType = likeType;
+    }
+
 }
