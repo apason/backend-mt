@@ -48,7 +48,7 @@ public class LikeService {
 	//add like
 	   String sql
 	   = "INSERT INTO slaikka "
-	   + "(subuser_id, answer_id, loaded) "
+	   + "(subuser_id, answer_id, created) "
 	   + "VALUES "
 	   + "(:suid, :aid, NOW())";
 

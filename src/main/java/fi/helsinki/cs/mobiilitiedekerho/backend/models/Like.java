@@ -8,7 +8,7 @@ public class Like {
     private int id;
     private int subuser_id;
     private int answer_id;
-    private Date loaded;
+    private Date created;
     
     public int getId() {
         return id;
@@ -37,12 +37,12 @@ public class Like {
     }
     
     
-    public Date getLoaded() {
-        return loaded;
+    public Date getCreated() {
+        return created;
     }
 
-    public void setLoaded(Date loaded) {
-        this.loaded = loaded;
+    public void setCreated(Date created) {
+        this.created = created;
     }
     
 }

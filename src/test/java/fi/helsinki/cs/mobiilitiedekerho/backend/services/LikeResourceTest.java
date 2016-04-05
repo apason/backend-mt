@@ -48,7 +48,7 @@ public class LikeResourceTest extends TestCase {
         like.setId(1);
         like.setSubUserId(1);
         like.setAnswer_id(1);
-        like.setLoaded(new Date(0));
+        like.setCreated(new Date(0));
         
         //when(likeService.getLikeById(1)).thenReturn(Optional.of(like));
         //when(likeService.getLikeById(2)).thenReturn(Optional.empty());
