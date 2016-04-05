@@ -28,11 +28,11 @@ public class Like {
     }
     
 
-    public int getanswer_id() {
+    public int getAnswer_id() {
         return answer_id;
     }
 
-    public void setLike_id(int answer_id) {
+    public void setAnswer_id(int answer_id) {
         this.answer_id = answer_id;
     }
     
