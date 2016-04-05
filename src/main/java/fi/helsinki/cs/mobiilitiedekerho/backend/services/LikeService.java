@@ -38,7 +38,7 @@ public class LikeService {
 	}
      }
 
-    //check for duplicate checks must be done.
+    //TODO: Check for duplicates.
     public int likeAnswer(int answerId, Subuser subUser){
 
 	//check for duplicates
