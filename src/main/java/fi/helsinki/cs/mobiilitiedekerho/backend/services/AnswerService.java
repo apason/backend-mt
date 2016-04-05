@@ -72,6 +72,7 @@ public class AnswerService {
 	}
     }
 
+    //This function name shoulb be changed. Its stupid.
     //checks if the answer is owned by given user
     private boolean answerExists(int answerId, User user){
 

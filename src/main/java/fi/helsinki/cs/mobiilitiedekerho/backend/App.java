@@ -26,7 +26,9 @@ public class App {
         TaskService taskService = new TaskService(sql2o);
         AnswerService answerService = new AnswerService(sql2o, userService);
         CategoryService categoryService = new CategoryService(sql2o);
+	LikeService likeService = new LikeService(sql2o);
 
+	LikeResource likeResource = new LikeResource(likeService, userService, answerService);
         TaskResource taskResource = new TaskResource(userService, taskService);
         AnswerResource answerResource = new AnswerResource(userService, answerService);
         UserResource userResource = new UserResource(userService);

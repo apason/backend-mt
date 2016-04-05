@@ -7,11 +7,8 @@ public class Like {
 
     private int id;
     private int subuser_id;
-    private int liked_id;
+    private int answer_id;
     private Date loaded;
-    private String likeType; //E.G "task" for a task-like and "answer" for a answer-like. If only those two then a boolean would be enought (though there may be more).
-
-    
     
     public int getId() {
         return id;
@@ -31,12 +28,12 @@ public class Like {
     }
     
 
-    public int getLiked_id() {
-        return liked_id;
+    public int getanswer_id() {
+        return answer_id;
     }
 
-    public void setLike_id(int liked_id) {
-        this.liked_id = liked_id;
+    public void setLike_id(int answer_id) {
+        this.answer_id = answer_id;
     }
     
     
@@ -48,13 +45,4 @@ public class Like {
         this.loaded = loaded;
     }
     
-    
-    public String getlikeType() {
-        return likeType;
-    }
-
-    public void setlikeType(String likeType) {
-        this.likeType = likeType;
-    }
-
 }
