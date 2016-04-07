@@ -24,14 +24,14 @@ public class LikeService {
         this.sql2o = sql2o;
     }    
 
-    public List<Like> describeAnswerLikes(String answerId){
+    public List<Like> describeAnswerLikes(int answerId){
 	String sql
 	    = "SELECT * FROM slaikka "
 	    + "WHERE answer_id = :aid";
 
 	try (Connection con = sql2o.open()){
 	    List<Like> likes = con.createQuery(sql)
-		.addParameter("aid", Integer.parseInt(answerId))
+		.addParameter("aid", answerId)
 		.executeAndFetch(Like.class);
 
 	    return likes;
