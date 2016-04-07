@@ -24,7 +24,7 @@ public class LikeService {
         this.sql2o = sql2o;
     }    
 
-    public List<Like> describeAnswerLikes(int answerId){
+    public List<Like> getLikesByAnswer(int answerId){
 	String sql
 	    = "SELECT * FROM slaikka "
 	    + "WHERE answer_id = :aid";

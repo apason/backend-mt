@@ -82,7 +82,7 @@ public class LikeResource extends Resource {
         return jsonResponse.setStatus("ParameterError").toJson();
     }
 
-	List<Like> likes = likeService.describeAnswerLikes(answerIdInt);
+	List<Like> likes = likeService.getLikesByAnswer(answerIdInt);
 	
 	if(likes.isEmpty())
 	    return jsonResponse.setStatus("LikesNotFound").toJson();
