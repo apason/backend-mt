@@ -56,7 +56,7 @@ public class CategoryResource extends Resource {
         }
         
         try {
-            categoryIdInt =  Integer.parseInt(categoryId);;
+            categoryIdInt =  Integer.parseInt(categoryId);
         } catch (Exception e) {
             return jsonResponse.setStatus("ParameterError").toJson();
         }
