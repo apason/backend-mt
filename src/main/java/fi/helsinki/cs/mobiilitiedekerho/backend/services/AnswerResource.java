@@ -36,113 +36,21 @@ public class AnswerResource extends Resource {
             return this.describeTaskAnswers(req, res);
         });
         
+        Spark.get("/DescribeSubUserAnswers", (req, res) -> {
+            requireAnonymousUser(req, res); //TODO: Depends actually of the "privacy-level" of the SubUser's (parent) user.
+            return this.describeSubUserAnswers(req, res);
+        });
+        
         Spark.get("/StartAnswerUpload", (req, res) -> {
             User u = requireAuthenticatedUser(req, res);
             Subuser subUser = requireSubUser(req, res, u);
             return this.startAnswerUpload(req, res, subUser);
         });
         
-	Spark.get("/EndAnswerUpload", (req, res) -> {
+        Spark.get("/EndAnswerUpload", (req, res) -> {
             User u = requireAuthenticatedUser(req, res);
             return this.endAnswerUpload(req, res, u);
         });
-        
-        Spark.get("/DescribeSubUserAnswers", (req, res) -> {
-            requireAnonymousUser(req, res); //TODO: Depends actually of the "privacy-level" of the SubUser's (parent) user.
-            return this.describeSubUserAnswers(req, res);
-        });
-    }
-    
-    // Starts answer upload.
-    // Creates the answer in the database.
-    // Returns the new answer id and an URI for the client to upload to.
-    String startAnswerUpload(Request req, Response res, Subuser subUser) {
-        String taskId = req.queryParams("task_id");
-        String fileType = req.queryParams("file_type");
-        int taskIdInt;
-
-        JsonResponse jsonResponse = new JsonResponse();
-
-        if (taskId == null) {
-            jsonResponse.setStatus("ParameterError");
-            return jsonResponse.toJson();
-	}
-
-        if (fileType == null) {
-            jsonResponse.setStatus("ParameterError");
-            return jsonResponse.toJson();
-	}
-        
-        if ( !( fileType.equals("mp4") ||
-                fileType.equals("webm") ||
-                fileType.equals("mkv") ||
-                fileType.equals("jpeg") ||
-                fileType.equals("jpg") ||
-                fileType.equals("png")
-                )) {
-            jsonResponse.setStatus("FileTypeError");
-            return jsonResponse.toJson();
-        }
-        
-        
-        try {
-           taskIdInt = Integer.parseInt(taskId);
-        } catch (Exception e) {
-            return jsonResponse.setStatus("ParameterError").toJson();
-        }
-
-        Optional<Answer> answer = getAnswerService().setInitialAnswer(subUser, taskIdInt, fileType);
-
-        if (!answer.isPresent()) {
-            jsonResponse.setStatus("ParameterError");
-            return jsonResponse.toJson();
-        }
-
-        return jsonResponse
-	    .addPropery("task_id", taskId)
-	    .addPropery("answer_id", "" + answer.get().getId())
-	    .addPropery("answer_uri", answer.get().getUri())
-	    .setStatus("Success")
-	    .toJson();
-    }
-    
-    // Ends the answer upload.
-    // If upload was successful, updates the database.
-    // If upload failed, removes the row from the database.
-    String endAnswerUpload(Request req, Response res, User user) {
-        String uploadStatus = req.queryParams("upload_status");
-        String answerIdString = req.queryParams("answer_id");
-        Integer answerId;
-
-        JsonResponse jsonResponse = new JsonResponse();
-
-        if (uploadStatus == null || answerIdString == null) {
-            jsonResponse.setStatus("ParameterError");
-            return jsonResponse.toJson();
-        }
-
-        try {
-            answerId = Integer.parseInt(answerIdString);
-        } catch (Exception e) {
-            jsonResponse.setStatus("ParameterError");
-            return jsonResponse.toJson();
-        }
-
-        if (uploadStatus.equals("success")) {
-            jsonResponse
-		.setStatus(getAnswerService()
-			   .enableAnswer(answerId, user));
-	    
-        } else if (uploadStatus.equals("failure")) {
-            jsonResponse
-		.setStatus(getAnswerService()
-			   .deleteAnswer(answerId, user));
-        } else {
-            jsonResponse.setStatus("InvalidStatus");
-        }
-
-        return jsonResponse.toJson();
-
     }
 
     // Describes an answer indicated by answer_id.
@@ -240,6 +148,98 @@ public class AnswerResource extends Resource {
         jsonResponse.setObject(answers);
 
         return jsonResponse.setStatus("Success").toJson();
+    }
+    
+    // Starts answer upload.
+    // Creates the answer in the database.
+    // Returns the new answer id and an URI for the client to upload to.
+    String startAnswerUpload(Request req, Response res, Subuser subUser) {
+        String taskId = req.queryParams("task_id");
+        String fileType = req.queryParams("file_type");
+        int taskIdInt;
+
+        JsonResponse jsonResponse = new JsonResponse();
+
+        if (taskId == null) {
+            jsonResponse.setStatus("ParameterError");
+            return jsonResponse.toJson();
+	}
+
+        if (fileType == null) {
+            jsonResponse.setStatus("ParameterError");
+            return jsonResponse.toJson();
+	}
+        
+        if ( !( fileType.equals("mp4") ||
+                fileType.equals("webm") ||
+                fileType.equals("mkv") ||
+                fileType.equals("jpeg") ||
+                fileType.equals("jpg") ||
+                fileType.equals("png")
+                )) {
+            jsonResponse.setStatus("FileTypeError");
+            return jsonResponse.toJson();
+        }
+        
+        
+        try {
+           taskIdInt = Integer.parseInt(taskId);
+        } catch (Exception e) {
+            return jsonResponse.setStatus("ParameterError").toJson();
+        }
+
+        Optional<Answer> answer = getAnswerService().setInitialAnswer(subUser, taskIdInt, fileType);
+
+        if (!answer.isPresent()) {
+            jsonResponse.setStatus("ParameterError");
+            return jsonResponse.toJson();
+        }
+
+        return jsonResponse
+	    .addPropery("task_id", taskId)
+	    .addPropery("answer_id", "" + answer.get().getId())
+	    .addPropery("answer_uri", answer.get().getUri())
+	    .setStatus("Success")
+	    .toJson();
+    }
+    
+    // Ends the answer upload.
+    // If upload was successful, updates the database.
+    // If upload failed, removes the row from the database.
+    String endAnswerUpload(Request req, Response res, User user) {
+        String uploadStatus = req.queryParams("upload_status");
+        String answerIdString = req.queryParams("answer_id");
+        Integer answerId;
+
+        JsonResponse jsonResponse = new JsonResponse();
+
+        if (uploadStatus == null || answerIdString == null) {
+            jsonResponse.setStatus("ParameterError");
+            return jsonResponse.toJson();
+        }
+
+        try {
+            answerId = Integer.parseInt(answerIdString);
+        } catch (Exception e) {
+            jsonResponse.setStatus("ParameterError");
+            return jsonResponse.toJson();
+        }
+
+        if (uploadStatus.equals("success")) {
+            jsonResponse
+		.setStatus(getAnswerService()
+			   .enableAnswer(answerId, user));
+	    
+        } else if (uploadStatus.equals("failure")) {
+            jsonResponse
+		.setStatus(getAnswerService()
+			   .deleteAnswer(answerId, user));
+        } else {
+            jsonResponse.setStatus("InvalidStatus");
+        }
+
+        return jsonResponse.toJson();
+
     }
     
     public AnswerService getAnswerService() {
