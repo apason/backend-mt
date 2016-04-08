@@ -30,7 +30,7 @@ abstract public class Resource {
 	    Spark.halt(401, parameterError());
 	Integer subUserId = Integer.parseInt(subUserIdString);
 	if(subUserId == null)
-	    Spark.halt(401, subUserError());
+	    Spark.halt(401, parameterError());
 	
 	Subuser subUser = userService.requireSubUser(u, subUserId);
 	if(subUser == null)
