@@ -38,7 +38,7 @@ public class AnswerResource extends Resource {
         
         Spark.get("/StartAnswerUpload", (req, res) -> {
             User u = requireAuthenticatedUser(req, res);
-	    Subuser subUser = requireSubUser(req, res, u);
+            Subuser subUser = requireSubUser(req, res, u);
             return this.startAnswerUpload(req, res, subUser);
         });
         
