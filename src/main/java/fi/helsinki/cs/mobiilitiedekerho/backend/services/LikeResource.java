@@ -25,18 +25,17 @@ public class LikeResource extends Resource {
 
     // Defines routes for LikeResource
     private void defineRoutes() {
+        Spark.get("/LikeAnswer", (req, res) -> {
+        	User user = requireAuthenticatedUser(req, res);
+        	Subuser subUser = requireSubUser(req, res, user);
+            return likeAnswer(req, res, subUser);
+        });
+    	
         Spark.get("/DescribeAnswerLikes", (req, res) -> {
             requireAnonymousUser(req, res);
             return describeAnswerLikes(req, res);
         });
-
-        Spark.get("/LikeAnswer", (req, res) -> {
-	    User user = requireAuthenticatedUser(req, res);
-	    Subuser subUser = requireSubUser(req, res, user);
-            return likeAnswer(req, res, subUser);
-        });
 	
-
     }
 
     private String likeAnswer(Request req, Response res, Subuser subUser){

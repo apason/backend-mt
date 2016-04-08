@@ -34,12 +34,6 @@ public class CategoryResource extends Resource {
 	    return this.DescribeCategories(req, res);
 	});
     }
-
-    private String DescribeCategories(Request req, Response res){
-	JsonResponse jsonResponse = new JsonResponse();
-	List<Category> categories = getCategoryService().getAllCategories();
-	return jsonResponse.setStatus("Success").setObject(categories).toJson();
-    }
     
     // Describes an category indicated by category_id.
     // If the category is not found, returns status: CategoryNotFoundError.
@@ -74,6 +68,12 @@ public class CategoryResource extends Resource {
         jsonResponse.setObject(categories);
 
         return jsonResponse.setStatus("Success").toJson();
+    }
+    
+    String DescribeCategories(Request req, Response res){
+        JsonResponse jsonResponse = new JsonResponse();
+        List<Category> categories = getCategoryService().getAllCategories();
+        return jsonResponse.setStatus("Success").setObject(categories).toJson();
     }
     
     
