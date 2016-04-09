@@ -73,7 +73,7 @@ public class AnswerResource extends Resource {
             return jsonResponse.setStatus("ParameterError").toJson();
         }
 
-        Optional<Answer> answer = getAnswerService().getAnswerById(answerIdInt);
+        Optional<Answer> answer = answerService.getAnswerById(answerIdInt);
 
         if (!answer.isPresent()) {
             jsonResponse.setStatus("AnswerNotFoundError");
@@ -107,7 +107,7 @@ public class AnswerResource extends Resource {
             return jsonResponse.setStatus("ParameterError").toJson();
         }
 
-        answers = (ArrayList<Answer>) getAnswerService().getAnswersByTask(taskIdInt);
+        answers = (ArrayList<Answer>) answerService.getAnswersByTask(taskIdInt);
 
         if (answers.isEmpty()) {
             jsonResponse.setStatus("AnswerNotFoundError");
@@ -138,7 +138,7 @@ public class AnswerResource extends Resource {
         }
         
         ArrayList<Answer> answers = new ArrayList<Answer>();
-        answers = (ArrayList<Answer>) getAnswerService().getAnswersBySubUser(subUserIdInt);
+        answers = (ArrayList<Answer>) answerService.getAnswersBySubUser(subUserIdInt);
         
         if (answers.isEmpty()) {
             jsonResponse.setStatus("AnswerNotFoundError");
@@ -188,7 +188,7 @@ public class AnswerResource extends Resource {
             return jsonResponse.setStatus("ParameterError").toJson();
         }
 
-        Optional<Answer> answer = getAnswerService().setInitialAnswer(subUser, taskIdInt, fileType);
+        Optional<Answer> answer = answerService.setInitialAnswer(subUser, taskIdInt, fileType);
 
         if (!answer.isPresent()) {
             jsonResponse.setStatus("ParameterError");
@@ -227,12 +227,12 @@ public class AnswerResource extends Resource {
 
         if (uploadStatus.equals("success")) {
             jsonResponse
-		.setStatus(getAnswerService()
+		.setStatus(answerService
 			   .enableAnswer(answerId, user));
 	    
         } else if (uploadStatus.equals("failure")) {
             jsonResponse
-		.setStatus(getAnswerService()
+		.setStatus(answerService
 			   .deleteAnswer(answerId, user));
         } else {
             jsonResponse.setStatus("InvalidStatus");
@@ -240,9 +240,5 @@ public class AnswerResource extends Resource {
 
         return jsonResponse.toJson();
 
-    }
-    
-    public AnswerService getAnswerService() {
-        return answerService;
     }
 }

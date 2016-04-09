@@ -36,9 +36,6 @@ public class UserService {
 
     
     
-    /*
-     * Main api call
-     */
     public boolean createUser(String email, String password){
 	String sql
 	    = "INSERT INTO user "
@@ -58,10 +55,8 @@ public class UserService {
 	}
 	return false;
      }
+     
 
-    /*
-     * Main api call
-     */
     public int createSubUser(User u, String nick){
 	
 	String sql
@@ -82,7 +77,24 @@ public class UserService {
     }
     
 
+    public String setPrivacyLevel(User user, Integer privacyLevel) {
+            String sql =
+                "UPDATE user SET " +
+                "privacy_level = :pl, " +
+                "WHERE id = :id";
+                
+            try(Connection con = sql2o.open()){
+                con.createQuery(sql)
+                .addParameter("pl", privacyLevel)
+                .addParameter("id", user.getId())
+                .executeUpdate();
 
+                return "Success";
+            }
+            catch(Exception e){
+                return "DatabaseError";
+            }
+    }
 
 
 

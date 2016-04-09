@@ -40,7 +40,12 @@ public class UserResource extends Resource {
         
         Spark.get("/DescribeCurrentUser", (req, res) -> {
             User user = requireAuthenticatedUser(req, res);
-           return describeCurrentUser(req, res, user); 
+            return describeCurrentUser(req, res, user); 
+        });
+        
+        Spark.get("/SetPrivacyLevel", (req, res) -> {
+            User user = requireAuthenticatedUser(req, res);
+            return setPrivacyLevel(req, res, user); 
         });
         
         Spark.get("/CreateSubUser", (req, res) -> {
@@ -164,6 +169,33 @@ public class UserResource extends Resource {
     String describeCurrentUser(Request req, Response res, User user) {
         return new JsonResponse().setObject(user).setStatus("Success").toJson();
     }
+    
+    
+    //Sets the calling users privacy_level to the one given as a parameter.
+    String setPrivacyLevel(Request req, Response res, User user) {
+        JsonResponse jsonResponse = new JsonResponse();
+         String privacyLevel = req.queryParams("privacy_level");
+         int privacyLevelInt;
+         
+        if (privacyLevel == null) {
+            return jsonResponse.setStatus("ParameterError").toJson();
+        }
+        
+        try {
+            privacyLevelInt = Integer.parseInt(privacyLevel);
+        } catch (Exception e) {
+            return jsonResponse.setStatus("ParameterError").toJson();
+        }
+        
+        
+        if (privacyLevelInt > -1 && privacyLevelInt < 4) {
+            return jsonResponse.setStatus(getUserService().setPrivacyLevel(user, privacyLevelInt)).toJson();
+            
+        } else {
+            return jsonResponse.setStatus("InvalidPrivacyLevelNumber").toJson();
+        }
+    }
+    
     
     String createSubUser (Request req, Response res, User user){
         JsonResponse jsonResponse = new JsonResponse();

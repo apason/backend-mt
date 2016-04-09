@@ -56,7 +56,7 @@ public class CategoryResource extends Resource {
         }
         
 
-        Optional<Category> category = getCategoryService().getCategoryById(categoryIdInt);
+        Optional<Category> category = categoryService.getCategoryById(categoryIdInt);
 
         if (!category.isPresent()) {
             jsonResponse.setStatus("CategoryNotFoundError");
@@ -72,12 +72,8 @@ public class CategoryResource extends Resource {
     
     String DescribeCategories(Request req, Response res){
         JsonResponse jsonResponse = new JsonResponse();
-        List<Category> categories = getCategoryService().getAllCategories();
+        List<Category> categories = categoryService.getAllCategories();
         return jsonResponse.setStatus("Success").setObject(categories).toJson();
     }
     
-    
-    public CategoryService getCategoryService() {
-        return categoryService;
-    }
 }
