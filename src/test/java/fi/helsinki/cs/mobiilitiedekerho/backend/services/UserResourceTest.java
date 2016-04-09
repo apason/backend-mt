@@ -51,6 +51,7 @@ public class UserResourceTest extends TestCase {
         user.setEnabled(true);
         user.setEmail("testi@testika.test");
         user.setPassword("password123");
+        user.setPrivacyLevel(3);
         
         when(userService.getUserById(1)).thenReturn(Optional.of(user));
         when(userService.getUserById(2)).thenReturn(Optional.empty());
@@ -73,7 +74,7 @@ public class UserResourceTest extends TestCase {
         
         String jsonResponse = userResource.describeUser(req, res);
         
-        String jsonExpected = "{\"objects\":[{\"id\":1,\"create_time\":\"Jan 1, 1970 2:00:00 AM\",\"enabled\":true,\"email\":\"testi@testika.test\",\"password\":\"password123\"}],\"status\":\"Success\"}";
+        String jsonExpected = "{\"objects\":[{\"id\":1,\"create_time\":\"Jan 1, 1970 2:00:00 AM\",\"enabled\":true,\"email\":\"testi@testika.test\",\"password\":\"password123\",\"privacy_level\":3}],\"status\":\"Success\"}";
         
         assertEquals(jsonResponse, jsonExpected);
         

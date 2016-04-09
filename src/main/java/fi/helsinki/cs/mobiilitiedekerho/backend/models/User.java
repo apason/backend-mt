@@ -10,6 +10,7 @@ public class User {
     private boolean enabled;
     private String email;
     private String password;
+    private int privacy_level; // 0, not setted, DEFAULT (which means: ???); 1, only to itself; 2 only to authenticated users; 2, everyone. TODO: Use Enum?
 
     public int getId() {
         return id;
@@ -49,6 +50,14 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+    
+    public int getPrivacyLevel() {
+        return privacy_level;
+    }
+
+    public void setPrivacyLevel(int privacyLevel) {
+        this.privacy_level = privacyLevel;
     }
     
 }
