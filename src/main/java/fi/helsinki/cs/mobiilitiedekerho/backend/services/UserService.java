@@ -95,6 +95,20 @@ public class UserService {
                 return "DatabaseError";
             }
     }
+    
+    public int getSubUserPrivacyLevel(int subuserId) {
+        Optional<Subuser> subuser = getSubUserById(subuserId);
+        
+        if (!subuser.isPresent()) {
+            return -1; //No subuser found.
+        }
+   
+        Subuser subi = subuser.get();
+        
+        Optional<User> user = getUserById(subi.getUser_id()); //No need to check as user must exist.
+        
+        return user.get().getPrivacyLevel();
+    }
 
 
 
@@ -119,28 +133,32 @@ public class UserService {
 	    + "FROM subuser "
 	    + "WHERE user_id = :uid";
 	try (Connection con = sql2o.open()) {
-	    List<Subuser> users = con.createQuery(sql)
+	    List<Subuser> subusers = con.createQuery(sql)
 		.addParameter("uid", u.getId())
 		.executeAndFetch(Subuser.class);
 
-	    return users;
+	    return subusers;
 	}
     }
 
 
-    public List<Subuser> getSubUserById(int suid){
+    public Optional<User> getSubUserById(int suid){
 	String sql =
 	    "Select * " +
 	    "FROM subuser " +
 	    "WHERE id = :id";
 
 	try(Connection con = sql2o.open()){
-	    List<Subuser> user = con.createQuery(sql)
+	    List<Subuser> subusers = con.createQuery(sql)
 		.throwOnMappingFailure(false)
 		.addParameter("id", suid)
 		.executeAndFetch(Subuser.class);
 	    
-	    return user;
+        if (subusers.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(subusers.get(0));
+        }
 	}
     }
 	

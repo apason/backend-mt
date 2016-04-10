@@ -200,7 +200,6 @@ public class UserResource extends Resource {
     String createSubUser (Request req, Response res, User user){
         JsonResponse jsonResponse = new JsonResponse();
         String subuserNick = req.queryParams("subuser_nick");
-        int newKey;
 
         if(subuserNick == null)
             return jsonResponse.setStatus("ParameterError").toJson();
@@ -215,10 +214,11 @@ public class UserResource extends Resource {
             if(su.getNick().equals(subuserNick))
                 return jsonResponse.setStatus("SubuserDuplicateNickError").toJson();
 
-        newKey = getUserService().createSubUser(user, subuserNick);
-
-        return jsonResponse.setStatus("Success")
-            .setObject(getUserService().getSubUserById(newKey)).toJson();
+        int subuserId = getUserService().createSubUser(user, subuserNick);
+        
+        Optional<Subuser> subuser = getUserService().getSubUserById(subuserId);
+        //No need to check as must exist.
+        return jsonResponse.setStatus("Success").setObject(subuser.get()).toJson();
     }
 
     //It can be assumed that the subuser exist (requireSubUser() in defineRoutes
