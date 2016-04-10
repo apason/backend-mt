@@ -191,7 +191,6 @@ public class UserService {
     // Authenticates the user with email and password.
     // If authentication is successful, returns an Optional<User> with the user object.
     // Otherwise returns an empty Optional<User>.
-    
     public Optional<User> authenticateUser(String email, String password) {
         String sql
                 = "SELECT * "

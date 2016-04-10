@@ -9,6 +9,7 @@ import spark.Response;
 import spark.Request;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Optional;
 
 import static java.lang.System.out;
@@ -37,7 +38,7 @@ public class AnswerResource extends Resource {
         });
         
         Spark.get("/DescribeSubUserAnswers", (req, res) -> {
-            requireAnonymousUser(req, res); //TODO: Depends actually of the "privacy-level" of the SubUser's (parent) user.
+            requireAnonymousUser(req, res);
             return this.describeSubUserAnswers(req, res);
         });
         
@@ -80,6 +81,27 @@ public class AnswerResource extends Resource {
             return jsonResponse.toJson();
         }
 
+        
+        //Check if asker has the privileges to get the answers.
+        int priLv = getUserService().getSubUserPrivacyLevel(answer.get().getSubuser_id());
+        
+        if (priLv == -1)
+        	return jsonResponse.setStatus("SubuserNotFoundError").toJson(); //TODO: ???
+        else if (priLv == 2) { //At least authenticated user is needed.
+            // Check user-type because privacy-level.
+            String authToken = req.queryParams("auth_token");
+            String userType = getUserType(authToken);
+            if (!userType.equals("authenticated"))
+            	return jsonResponse.setStatus("InsuficientPrivileges").toJson();
+        }
+        else if (priLv == 1) { //Only to itself.
+        	User user = requireAuthenticatedUser(req, res);
+    		if (getUserService().requireSubUser(user, answer.get().getSubuser_id()) == null)
+    			return jsonResponse.setStatus("InsuficientPrivileges").toJson();
+        }
+        // END
+        
+        
         answers.add(answer.get());
 
         jsonResponse.setObject(answers);
@@ -113,6 +135,29 @@ public class AnswerResource extends Resource {
             jsonResponse.setStatus("AnswerNotFoundError");
             return jsonResponse.toJson();
         }
+        
+        //Removes the answers that the user has no right to see. //TODO: Or should it tell them as inaccessible, bah "no good" for that.
+        Iterator<Answer> iterator = answers.iterator();
+        while (iterator.hasNext()) {
+        	Answer answer = iterator.next();
+        	//Check if asker has the privileges to get the answer. Remove if hasn't.
+            int priLv = getUserService().getSubUserPrivacyLevel(answer.getSubuser_id());
+            
+            if (priLv == -1)
+            	iterator.remove(); //TODO: ???
+            else if (priLv == 2) { //At least authenticated user is needed.
+                // Check user-type because privacy-level.
+                String authToken = req.queryParams("auth_token");
+                String userType = getUserType(authToken);
+                if (!userType.equals("authenticated"))
+                	iterator.remove();
+            }
+            else if (priLv == 1) { //Only to itself.
+            	User user = requireAuthenticatedUser(req, res);
+        		if (getUserService().requireSubUser(user, answer.getSubuser_id()) == null)
+        			iterator.remove();
+            }
+        }
 
         jsonResponse.setObject(answers);
 
@@ -124,6 +169,7 @@ public class AnswerResource extends Resource {
     String describeSubUserAnswers(Request req, Response res) {
         String subUserId = req.queryParams("subuser_id");
         Integer subUserIdInt;
+        
         JsonResponse jsonResponse = new JsonResponse();
         
         if (subUserId == null) {
@@ -136,6 +182,25 @@ public class AnswerResource extends Resource {
         } catch (Exception e) {
             return jsonResponse.setStatus("ParameterError").toJson();
         }
+        
+        //Check if asker has the privileges to get the answers.
+        int priLv = getUserService().getSubUserPrivacyLevel(subUserIdInt);
+        
+        if (priLv == -1)
+        	return jsonResponse.setStatus("SubuserNotFoundError").toJson();
+        else if (priLv == 2) { //At least authenticated user is needed.
+            // Check user-type because privacy-level.
+            String authToken = req.queryParams("auth_token");
+            String userType = getUserType(authToken);
+            if (!userType.equals("authenticated"))
+            	return jsonResponse.setStatus("InsuficientPrivileges").toJson();
+        }
+        else if (priLv == 1) { //Only to itself.
+        	User user = requireAuthenticatedUser(req, res);
+    		if (getUserService().requireSubUser(user, subUserIdInt) == null)
+    			return jsonResponse.setStatus("InsuficientPrivileges").toJson();
+        }
+        // END
         
         ArrayList<Answer> answers = new ArrayList<Answer>();
         answers = (ArrayList<Answer>) answerService.getAnswersBySubUser(subUserIdInt);
