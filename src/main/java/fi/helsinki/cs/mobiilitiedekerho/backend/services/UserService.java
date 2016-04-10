@@ -142,7 +142,7 @@ public class UserService {
     }
 
 
-    public Optional<User> getSubUserById(int suid){
+    public Optional<Subuser> getSubUserById(int suid){
 	String sql =
 	    "Select * " +
 	    "FROM subuser " +
