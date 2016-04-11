@@ -9,6 +9,7 @@ import spark.Response;
 import spark.Request;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Optional;
 
 import static java.lang.System.out;
@@ -36,21 +37,182 @@ public class AnswerResource extends Resource {
             return this.describeTaskAnswers(req, res);
         });
         
+        Spark.get("/DescribeSubUserAnswers", (req, res) -> {
+            requireAnonymousUser(req, res);
+            return this.describeSubUserAnswers(req, res);
+        });
+        
         Spark.get("/StartAnswerUpload", (req, res) -> {
             User u = requireAuthenticatedUser(req, res);
-	    Subuser subUser = requireSubUser(req, res, u);
+            Subuser subUser = requireSubUser(req, res, u);
             return this.startAnswerUpload(req, res, subUser);
         });
         
-	Spark.get("/EndAnswerUpload", (req, res) -> {
+        Spark.get("/EndAnswerUpload", (req, res) -> {
             User u = requireAuthenticatedUser(req, res);
             return this.endAnswerUpload(req, res, u);
         });
+    }
+
+    // Describes an answer indicated by answer_id.
+    // If the answer is not found, returns status: AnswerNotFoundError.
+    String describeAnswer(Request req, Response res) {
+        String answerId = req.queryParams("answer_id");
+        Integer answerIdInt;
+        JsonResponse jsonResponse = new JsonResponse();
+
+        ArrayList<Answer> answers = new ArrayList<Answer>();
+
+        if (answerId == null) {
+            jsonResponse.setStatus("ParameterError");
+            return jsonResponse.toJson();
+        }
         
-        Spark.get("/DescribeSubUserAnswers", (req, res) -> {
-            requireAnonymousUser(req, res); //TODO: Depends actually of the "privacy-level" of the SubUser's (parent) user.
-            return this.describeSubUserAnswers(req, res);
-        });
+        try {
+           answerIdInt = Integer.parseInt(answerId);
+        } catch (Exception e) {
+            return jsonResponse.setStatus("ParameterError").toJson();
+        }
+
+        Optional<Answer> answer = answerService.getAnswerById(answerIdInt);
+
+        if (!answer.isPresent()) {
+            jsonResponse.setStatus("AnswerNotFoundError");
+            return jsonResponse.toJson();
+        }
+
+        
+        //Check if asker has the privileges to get the answers.
+        int priLv = getUserService().getSubUserPrivacyLevel(answer.get().getSubuser_id());
+        
+        if (priLv == -1)
+        	return jsonResponse.setStatus("SubuserNotFoundError").toJson(); //TODO: ???
+        else if (priLv == 2) { //At least authenticated user is needed.
+            // Check user-type because privacy-level.
+            String authToken = req.queryParams("auth_token");
+            String userType = getUserType(authToken);
+            if (!userType.equals("authenticated"))
+            	return jsonResponse.setStatus("InsuficientPrivileges").toJson();
+        }
+        else if (priLv == 1) { //Only to itself.
+        	User user = requireAuthenticatedUser(req, res);
+    		if (getUserService().requireSubUser(user, answer.get().getSubuser_id()) == null)
+    			return jsonResponse.setStatus("InsuficientPrivileges").toJson();
+        }
+        // END
+        
+        
+        answers.add(answer.get());
+
+        jsonResponse.setObject(answers);
+
+        return jsonResponse.setStatus("Success").toJson();
+    }
+
+    // Describes all answers associated with the task indicated by task_id.
+    // If no answers are found, returns status: AnswerNotFoundError.
+    String describeTaskAnswers(Request req, Response res) {
+        String taskId = req.queryParams("task_id");
+        Integer taskIdInt;
+        JsonResponse jsonResponse = new JsonResponse();
+
+        ArrayList<Answer> answers = new ArrayList<Answer>();
+
+        if (taskId == null) {
+            jsonResponse.setStatus("ParameterError");
+            return jsonResponse.toJson();
+        }
+        
+        try {
+           taskIdInt = Integer.parseInt(taskId);
+        } catch (Exception e) {
+            return jsonResponse.setStatus("ParameterError").toJson();
+        }
+
+        answers = (ArrayList<Answer>) answerService.getAnswersByTask(taskIdInt);
+
+        if (answers.isEmpty()) {
+            jsonResponse.setStatus("AnswerNotFoundError");
+            return jsonResponse.toJson();
+        }
+        
+        //Removes the answers that the user has no right to see. //TODO: Or should it tell them as inaccessible, bah "no good" for that.
+        Iterator<Answer> iterator = answers.iterator();
+        while (iterator.hasNext()) {
+        	Answer answer = iterator.next();
+        	//Check if asker has the privileges to get the answer. Remove if hasn't.
+            int priLv = getUserService().getSubUserPrivacyLevel(answer.getSubuser_id());
+            
+            if (priLv == -1)
+            	iterator.remove(); //TODO: ???
+            else if (priLv == 2) { //At least authenticated user is needed.
+                // Check user-type because privacy-level.
+                String authToken = req.queryParams("auth_token");
+                String userType = getUserType(authToken);
+                if (!userType.equals("authenticated"))
+                	iterator.remove();
+            }
+            else if (priLv == 1) { //Only to itself.
+            	User user = requireAuthenticatedUser(req, res);
+        		if (getUserService().requireSubUser(user, answer.getSubuser_id()) == null)
+        			iterator.remove();
+            }
+        }
+
+        jsonResponse.setObject(answers);
+
+        return jsonResponse.setStatus("Success").toJson();
+    }
+    
+    // Describes all answers associated with the SubUser indicated by subuser_id.
+    // If no answers are found, returns status: AnswerNotFoundError.
+    String describeSubUserAnswers(Request req, Response res) {
+        String subUserId = req.queryParams("subuser_id");
+        Integer subUserIdInt;
+        
+        JsonResponse jsonResponse = new JsonResponse();
+        
+        if (subUserId == null) {
+            jsonResponse.setStatus("ParameterError");
+            return jsonResponse.toJson();
+        }
+        
+        try {
+           subUserIdInt = Integer.parseInt(subUserId);
+        } catch (Exception e) {
+            return jsonResponse.setStatus("ParameterError").toJson();
+        }
+        
+        //Check if asker has the privileges to get the answers.
+        int priLv = getUserService().getSubUserPrivacyLevel(subUserIdInt);
+        
+        if (priLv == -1)
+        	return jsonResponse.setStatus("SubuserNotFoundError").toJson();
+        else if (priLv == 2) { //At least authenticated user is needed.
+            // Check user-type because privacy-level.
+            String authToken = req.queryParams("auth_token");
+            String userType = getUserType(authToken);
+            if (!userType.equals("authenticated"))
+            	return jsonResponse.setStatus("InsuficientPrivileges").toJson();
+        }
+        else if (priLv == 1) { //Only to itself.
+        	User user = requireAuthenticatedUser(req, res);
+    		if (getUserService().requireSubUser(user, subUserIdInt) == null)
+    			return jsonResponse.setStatus("InsuficientPrivileges").toJson();
+        }
+        // END
+        
+        ArrayList<Answer> answers = new ArrayList<Answer>();
+        answers = (ArrayList<Answer>) answerService.getAnswersBySubUser(subUserIdInt);
+        
+        if (answers.isEmpty()) {
+            jsonResponse.setStatus("AnswerNotFoundError");
+            return jsonResponse.toJson();
+        }
+        
+        jsonResponse.setObject(answers);
+
+        return jsonResponse.setStatus("Success").toJson();
     }
     
     // Starts answer upload.
@@ -91,7 +253,7 @@ public class AnswerResource extends Resource {
             return jsonResponse.setStatus("ParameterError").toJson();
         }
 
-        Optional<Answer> answer = getAnswerService().setInitialAnswer(subUser, taskIdInt, fileType);
+        Optional<Answer> answer = answerService.setInitialAnswer(subUser, taskIdInt, fileType);
 
         if (!answer.isPresent()) {
             jsonResponse.setStatus("ParameterError");
@@ -130,12 +292,12 @@ public class AnswerResource extends Resource {
 
         if (uploadStatus.equals("success")) {
             jsonResponse
-		.setStatus(getAnswerService()
+		.setStatus(answerService
 			   .enableAnswer(answerId, user));
 	    
         } else if (uploadStatus.equals("failure")) {
             jsonResponse
-		.setStatus(getAnswerService()
+		.setStatus(answerService
 			   .deleteAnswer(answerId, user));
         } else {
             jsonResponse.setStatus("InvalidStatus");
@@ -143,106 +305,5 @@ public class AnswerResource extends Resource {
 
         return jsonResponse.toJson();
 
-    }
-
-    // Describes an answer indicated by answer_id.
-    // If the answer is not found, returns status: AnswerNotFoundError.
-    String describeAnswer(Request req, Response res) {
-        String answerId = req.queryParams("answer_id");
-        Integer answerIdInt;
-        JsonResponse jsonResponse = new JsonResponse();
-
-        ArrayList<Answer> answers = new ArrayList<Answer>();
-
-        if (answerId == null) {
-            jsonResponse.setStatus("ParameterError");
-            return jsonResponse.toJson();
-        }
-        
-        try {
-           answerIdInt = Integer.parseInt(answerId);
-        } catch (Exception e) {
-            return jsonResponse.setStatus("ParameterError").toJson();
-        }
-
-        Optional<Answer> answer = getAnswerService().getAnswerById(answerIdInt);
-
-        if (!answer.isPresent()) {
-            jsonResponse.setStatus("AnswerNotFoundError");
-            return jsonResponse.toJson();
-        }
-
-        answers.add(answer.get());
-
-        jsonResponse.setObject(answers);
-
-        return jsonResponse.setStatus("Success").toJson();
-    }
-
-    // Describes all answers associated with the task indicated by task_id.
-    // If no answers are found, returns status: AnswerNotFoundError.
-    String describeTaskAnswers(Request req, Response res) {
-        String taskId = req.queryParams("task_id");
-        Integer taskIdInt;
-        JsonResponse jsonResponse = new JsonResponse();
-
-        ArrayList<Answer> answers = new ArrayList<Answer>();
-
-        if (taskId == null) {
-            jsonResponse.setStatus("ParameterError");
-            return jsonResponse.toJson();
-        }
-        
-        try {
-           taskIdInt = Integer.parseInt(taskId);
-        } catch (Exception e) {
-            return jsonResponse.setStatus("ParameterError").toJson();
-        }
-
-        answers = (ArrayList<Answer>) getAnswerService().getAnswersByTask(taskIdInt);
-
-        if (answers.isEmpty()) {
-            jsonResponse.setStatus("AnswerNotFoundError");
-            return jsonResponse.toJson();
-        }
-
-        jsonResponse.setObject(answers);
-
-        return jsonResponse.setStatus("Success").toJson();
-    }
-    
-    // Describes all answers associated with the SubUser indicated by subuser_id.
-    // If no answers are found, returns status: AnswerNotFoundError.
-    String describeSubUserAnswers(Request req, Response res) {
-        String subUserId = req.queryParams("subuser_id");
-        Integer subUserIdInt;
-        JsonResponse jsonResponse = new JsonResponse();
-        
-        if (subUserId == null) {
-            jsonResponse.setStatus("ParameterError");
-            return jsonResponse.toJson();
-        }
-        
-        try {
-           subUserIdInt = Integer.parseInt(subUserId);
-        } catch (Exception e) {
-            return jsonResponse.setStatus("ParameterError").toJson();
-        }
-        
-        ArrayList<Answer> answers = new ArrayList<Answer>();
-        answers = (ArrayList<Answer>) getAnswerService().getAnswersBySubUser(subUserIdInt);
-        
-        if (answers.isEmpty()) {
-            jsonResponse.setStatus("AnswerNotFoundError");
-            return jsonResponse.toJson();
-        }
-        
-        jsonResponse.setObject(answers);
-
-        return jsonResponse.setStatus("Success").toJson();
-    }
-    
-    public AnswerService getAnswerService() {
-        return answerService;
     }
 }

@@ -34,12 +34,6 @@ public class CategoryResource extends Resource {
 	    return this.DescribeCategories(req, res);
 	});
     }
-
-    private String DescribeCategories(Request req, Response res){
-	JsonResponse jsonResponse = new JsonResponse();
-	List<Category> categories = getCategoryService().getAllCategories();
-	return jsonResponse.setStatus("Success").setObject(categories).toJson();
-    }
     
     // Describes an category indicated by category_id.
     // If the category is not found, returns status: CategoryNotFoundError.
@@ -56,13 +50,13 @@ public class CategoryResource extends Resource {
         }
         
         try {
-            categoryIdInt =  Integer.parseInt(categoryId);;
+            categoryIdInt =  Integer.parseInt(categoryId);
         } catch (Exception e) {
             return jsonResponse.setStatus("ParameterError").toJson();
         }
         
 
-        Optional<Category> category = getCategoryService().getCategoryById(categoryIdInt);
+        Optional<Category> category = categoryService.getCategoryById(categoryIdInt);
 
         if (!category.isPresent()) {
             jsonResponse.setStatus("CategoryNotFoundError");
@@ -76,8 +70,10 @@ public class CategoryResource extends Resource {
         return jsonResponse.setStatus("Success").toJson();
     }
     
-    
-    public CategoryService getCategoryService() {
-        return categoryService;
+    String DescribeCategories(Request req, Response res){
+        JsonResponse jsonResponse = new JsonResponse();
+        List<Category> categories = categoryService.getAllCategories();
+        return jsonResponse.setStatus("Success").setObject(categories).toJson();
     }
+    
 }

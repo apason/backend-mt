@@ -29,15 +29,15 @@ public class LikeResource extends Resource {
 
     // Defines routes for LikeResource
     private void defineRoutes() {
+        Spark.get("/LikeAnswer", (req, res) -> {
+        	User user = requireAuthenticatedUser(req, res);
+        	Subuser subUser = requireSubUser(req, res, user);
+            return likeAnswer(req, res, subUser);
+        });
+    	
         Spark.get("/DescribeAnswerLikes", (req, res) -> {
             requireAnonymousUser(req, res);
             return describeAnswerLikes(req, res);
-        });
-
-        Spark.get("/LikeAnswer", (req, res) -> {
-	    User user = requireAuthenticatedUser(req, res);
-	    Subuser subUser = requireSubUser(req, res, user);
-            return likeAnswer(req, res, subUser);
         });
 	
 	Spark.get("/DescribeLikesFromSubuser", (req, res) -> {
@@ -71,19 +71,24 @@ public class LikeResource extends Resource {
 	    .toJson();
     }
 
-    String likeAnswer(Request req, Response res, Subuser subUser){
+    private String likeAnswer(Request req, Response res, Subuser subUser){
 	JsonResponse jsonResponse = new JsonResponse();
+	int answerIdInt; 
 
 	String answerId = req.queryParams("answer_id");
-	if(answerId == null || (Integer) Integer.parseInt(answerId) == null)
+	if(answerId == null)
 	    return jsonResponse.setStatus("ParameterError").toJson();
+	
+    try {
+    	answerIdInt =  Integer.parseInt(answerId);
+    } catch (Exception e) {
+        return jsonResponse.setStatus("ParameterError").toJson();
+    }
 
-	int answer = Integer.parseInt(answerId);
-
-	if(!answerService.getAnswerById(answer).isPresent())
+	if(!answerService.getAnswerById(answerIdInt).isPresent())
 	    return jsonResponse.setStatus("AnswerNotFoundError").toJson();
 
-	Integer newKey = likeService.likeAnswer(answer, subUser);
+	Integer newKey = likeService.likeAnswer(answerIdInt, subUser);
 	
 	if(newKey < 0)
 	    return jsonResponse.setStatus("AlreadyLiked").toJson();
@@ -94,15 +99,22 @@ public class LikeResource extends Resource {
     }
 
 
-    String describeAnswerLikes(Request req, Response res){
+    private String describeAnswerLikes(Request req, Response res){
 	JsonResponse jsonResponse = new JsonResponse();
+	int answerIdInt;
 
 	String answerId = req.queryParams("answer_id");
 
-	if(answerId == null || (Integer)Integer.parseInt(answerId) == null)
+	if(answerId == null)
 	    return jsonResponse.setStatus("ParameterError").toJson();
+	
+    try {
+    	answerIdInt =  Integer.parseInt(answerId);
+    } catch (Exception e) {
+        return jsonResponse.setStatus("ParameterError").toJson();
+    }
 
-	List<Like> likes = likeService.describeAnswerLikes(answerId);
+	List<Like> likes = likeService.getLikesByAnswer(answerIdInt);
 	
 	if(likes.isEmpty())
 	    return jsonResponse.setStatus("LikesNotFound").toJson();

@@ -24,14 +24,14 @@ public class LikeService {
         this.sql2o = sql2o;
     }    
 
-    public List<Like> describeAnswerLikes(String answerId){
+    public List<Like> getLikesByAnswer(int answerId){
 	String sql
 	    = "SELECT * FROM slaikka "
 	    + "WHERE answer_id = :aid";
 
 	try (Connection con = sql2o.open()){
 	    List<Like> likes = con.createQuery(sql)
-		.addParameter("aid", Integer.parseInt(answerId))
+		.addParameter("aid", answerId)
 		.executeAndFetch(Like.class);
 
 	    return likes;
@@ -69,7 +69,7 @@ public class LikeService {
 	}
     }
 
-    //check for duplicate checks must be done.
+    //TODO: Check for duplicates.
     public int likeAnswer(int answerId, Subuser subUser){
 
 	//check for duplicates
@@ -79,7 +79,7 @@ public class LikeService {
 	//add like
 	   String sql
 	   = "INSERT INTO slaikka "
-	   + "(subuser_id, answer_id, loaded) "
+	   + "(subuser_id, answer_id, created) "
 	   + "VALUES "
 	   + "(:suid, :aid, NOW())";
 

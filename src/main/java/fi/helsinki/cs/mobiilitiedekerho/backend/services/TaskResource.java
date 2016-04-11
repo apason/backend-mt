@@ -54,7 +54,7 @@ public class TaskResource extends Resource {
         
         
 
-        Optional<Task> task = getTaskService().getTaskById(taskIdInt);
+        Optional<Task> task = taskService.getTaskById(taskIdInt);
 
         if (!task.isPresent()) {
             jsonResponse.setStatus("TaskNotFoundError");
@@ -85,7 +85,7 @@ public class TaskResource extends Resource {
             return jsonResponse.setStatus("ParameterError").toJson();
         }
         
-        ArrayList<Task> tasks = (ArrayList<Task>) getTaskService().getTasksByCategory(categoryIdInt);
+        ArrayList<Task> tasks = (ArrayList<Task>) taskService.getTasksByCategory(categoryIdInt);
 
         if (tasks.isEmpty()) {
             jsonResponse.setStatus("TaskNotFoundError");
@@ -97,7 +97,4 @@ public class TaskResource extends Resource {
         return jsonResponse.setStatus("Success").toJson();
     }
 
-    public TaskService getTaskService() {
-        return taskService;
-    }
 }
