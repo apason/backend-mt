@@ -92,12 +92,20 @@ public class AnswerResource extends Resource {
             String authToken = req.queryParams("auth_token");
             String userType = getUserType(authToken);
             if (!userType.equals("authenticated"))
-            	return jsonResponse.setStatus("InsuficientPrivileges").toJson();
+                return jsonResponse.setStatus("InsuficientPrivileges").toJson();
         }
         else if (priLv == 1) { //Only to itself.
-        	User user = requireAuthenticatedUser(req, res);
-    		if (getUserService().requireSubUser(user, answer.get().getSubuser_id()) == null)
-    			return jsonResponse.setStatus("InsuficientPrivileges").toJson();
+            // First Checks user-type before getting user, avoid spark.halt.
+            String authToken = req.queryParams("auth_token");
+            String userType = getUserType(authToken);
+            if (!userType.equals("authenticated"))
+                return jsonResponse.setStatus("InsuficientPrivileges").toJson();
+            else {
+                //Only to itself. Subuser must be a subuser of the calling user.
+                User user = requireAuthenticatedUser(req, res);
+                if (getUserService().requireSubUser(user, answer.get().getSubuser_id()) == null)
+                    return jsonResponse.setStatus("InsuficientPrivileges").toJson();
+            }
         }
         // END
         
@@ -153,9 +161,17 @@ public class AnswerResource extends Resource {
                 	iterator.remove();
             }
             else if (priLv == 1) { //Only to itself.
-            	User user = requireAuthenticatedUser(req, res);
-        		if (getUserService().requireSubUser(user, answer.getSubuser_id()) == null)
-        			iterator.remove();
+                // First Checks user-type before getting user, avoid spark.halt.
+                String authToken = req.queryParams("auth_token");
+                String userType = getUserType(authToken);
+                if (!userType.equals("authenticated"))
+                    iterator.remove();
+                else {
+                    //Only to itself. Subuser must be a subuser of the calling user.
+                    User user = requireAuthenticatedUser(req, res);
+                    if (getUserService().requireSubUser(user, answer.getSubuser_id()) == null)
+                        iterator.remove();
+                }
             }
         }
 
@@ -196,9 +212,17 @@ public class AnswerResource extends Resource {
             	return jsonResponse.setStatus("InsuficientPrivileges").toJson();
         }
         else if (priLv == 1) { //Only to itself.
-        	User user = requireAuthenticatedUser(req, res);
-    		if (getUserService().requireSubUser(user, subUserIdInt) == null)
-    			return jsonResponse.setStatus("InsuficientPrivileges").toJson();
+            // First Checks user-type before getting user, avoid spark.halt.
+            String authToken = req.queryParams("auth_token");
+            String userType = getUserType(authToken);
+            if (!userType.equals("authenticated"))
+                return jsonResponse.setStatus("InsuficientPrivileges").toJson();
+            else {
+                //Only to itself. Subuser must be a subuser of the calling user.
+                User user = requireAuthenticatedUser(req, res);
+                if (getUserService().requireSubUser(user, subUserIdInt) == null)
+                    return jsonResponse.setStatus("InsuficientPrivileges").toJson();
+            }
         }
         // END
         
