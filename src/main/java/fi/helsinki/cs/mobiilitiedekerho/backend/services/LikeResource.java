@@ -13,6 +13,10 @@ import spark.Spark;
 
 public class LikeResource extends Resource {
 
+    public enum Direction{
+	TO, FROM
+    }
+
     private final LikeService likeService;
     private final AnswerService answerService;
 
@@ -36,7 +40,35 @@ public class LikeResource extends Resource {
             return likeAnswer(req, res, subUser);
         });
 	
+	Spark.get("/DescribeLikesFromSubuser", (req, res) -> {
+	    User user = requireAuthenticatedUser(req, res);
+	    Subuser subUser = requireSubUser(req, res, user);
+            return describeSubuserLikes(subUser, Direction.FROM);
+        });
 
+	Spark.get("/DescribeLikesToSubuser", (req, res) -> {
+	    User user = requireAuthenticatedUser(req, res);
+	    Subuser subUser = requireSubUser(req, res, user);
+            return describeSubuserLikes(subUser, Direction.TO);
+        });
+    }
+
+
+    String describeSubuserLikes(Subuser subUser, Direction direction){
+	JsonResponse jsonResponse = new JsonResponse();
+
+	List<Like> likes = direction == Direction.TO ?
+	    likeService.describeLikesToSubuser(subUser)
+	    :
+	    likeService.describeLikesFromSubuser(subUser);
+
+	return !likes.isEmpty() ?
+	    jsonResponse.setStatus("Success")
+	    .setObject(likes)
+	    .toJson()
+	    :
+	    jsonResponse.setStatus("LikesNotFound")
+	    .toJson();
     }
 
     String likeAnswer(Request req, Response res, Subuser subUser){

@@ -66,9 +66,9 @@ public class UserService {
 	
 	String sql
 	    = "INSERT INTO subuser "
-	    + "(nick, user_id) "
+	    + "(nick, user_id, created) "
 	    + "VALUES "
-	    + "(:nick, :puid)";
+	    + "(:nick, :puid, NOW())";
 
 	try (Connection con = sql2o.open()) {
 	    Integer newKey = con.createQuery(sql, true)

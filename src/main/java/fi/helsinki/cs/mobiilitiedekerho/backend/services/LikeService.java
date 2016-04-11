@@ -38,6 +38,37 @@ public class LikeService {
 	}
      }
 
+
+    public List<Like> describeLikesToSubuser(Subuser subUser){
+	String sql
+	    = "SELECT * FROM slaikka "
+	    + "WHERE answer_id IN "
+	        + "(SELECT id FROM answer "
+       	        + "WHERE subuser_id = :suid)";
+
+	try(Connection con = sql2o.open()){
+	    List<Like> likes = con.createQuery(sql)
+		.addParameter("suid", subUser.getId())
+		.executeAndFetch(Like.class);
+
+	    return likes;
+	}
+    }
+
+    public List<Like> describeLikesFromSubuser(Subuser subUser){
+	String sql
+	    = "SELECT * FROM slaikka "
+	    + "WHERE subuser_id = :suid";
+
+	try(Connection con = sql2o.open()){
+	    List<Like> likes = con.createQuery(sql)
+		.addParameter("suid", subUser.getId())
+		.executeAndFetch(Like.class);
+	    
+	    return likes;
+	}
+    }
+
     //check for duplicate checks must be done.
     public int likeAnswer(int answerId, Subuser subUser){
 
