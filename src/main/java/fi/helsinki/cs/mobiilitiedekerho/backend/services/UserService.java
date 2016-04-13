@@ -39,7 +39,7 @@ public class UserService {
     public boolean createUser(String email, String password){
 	String sql
 	    = "INSERT INTO user "
-	    + "(email, password, enabled, create_time)"
+	    + "(email, password, enabled, created)"
 	    + "VALUES"
 	    + "(:email, :password, true, NOW())";
 
@@ -73,7 +73,7 @@ public class UserService {
 		.getKey(Integer.class);
 
 	    return newKey;
-	}	
+        }
     }
     
 
