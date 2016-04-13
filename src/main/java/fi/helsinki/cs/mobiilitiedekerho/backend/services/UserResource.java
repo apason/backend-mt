@@ -81,9 +81,8 @@ public class UserResource extends Resource {
         String auth_token = "";
         String email = req.queryParams("email");
         String password = req.queryParams(("password"));
-
-        if (email != null && password != null) {
-
+        
+        if ((email != null) && (password != null)) {
             Optional<User> u = getUserService()
                     .authenticateUser(email, password);
 
@@ -97,7 +96,6 @@ public class UserResource extends Resource {
                         .toJson();
             }
         }
-        
         auth_token = getUserService().generateAnonymousToken(req.ip());
 
         return new JsonResponse()
@@ -210,9 +208,11 @@ public class UserResource extends Resource {
             return jsonResponse.setStatus("SubuserQuantityError").toJson();
 
         //no duplicates allowed
-        for(Subuser su : users)
-            if(su.getNick().equals(subuserNick))
+        for(Subuser su : users) {
+            if(su.getNick().equals(subuserNick)) {
                 return jsonResponse.setStatus("SubuserDuplicateNickError").toJson();
+            }
+        }
 
         int subuserId = getUserService().createSubUser(user, subuserNick);
         

@@ -202,7 +202,7 @@ public class UserService {
                     .addParameter("email", email)
                     .addParameter("password", password)
                     .executeAndFetch(User.class);
-
+            
             if (users.isEmpty()) {
                 return Optional.empty();
             } else {
