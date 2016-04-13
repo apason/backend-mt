@@ -10,8 +10,8 @@ public class Category {
     private boolean uploaded;
     private boolean enabled;
     private String name;
-    private int cordinate_x;
-    private int cordinate_y;
+    private int coordinate_x;
+    private int coordinate_y;
     private String bg_uri;
     private String icon_uri;
 
@@ -56,19 +56,19 @@ public class Category {
     }
     
     public int getCordinateX() {
-        return cordinate_x;
+        return coordinate_x;
     }
 
     public void setCordinateX(int cordinate_x) {
-        this.cordinate_x = cordinate_x;
+        this.coordinate_x = cordinate_x;
     }
     
     public int getCordinateY() {
-        return cordinate_y;
+        return coordinate_y;
     }
 
     public void setCordinateY(int cordinate_y) {
-        this.cordinate_y = cordinate_y;
+        this.coordinate_y = cordinate_y;
     }
 
     public String getBg_uri() {
