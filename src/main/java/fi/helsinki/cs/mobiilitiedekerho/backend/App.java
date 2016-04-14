@@ -26,7 +26,10 @@ public class App {
         TaskService taskService = new TaskService(sql2o);
         AnswerService answerService = new AnswerService(sql2o, userService);
         CategoryService categoryService = new CategoryService(sql2o);
+	LikeService likeService = new LikeService(sql2o);
+	Misc misc = new Misc(sql2o);
 
+	LikeResource likeResource = new LikeResource(likeService, userService, answerService);
         TaskResource taskResource = new TaskResource(userService, taskService);
         AnswerResource answerResource = new AnswerResource(userService, answerService);
         UserResource userResource = new UserResource(userService);
@@ -49,7 +52,7 @@ public class App {
     // Sets response type to application/json.
     private static void SparkConfiguration() {
         Spark.before((req, res) -> {
-            res.type("application/json");
+            res.type("application/json;charset=utf-8");
         });
     }
 }

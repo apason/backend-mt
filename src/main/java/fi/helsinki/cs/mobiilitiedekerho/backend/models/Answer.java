@@ -6,44 +6,19 @@ import java.util.Date;
 public class Answer {
 
     private int id;
-    private Date issued;
-    private Date loaded;
-    private boolean enabled;
     private int task_id;
     private int subuser_id;
+    private Date created;
+    private boolean uploaded;
+    private boolean enabled;
     private String uri;
 
-    
     public int getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public Date getIssued() {
-        return issued;
-    }
-
-    public void setIssued(Date issued) {
-        this.issued = issued;
-    }    
-
-    public Date getLoaded() {
-        return loaded;
-    }
-
-    public void setLoaded(Date loaded) {
-        this.loaded = loaded;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
     }
 
     public int getTask_id() {
@@ -54,12 +29,36 @@ public class Answer {
         this.task_id = task_id;
     }
 
-    public int getSubUserId() {
+    public int getSubuser_id() {
         return subuser_id;
     }
 
-    public void setSubUserId(int user_id) {
+    public void setSubuser_id(int subuser_id) {
         this.subuser_id = subuser_id;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
+    }
+
+    public boolean isUploaded() {
+        return uploaded;
+    }
+
+    public void setUploaded(boolean uploaded) {
+        this.uploaded = uploaded;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public String getUri() {

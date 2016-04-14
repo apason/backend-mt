@@ -44,10 +44,14 @@ public class TaskResourceTest extends TestCase {
 
         Task task = new Task();
         task.setId(1);
-        task.setUri("uri.mp4");
-        task.setLoaded(new Date(0));
-        task.setInfo("tehtävä");
         task.setCategory_id(1);
+        task.setCreated(new Date(0));
+        task.setUploaded(true);
+        task.setEnabled(true);
+        task.setName("Jään sulaminen");
+        task.setInfo("Tehtävässä tutkitaan, kuinka jää sulaa.");
+        task.setUri("task_id_1.webm");
+        task.setIcon_uri("task_icon_id_1.png");
         
         when(taskService.getTaskById(1)).thenReturn(Optional.of(task));
         when(taskService.getTaskById(2)).thenReturn(Optional.empty());
@@ -60,10 +64,9 @@ public class TaskResourceTest extends TestCase {
         
         String jsonResponse = taskResource.describeTask(req, res);
         
-        String jsonExpected = "{\"objects\":[{\"id\":1,\"uri\":\"uri.mp4\",\"loaded\":\"Jan 1, 1970 2:00:00 AM\",\"enabled\":false,\"info\":\"tehtävä\",\"category_id\":1}],\"status\":\"Success\"}";
-        assertEquals(jsonResponse, jsonExpected);
+        String jsonExpected = "{\"objects\":[{\"id\":1,\"category_id\":1,\"created\":\"Jan 1, 1970 2:00:00 AM\",\"uploaded\":true,\"enabled\":true,\"name\":\"Jään sulaminen\",\"info\":\"Tehtävässä tutkitaan, kuinka jää sulaa.\",\"uri\":\"task_id_1.webm\",\"icon_uri\":\"task_icon_id_1.png\"}],\"status\":\"Success\"}";
         
-        jsonResponse = taskResource.describeTask(req, res);
+        assertEquals(jsonResponse, jsonExpected);
     }
 
     public void testDescribeTaskNotFound() {         
@@ -72,8 +75,7 @@ public class TaskResourceTest extends TestCase {
         String jsonResponse = taskResource.describeTask(req, res);
         
         String jsonExpected = "{\"status\":\"TaskNotFoundError\"}";
-        assertEquals(jsonResponse, jsonExpected);
         
-        jsonResponse = taskResource.describeTask(req, res);
+        assertEquals(jsonResponse, jsonExpected);
     }
 }

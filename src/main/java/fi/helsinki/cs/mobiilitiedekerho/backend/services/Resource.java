@@ -30,13 +30,21 @@ abstract public class Resource {
 	    Spark.halt(401, parameterError());
 	Integer subUserId = Integer.parseInt(subUserIdString);
 	if(subUserId == null)
-	    Spark.halt(401, subUserError());
+	    Spark.halt(401, parameterError());
 	
-	Subuser subUser   =  userService.requireSubUser(u, subUserId);
+	Subuser subUser = userService.requireSubUser(u, subUserId);
 	if(subUser == null)
 	    Spark.halt(401, subUserError());
 
 	return subUser;
+    }
+
+    String getUserType(String authToken){
+	return Jwts.parser()
+	    .setSigningKey(getUserService().getSecretKey())
+	    .parseClaimsJws(authToken)
+	    .getBody()
+	    .get("user_type", String.class);
     }
 
     // Checks if the user is authenticated with an auth token.
@@ -49,7 +57,7 @@ abstract public class Resource {
         
         String authToken = req.queryParams("auth_token");
         
-        String userType = Jwts.parser().setSigningKey(getUserService().getSecretKey()).parseClaimsJws(authToken).getBody().get("user_type", String.class);
+        String userType = getUserType(authToken);
         
         if (!userType.equals("authenticated")) {
             Spark.halt(401, authorizationFailure());

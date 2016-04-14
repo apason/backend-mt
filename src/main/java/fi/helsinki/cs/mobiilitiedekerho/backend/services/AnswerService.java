@@ -72,6 +72,7 @@ public class AnswerService {
 	}
     }
 
+    //This function name shoulb be changed. Its stupid.
     //checks if the answer is owned by given user
     private boolean answerExists(int answerId, User user){
 
@@ -90,17 +91,16 @@ public class AnswerService {
 	    if(answer.size() != 1)
 		return false;
 
-	    return userService.requireSubUser(user, answer.get(0).getSubUserId()) != null;
+	    return userService.requireSubUser(user, answer.get(0).getSubuser_id()) != null;
 	}
 	catch(Exception e){
 	    return false;
 	}
     }
     
-    //handles StartAnswerUpload api-call.
-    public Optional<Answer> setInitialAnswer(Subuser subUser, Integer taskId){
+    // handles StartAnswerUpload api-call.
+    public Optional<Answer> setInitialAnswer(Subuser subUser, Integer taskId, String fileType){
 	Date date = new Date();
-	SimpleDateFormat sdf = new SimpleDateFormat("MM+dd+yyyy+h+mm+ss+a");
 
 	List<Answer> answer;
 
@@ -108,27 +108,38 @@ public class AnswerService {
 	if(!taskExists(taskId))
 	    return Optional.empty();
 
-	int addedKey = -1;
+	int newAnswerId = -1;
 
 	//create new disabled answer instance to be uploaded
 	String sql =
 	    "INSERT INTO answer " +
-	    "(issued, enabled, task_id, subuser_id, uri) " +
+	    "(task_id, subuser_id, created) " +
 	    "VALUES " +
-	    "(NOW(), false, :task_id, :user_id, :uri)";
+	    "(:task_id, :subuser_id, NOW())";
 
 	try(Connection con = sql2o.open()) {
 	
-	    addedKey  = con.createQuery(sql, true)
+	    newAnswerId  = con.createQuery(sql, true)
 		.addParameter("task_id", taskId)
-		.addParameter("user_id", subUser.getId())
-		.addParameter("uri", subUser.getId() + "+" + taskId + "+" + sdf.format(date) + ".mp4")
+		.addParameter("subuser_id", subUser.getId())
 		.executeUpdate()
 		.getKey(Integer.class);
 	}
-
-	//get that created answer and return it
-	//this could be a separate function
+        
+        // Generate URI for the answer and save it to database.
+        String uri = "answer_suid_" + Integer.toString(subUser.getId()) +
+                "_id_" + newAnswerId + "." + fileType;
+	
+        sql = "UPDATE answer SET uri = :uri WHERE id = :id";
+        
+        try(Connection con = sql2o.open()){
+	    con.createQuery(sql)
+		.addParameter("uri", uri)
+                .addParameter("id", newAnswerId)
+		.executeUpdate();
+	}
+        
+        // Get the newly created answer and return it.
 	sql =
 	    "SELECT * " +
 	    "FROM answer " +
@@ -137,7 +148,7 @@ public class AnswerService {
 	try(Connection con = sql2o.open()){
 	    answer = con.createQuery(sql)
 		.throwOnMappingFailure(false)
-		.addParameter("id", addedKey)
+		.addParameter("id", newAnswerId)
 		.executeAndFetch(Answer.class);
 	}
 

@@ -6,13 +6,12 @@ import java.util.Date;
 public class User {
 
     private int id;
+    private Date created;
+    private boolean enabled;
     private String email;
     private String password;
-    private boolean enabled;
-    private String token;
-    private Date create_time;
+    private int privacy_level; // 0, not setted, DEFAULT (which means: ???); 1, only to itself; 2 only to authenticated users; 2, everyone. TODO: Use Enum?
 
-    
     public int getId() {
         return id;
     }
@@ -21,20 +20,12 @@ public class User {
         this.id = id;
     }
 
-    public String getPassword() {
-        return password;
+    public Date getCreated() {
+        return created;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
+    public void setCreated(Date created) {
+        this.created = created;
     }
 
     public boolean isEnabled() {
@@ -53,11 +44,20 @@ public class User {
         this.email = email;
     }
 
-    public Date getCreate_time() {
-        return create_time;
+    public String getPassword() {
+        return password;
     }
 
-    public void setCreate_time(Date create_time) {
-        this.create_time = create_time;
+    public void setPassword(String password) {
+        this.password = password;
     }
+    
+    public int getPrivacyLevel() {
+        return privacy_level;
+    }
+
+    public void setPrivacyLevel(int privacyLevel) {
+        this.privacy_level = privacyLevel;
+    }
+    
 }
