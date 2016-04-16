@@ -10,12 +10,12 @@ public class Misc {
 
     Sql2o sql2o;
 
-    public Misc(Sql2o sql2o){
+    public Misc(Sql2o sql2o) {
         this.sql2o = sql2o;
         defineRoutes();
     }
 
-    private void defineRoutes(){
+    private void defineRoutes() {
         Spark.get("/GetBuckets", (req, res) -> {
             return getBuckets();
         });
@@ -23,9 +23,12 @@ public class Misc {
             return getEULA();
         
         });
+        Spark.get("/GetInstructions", (req, res) -> {
+            return getInstructions();
+        });
     }
 
-    String getBuckets(){
+    String getBuckets() {
         JsonResponse jsonResponse = new JsonResponse();
 
         String sql;
@@ -54,20 +57,34 @@ public class Misc {
         }
     }
 
-    String getEULA(){
+    String getEULA() {
         JsonResponse jsonResponse = new JsonResponse();
 
-        String sql
-            = "SELECT eula FROM info ";
+        String sql = "SELECT eula FROM info ";
 
-            try(Connection con = sql2o.open()){
-                List<String> eula = con.createQuery(sql)
-                .executeAndFetch(String.class);
+        try(Connection con = sql2o.open()){
+            List<String> eula = con.createQuery(sql)
+            .executeAndFetch(String.class);
 
-                return jsonResponse.addPropery("eula", eula.get(0))
-                    .setStatus("success")
-                    .toJson();
-            }
+            return jsonResponse.addPropery("eula", eula.get(0))
+                .setStatus("success")
+                .toJson();
+        }
+    }
+    
+    String getInstructions() {
+        JsonResponse jsonResponse = new JsonResponse();
+
+        String sql = "SELECT instructions FROM info ";
+
+        try(Connection con = sql2o.open()){
+            List<String> instructions = con.createQuery(sql)
+            .executeAndFetch(String.class);
+
+            return jsonResponse.addPropery("instructions", instructions.get(0))
+                .setStatus("success")
+                .toJson();
+        }
     }
     
 }
