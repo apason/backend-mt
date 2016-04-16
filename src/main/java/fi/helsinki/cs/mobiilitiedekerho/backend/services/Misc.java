@@ -11,75 +11,63 @@ public class Misc {
     Sql2o sql2o;
 
     public Misc(Sql2o sql2o){
-	this.sql2o = sql2o;
-	defineRoutes();
+        this.sql2o = sql2o;
+        defineRoutes();
     }
 
     private void defineRoutes(){
-	Spark.get("/GetBuckets", (req, res) -> {
-	    return getBuckets();
-	});
-	Spark.get("/GetEULA", (req, res) -> {
-	    return getEULA();
-	
-	});
+        Spark.get("/GetBuckets", (req, res) -> {
+            return getBuckets();
+        });
+        Spark.get("/GetEULA", (req, res) -> {
+            return getEULA();
+        
+        });
     }
 
     String getBuckets(){
-	JsonResponse jsonResponse = new JsonResponse();
+        JsonResponse jsonResponse = new JsonResponse();
 
-	String sql;
-	List<String> res;
-	    
-	try(Connection con = sql2o.open()){
-	    
-	sql = "SELECT tasks_bucket FROM info";
+        String sql;
+        List<String> res;
 
-	res = con.createQuery(sql)
-	    .executeAndFetch(String.class);
+        try(Connection con = sql2o.open()){
+        
+            sql = "SELECT s3_location FROM info";
+            res = con.createQuery(sql).executeAndFetch(String.class);
+            jsonResponse.addPropery("s3_location", res.get(0));
+            
+            sql = "SELECT tasks_bucket FROM info";
+            res = con.createQuery(sql).executeAndFetch(String.class);
+            jsonResponse.addPropery("tasks_bucket", res.get(0));
 
-	jsonResponse.addPropery("tasks_bucket", res.get(0));
+            sql = "SELECT answers_bucket FROM info";
+            res = con.createQuery(sql).executeAndFetch(String.class);
+            jsonResponse.addPropery("answers_bucket", res.get(0));
 
-	sql = "SELECT answers_bucket FROM info";
+            sql = "SELECT graphics_bucket FROM info";
+            res = con.createQuery(sql).executeAndFetch(String.class);
+            jsonResponse.addPropery("graphics_bucket", res.get(0));
 
-	res = con.createQuery(sql)
-	    .executeAndFetch(String.class);
-
-	jsonResponse.addPropery("answers_bucket", res.get(0));
-
-	sql = "SELECT graphics_bucket FROM info";
-
-	res = con.createQuery(sql)
-	    .executeAndFetch(String.class);
-
-	jsonResponse.addPropery("graphics_bucket", res.get(0));
-
-	sql = "SELECT s3_location FROM info";
-
-	res = con.createQuery(sql)
-	    .executeAndFetch(String.class);
-
-	jsonResponse.addPropery("s3_location", res.get(0));
-
-	return jsonResponse.setStatus("Success").toJson();
-
-	}
+            
+            return jsonResponse.setStatus("Success").toJson();
+        }
     }
 
     String getEULA(){
-	JsonResponse jsonResponse = new JsonResponse();
+        JsonResponse jsonResponse = new JsonResponse();
 
-	String sql
-	    = "SELECT eula FROM info ";
+        String sql
+            = "SELECT eula FROM info ";
 
-	    try(Connection con = sql2o.open()){
-		List<String> eula = con.createQuery(sql)
-		.executeAndFetch(String.class);
+            try(Connection con = sql2o.open()){
+                List<String> eula = con.createQuery(sql)
+                .executeAndFetch(String.class);
 
-		return jsonResponse.addPropery("eula", eula.get(0))
-		    .setStatus("success")
-		    .toJson();
-	    }
+                return jsonResponse.addPropery("eula", eula.get(0))
+                    .setStatus("success")
+                    .toJson();
+            }
     }
     
 }

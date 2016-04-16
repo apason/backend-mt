@@ -93,9 +93,9 @@ abstract public class Resource {
         }
     }
 
-   String subUserError(){
-       return new JsonResponse().setStatus("SubuserError").toJson();
-   }
+    String subUserError(){
+        return new JsonResponse().setStatus("SubuserError").toJson();
+    }
 
     String authenticationFailure() {
         return new JsonResponse().setStatus("AuthenticationFailure").toJson();
