@@ -30,52 +30,52 @@ public class UserService {
     }
 
     /*
-     * All following methods are main API methods called immidiately
-     * from UserResources methods of same name.
-     */
+        * All following methods are main API methods called immidiately
+        * from UserResources methods of same name.
+        */
 
-    
-    
+
+
     public boolean createUser(String email, String password){
-	String sql
-	    = "INSERT INTO user "
-	    + "(email, password, enabled, created)"
-	    + "VALUES"
-	    + "(:email, :password, true, NOW())";
+        String sql
+            = "INSERT INTO user "
+            + "(email, password, enabled, created)"
+            + "VALUES"
+            + "(:email, :password, true, NOW())";
 
-	try (Connection con = sql2o.open()){
-	    Integer newKey = con.createQuery(sql)
-		.addParameter("email", email)
-		.addParameter("password", password)
-		.executeUpdate()
-		.getKey(Integer.class);
-	   
-	    if(newKey != null)
-		return true;
-	}
-	return false;
-     }
-     
+        try (Connection con = sql2o.open()){
+            Integer newKey = con.createQuery(sql)
+                .addParameter("email", email)
+                .addParameter("password", password)
+                .executeUpdate()
+                .getKey(Integer.class);
+            
+            if(newKey != null)
+                return true;
+        }
+        return false;
+        }
+        
 
     public int createSubUser(User u, String nick){
-	
-	String sql
-	    = "INSERT INTO subuser "
-	    + "(nick, user_id, created) "
-	    + "VALUES "
-	    + "(:nick, :puid, NOW())";
+        
+        String sql
+            = "INSERT INTO subuser "
+            + "(nick, user_id, created) "
+            + "VALUES "
+            + "(:nick, :puid, NOW())";
 
-	try (Connection con = sql2o.open()) {
-	    Integer newKey = con.createQuery(sql, true)
-		.addParameter("nick", nick)
-		.addParameter("puid", u.getId())
-		.executeUpdate()
-		.getKey(Integer.class);
+        try (Connection con = sql2o.open()) {
+            Integer newKey = con.createQuery(sql, true)
+                .addParameter("nick", nick)
+                .addParameter("puid", u.getId())
+                .executeUpdate()
+                .getKey(Integer.class);
 
-	    return newKey;
+            return newKey;
         }
     }
-    
+
 
     public String setPrivacyLevel(User user, Integer privacyLevel) {
             String sql =
@@ -95,14 +95,14 @@ public class UserService {
                 return "DatabaseError";
             }
     }
-    
+
     public int getSubUserPrivacyLevel(int subuserId) {
         Optional<Subuser> subuser = getSubUserById(subuserId);
         
         if (!subuser.isPresent()) {
             return -1; //No subuser found.
         }
-   
+
         Subuser subi = subuser.get();
         
         Optional<User> user = getUserById(subi.getUser_id()); //No need to check as user must exist.
@@ -114,78 +114,78 @@ public class UserService {
 
 
     public boolean userExists(String email){
-	String sql
-	    = "SELECT * FROM user "
-	    + "WHERE email = :email";
+        String sql
+            = "SELECT * FROM user "
+            + "WHERE email = :email";
 
-	try (Connection con = sql2o.open()){
-	    List<User> user = con.createQuery(sql)
-		.addParameter("email", email)
-		.executeAndFetch(User.class);
+        try (Connection con = sql2o.open()){
+            List<User> user = con.createQuery(sql)
+                .addParameter("email", email)
+                .executeAndFetch(User.class);
 
-	    return !user.isEmpty();
-	}
+            return !user.isEmpty();
+        }
     }
-   
-    public List<Subuser> getSubUsers(User u){
-	String sql 
-	    = "SELECT * "
-	    + "FROM subuser "
-	    + "WHERE user_id = :uid";
-	try (Connection con = sql2o.open()) {
-	    List<Subuser> subusers = con.createQuery(sql)
-		.addParameter("uid", u.getId())
-		.executeAndFetch(Subuser.class);
 
-	    return subusers;
-	}
+    public List<Subuser> getSubUsers(User u){
+        String sql 
+            = "SELECT * "
+            + "FROM subuser "
+            + "WHERE user_id = :uid";
+        try (Connection con = sql2o.open()) {
+            List<Subuser> subusers = con.createQuery(sql)
+                .addParameter("uid", u.getId())
+                .executeAndFetch(Subuser.class);
+
+            return subusers;
+        }
     }
 
 
     public Optional<Subuser> getSubUserById(int suid){
-	String sql =
-	    "Select * " +
-	    "FROM subuser " +
-	    "WHERE id = :id";
+        String sql =
+            "Select * " +
+            "FROM subuser " +
+            "WHERE id = :id";
 
-	try(Connection con = sql2o.open()){
-	    List<Subuser> subusers = con.createQuery(sql)
-		.throwOnMappingFailure(false)
-		.addParameter("id", suid)
-		.executeAndFetch(Subuser.class);
-	    
+        try(Connection con = sql2o.open()){
+            List<Subuser> subusers = con.createQuery(sql)
+                .throwOnMappingFailure(false)
+                .addParameter("id", suid)
+                .executeAndFetch(Subuser.class);
+            
         if (subusers.isEmpty()) {
             return Optional.empty();
         } else {
             return Optional.of(subusers.get(0));
         }
-	}
+        }
     }
-	
+        
     //rename?
     public Subuser requireSubUser(User u, Integer subuserId){
-	
-	if(subuserId == null) return null;
-	
-	String sql
-	    = "SELECT * "
-	    + "FROM subuser "
-	    + "WHERE id = :id "
-	    + "AND user_id = :uid";
-	
-	try (Connection con = sql2o.open()) {
-	    List<Subuser> user = con.createQuery(sql)
-		.addParameter("id", subuserId)
-		.addParameter("uid", u.getId())
-		.executeAndFetch(Subuser.class);
+        
+        if(subuserId == null) return null;
+        
+        String sql
+            = "SELECT * "
+            + "FROM subuser "
+            + "WHERE id = :id "
+            + "AND user_id = :uid";
+        
+        try (Connection con = sql2o.open()) {
+            List<Subuser> user = con.createQuery(sql)
+                .addParameter("id", subuserId)
+                .addParameter("uid", u.getId())
+                .executeAndFetch(Subuser.class);
 
-	    if(user.isEmpty())
-	    	return null;
-	    else
-	    	return user.get(0);
-	    
-	    //catch?
-	}
+            if(user.isEmpty())
+                return null;
+            else
+                return user.get(0);
+            
+            //catch?
+        }
     }
 
     // Authenticates the user with email and password.
@@ -214,7 +214,7 @@ public class UserService {
             }
         }
     }
-    
+
     // Generates a JSON Web Token for an anonymous user.
     // Returns the token.
     public String generateAnonymousToken(String client_ip) {
@@ -230,38 +230,38 @@ public class UserService {
     }
 
     public void deleteSubUser(String subuserId){
-	String sql
-	    = "DELETE FROM answer "
-	    + "WHERE subuser_id = :suid";
+        String sql
+            = "DELETE FROM answer "
+            + "WHERE subuser_id = :suid";
 
-	try(Connection con = sql2o.open()){
-	    con.createQuery(sql)
-		.addParameter("suid", Integer.parseInt(subuserId))
-		.executeUpdate();
+        try(Connection con = sql2o.open()){
+            con.createQuery(sql)
+                .addParameter("suid", Integer.parseInt(subuserId))
+                .executeUpdate();
 
-	    sql
-		= "DELETE FROM subuser "
-		+ "WHERE id = :suid";
+            sql
+                = "DELETE FROM subuser "
+                + "WHERE id = :suid";
 
-	    con.createQuery(sql)
-		.addParameter("suid", Integer.parseInt(subuserId))
-		.executeUpdate();
-	}
+            con.createQuery(sql)
+                .addParameter("suid", Integer.parseInt(subuserId))
+                .executeUpdate();
+        }
     }
 
     public List<Subuser> describeSubUsers(User user){
-	List<Subuser> users;
-	String sql
-	    = "SELECT * FROM subuser "
-	    + "WHERE user_id = :uid";
+        List<Subuser> users;
+        String sql
+            = "SELECT * FROM subuser "
+            + "WHERE user_id = :uid";
 
-	try(Connection con = sql2o.open()){
-	    users = con.createQuery(sql)
-		.addParameter("uid", user.getId())
-		.executeAndFetch(Subuser.class);
+        try(Connection con = sql2o.open()){
+            users = con.createQuery(sql)
+                .addParameter("uid", user.getId())
+                .executeAndFetch(Subuser.class);
 
-	    return users;
-	}
+            return users;
+        }
     }
 
     // Generates a JSON Web Token for an authenticated user.
@@ -292,7 +292,7 @@ public class UserService {
             return false;
         }
     }
-    
+
     // Returns an user from the database.
     // If the user is found, returns Optional<User> with the user object.
     // Otherwise returns an empty Optional<User>.
@@ -316,7 +316,7 @@ public class UserService {
             }
         }
     }  
-    
+
     // Returns a list of all users in the database.
     public List<User> getAllUsers() {
         String sql

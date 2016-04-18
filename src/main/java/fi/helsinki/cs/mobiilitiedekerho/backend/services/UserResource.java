@@ -96,6 +96,11 @@ public class UserResource extends Resource {
                         .toJson();
             }
         }
+        // else if ((email != null) || (password != null)) {
+        // 	  Error as one parameter is set but the other not.
+        //    Should not happen, but anyways...
+        // }
+        // else
         auth_token = getUserService().generateAnonymousToken(req.ip());
 
         return new JsonResponse()

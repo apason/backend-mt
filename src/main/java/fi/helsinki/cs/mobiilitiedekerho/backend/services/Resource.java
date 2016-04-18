@@ -25,26 +25,26 @@ abstract public class Resource {
      * is used. Otherwise Subuser object of that id is returned.
      */
     Subuser requireSubUser(Request req, Response res, User u){
-	String subUserIdString = req.queryParams("subuser_id");
-	if(subUserIdString == null)
-	    Spark.halt(401, parameterError());
-	Integer subUserId = Integer.parseInt(subUserIdString);
-	if(subUserId == null)
-	    Spark.halt(401, parameterError());
-	
-	Subuser subUser = userService.requireSubUser(u, subUserId);
-	if(subUser == null)
-	    Spark.halt(401, subUserError());
+        String subUserIdString = req.queryParams("subuser_id");
+        if(subUserIdString == null)
+            Spark.halt(401, parameterError());
+        Integer subUserId = Integer.parseInt(subUserIdString);
+        if(subUserId == null)
+            Spark.halt(401, parameterError());
+        
+        Subuser subUser = userService.requireSubUser(u, subUserId);
+        if(subUser == null)
+            Spark.halt(401, subUserError());
 
-	return subUser;
+        return subUser;
     }
 
     String getUserType(String authToken){
-	return Jwts.parser()
-	    .setSigningKey(getUserService().getSecretKey())
-	    .parseClaimsJws(authToken)
-	    .getBody()
-	    .get("user_type", String.class);
+        return Jwts.parser()
+            .setSigningKey(getUserService().getSecretKey())
+            .parseClaimsJws(authToken)
+            .getBody()
+            .get("user_type", String.class);
     }
 
     // Checks if the user is authenticated with an auth token.

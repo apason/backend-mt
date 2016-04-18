@@ -84,15 +84,15 @@ public class CategoryService {
     //     return "Success";
     // }
 
-    // Lists all categories from the dabase.
+    // Lists all categories from the database.
     public List<Category> getAllCategories() {
         String sql
                 = "SELECT * "
                 + "FROM category";
         try (Connection con = sql2o.open()) {
             return con.createQuery(sql)
-		.throwOnMappingFailure(false)
-		.executeAndFetch(Category.class);
+                .throwOnMappingFailure(false)
+                .executeAndFetch(Category.class);
         }
     }
     

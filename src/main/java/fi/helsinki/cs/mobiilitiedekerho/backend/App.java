@@ -22,14 +22,20 @@ public class App {
 
         SparkConfiguration();
 
-	UserService userService = new UserService(sql2o, key);
+        // Start the services.
+        UserService userService = new UserService(sql2o, key);
+        
         TaskService taskService = new TaskService(sql2o);
         AnswerService answerService = new AnswerService(sql2o, userService);
         CategoryService categoryService = new CategoryService(sql2o);
-	LikeService likeService = new LikeService(sql2o);
-	Misc misc = new Misc(sql2o);
+        LikeService likeService = new LikeService(sql2o);
 
-	LikeResource likeResource = new LikeResource(likeService, userService, answerService);
+        
+        //This class is 'both' resource and service. 
+        Misc misc = new Misc(userService, sql2o);
+
+        //Start resources.
+        LikeResource likeResource = new LikeResource(likeService, userService, answerService);
         TaskResource taskResource = new TaskResource(userService, taskService);
         AnswerResource answerResource = new AnswerResource(userService, answerService);
         UserResource userResource = new UserResource(userService);

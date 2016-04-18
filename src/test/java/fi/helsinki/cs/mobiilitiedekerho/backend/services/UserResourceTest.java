@@ -110,7 +110,7 @@ public class UserResourceTest extends TestCase {
         String jsonExpected = "{\"status\":\"SubUserNotFoundError\"}";
         
         assertEquals(jsonResponse, jsonExpected);
-    	*/
+        */
         
         assertTrue(true);
     }

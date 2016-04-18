@@ -147,8 +147,8 @@ public class AnswerResource extends Resource {
         //Removes the answers that the user has no right to see. //TODO: Or should it tell them as inaccessible, bah "no good" for that.
         Iterator<Answer> iterator = answers.iterator();
         while (iterator.hasNext()) {
-        	Answer answer = iterator.next();
-        	//Check if asker has the privileges to get the answer. Remove if hasn't.
+            Answer answer = iterator.next();
+            //Check if asker has the privileges to get the answer. Remove if hasn't.
             int priLv = getUserService().getSubUserPrivacyLevel(answer.getSubuser_id());
             
             if (priLv == -1)
@@ -316,13 +316,13 @@ public class AnswerResource extends Resource {
 
         if (uploadStatus.equals("success")) {
             jsonResponse
-		.setStatus(answerService
-			   .enableAnswer(answerId, user));
-	    
+                .setStatus(answerService
+                            .enableAnswer(answerId, user));
+            
         } else if (uploadStatus.equals("failure")) {
             jsonResponse
-		.setStatus(answerService
-			   .deleteAnswer(answerId, user));
+                .setStatus(answerService
+                            .deleteAnswer(answerId, user));
         } else {
             jsonResponse.setStatus("InvalidStatus");
         }

@@ -6,24 +6,29 @@ import spark.Response;
 
 import java.util.List;
 
-public class Misc {
+public class Misc extends Resource {
 
-    Sql2o sql2o;
+    private final  Sql2o sql2o;
 
-    public Misc(Sql2o sql2o) {
+    public Misc(UserService userService, Sql2o sql2o) {
+        super(userService);
+
         this.sql2o = sql2o;
         defineRoutes();
     }
 
     private void defineRoutes() {
         Spark.get("/GetBuckets", (req, res) -> {
+            requireAnonymousUser(req, res);
             return getBuckets();
         });
         Spark.get("/GetEULA", (req, res) -> {
+            requireAnonymousUser(req, res);
             return getEULA();
         
         });
         Spark.get("/GetInstructions", (req, res) -> {
+            requireAnonymousUser(req, res);
             return getInstructions();
         });
     }
@@ -54,6 +59,8 @@ public class Misc {
 
             
             return jsonResponse.setStatus("Success").toJson();
+        } catch (Exception e) {
+            return jsonResponse.setStatus("InfoNotFound").toJson();
         }
     }
 
@@ -69,6 +76,8 @@ public class Misc {
             return jsonResponse.addPropery("eula", eula.get(0))
                 .setStatus("success")
                 .toJson();
+        } catch (Exception e) {
+            return jsonResponse.setStatus("InfoNotFound").toJson();
         }
     }
     
@@ -84,6 +93,8 @@ public class Misc {
             return jsonResponse.addPropery("instructions", instructions.get(0))
                 .setStatus("success")
                 .toJson();
+        } catch (Exception e) {
+            return jsonResponse.setStatus("InfoNotFound").toJson();
         }
     }
     

@@ -40,7 +40,7 @@ public class TaskResource extends Resource {
         String taskId = req.queryParams("task_id");
         int taskIdInt;
         JsonResponse jsonResponse = new JsonResponse();
-	ArrayList<Task> tasks = new ArrayList<Task>();
+        ArrayList<Task> tasks = new ArrayList<Task>();
 
         if (taskId == null) {
             return jsonResponse.setStatus("ParameterError").toJson();
@@ -61,8 +61,8 @@ public class TaskResource extends Resource {
             return jsonResponse.toJson();
         }
 
-	tasks.add(task.get());
-	
+        tasks.add(task.get());
+
         jsonResponse.setObject(tasks);
 
         return jsonResponse.setStatus("Success").toJson();

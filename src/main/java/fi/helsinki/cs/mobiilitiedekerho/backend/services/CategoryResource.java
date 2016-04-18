@@ -26,13 +26,13 @@ public class CategoryResource extends Resource {
     // Defines routes for CategoryResource.
     private void defineRoutes() {
         Spark.get("/DescribeCategory", (req, res) -> {
-	    requireAnonymousUser(req, res);
+            requireAnonymousUser(req, res);
             return this.describeCategory(req, res);
         });
-	Spark.get("/DescribeCategories", (req, res) -> {
-	    requireAnonymousUser(req, res);
-	    return this.DescribeCategories(req, res);
-	});
+        Spark.get("/DescribeCategories", (req, res) -> {
+            requireAnonymousUser(req, res);
+            return this.DescribeCategories(req, res);
+        });
     }
     
     // Describes an category indicated by category_id.
