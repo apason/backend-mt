@@ -74,7 +74,7 @@ public class Misc extends Resource {
             .executeAndFetch(String.class);
 
             return jsonResponse.addPropery("eula", eula.get(0))
-                .setStatus("success")
+                .setStatus("Success")
                 .toJson();
         } catch (Exception e) {
             return jsonResponse.setStatus("InfoNotFound").toJson();
@@ -91,7 +91,7 @@ public class Misc extends Resource {
             .executeAndFetch(String.class);
 
             return jsonResponse.addPropery("instructions", instructions.get(0))
-                .setStatus("success")
+                .setStatus("Success")
                 .toJson();
         } catch (Exception e) {
             return jsonResponse.setStatus("InfoNotFound").toJson();
