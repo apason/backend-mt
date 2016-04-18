@@ -72,7 +72,7 @@ public class AnswerResourceTest extends TestCase {
         
         String jsonResponse = answerResource.describeAnswer(req, res);
         
-        String jsonExpected = "{\"status\":\"AnswerNotFound\"}";
+        String jsonExpected = "{\"status\":\"AnswerNotFoundError\"}";
         
         assertEquals(jsonResponse, jsonExpected);
     }

@@ -48,10 +48,10 @@ public class CategoryResourceTest extends TestCase {
         category.setUploaded(true);
         category.setEnabled(true);
         category.setName("Fysiikka");
-        category.setBg_uri("category_bg_id_1.png");
-        category.setIcon_uri("category_icon_id_1.png");
         category.setCordinateX(100);
         category.setCordinateY(200);
+        category.setBg_uri("category_bg_id_1.png");
+        category.setIcon_uri("category_icon_id_1.png");
         
         when(categoryService.getCategoryById(1)).thenReturn(Optional.of(category));
         when(categoryService.getCategoryById(2)).thenReturn(Optional.empty());
@@ -64,7 +64,7 @@ public class CategoryResourceTest extends TestCase {
         
         String jsonResponse = categoryResource.describeCategory(req, res);
         
-        String jsonExpected = "{\"objects\":[{\"id\":1,\"created\":\"Jan 1, 1970 2:00:00 AM\",\"uploaded\":true,\"enabled\":true,\"name\":\"Fysiikka\",\"bg_uri\":\"category_bg_id_1.png\",\"icon_uri\":\"category_icon_id_1.png\",\"cordinate_x\":100,\"cordinate_y\":200}],\"status\":\"Success\"}";
+        String jsonExpected = "{\"objects\":[{\"id\":1,\"created\":\"Jan 1, 1970 2:00:00 AM\",\"uploaded\":true,\"enabled\":true,\"name\":\"Fysiikka\",\"coordinate_x\":100,\"coordinate_y\":200,\"bg_uri\":\"category_bg_id_1.png\",\"icon_uri\":\"category_icon_id_1.png\"}],\"status\":\"Success\"}";
                 
         assertEquals(jsonResponse, jsonExpected);
     }

@@ -74,7 +74,7 @@ public class UserResourceTest extends TestCase {
         
         String jsonResponse = userResource.describeUser(req, res);
         
-        String jsonExpected = "{\"objects\":[{\"id\":1,\"create_time\":\"Jan 1, 1970 2:00:00 AM\",\"enabled\":true,\"email\":\"testi@testika.test\",\"password\":\"password123\",\"privacy_level\":3}],\"status\":\"Success\"}";
+        String jsonExpected = "{\"objects\":[{\"id\":1,\"created\":\"Jan 1, 1970 2:00:00 AM\",\"enabled\":true,\"email\":\"testi@testika.test\",\"password\":\"password123\",\"privacy_level\":3}],\"status\":\"Success\"}";
         
         assertEquals(jsonResponse, jsonExpected);
         
@@ -95,7 +95,7 @@ public class UserResourceTest extends TestCase {
         
         String jsonResponse = userResource.describeSubUser(req, res, user, subuser);
         
-        String jsonExpected = "{\"objects\":[{\"id\":1,\"user_id\":1,\"create_time\":\"Jan 1, 1970 2:00:00 AM\",\"nick\":\"Lissu\",\"avatar_url\":\"avatar_icon_id_1.png\"}],\"status\":\"Success\"}";
+        String jsonExpected = "{\"objects\":[{\"id\":1,\"user_id\":1,\"created\":\"Jan 1, 1970 2:00:00 AM\",\"nick\":\"Lissu\",\"avatar_url\":\"avatar_icon_id_1.png\"}],\"status\":\"Success\"}";
         
         assertEquals(jsonResponse, jsonExpected);
         
