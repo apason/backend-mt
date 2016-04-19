@@ -95,6 +95,27 @@ public class UserService {
                 return "DatabaseError";
             }
     }
+    
+    
+    public String setPin(User user, String pin) {
+            String sql =
+                "UPDATE user SET " +
+                "pin = :pin, " +
+                "WHERE id = :id";
+                
+            try(Connection con = sql2o.open()){
+                con.createQuery(sql)
+                .addParameter("pin", pin)
+                .addParameter("id", user.getId())
+                .executeUpdate();
+
+                return "Success";
+            }
+            catch(Exception e){
+                return "DatabaseError";
+            }
+    }
+    
 
     public int getSubUserPrivacyLevel(int subuserId) {
         Optional<Subuser> subuser = getSubUserById(subuserId);

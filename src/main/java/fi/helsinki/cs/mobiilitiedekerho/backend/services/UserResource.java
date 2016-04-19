@@ -48,6 +48,11 @@ public class UserResource extends Resource {
             return setPrivacyLevel(req, res, user); 
         });
         
+        Spark.get("/SetPin", (req, res) -> {
+            User user = requireAuthenticatedUser(req, res);
+            return setPin(req, res, user); 
+        });
+        
         Spark.get("/CreateSubUser", (req, res) -> {
             User user = requireAuthenticatedUser(req, res);
            return createSubUser(req, res, user); 
@@ -177,8 +182,8 @@ public class UserResource extends Resource {
     //Sets the calling users privacy_level to the one given as a parameter.
     String setPrivacyLevel(Request req, Response res, User user) {
         JsonResponse jsonResponse = new JsonResponse();
-         String privacyLevel = req.queryParams("privacy_level");
-         int privacyLevelInt;
+        String privacyLevel = req.queryParams("privacy_level");
+        int privacyLevelInt;
          
         if (privacyLevel == null) {
             return jsonResponse.setStatus("ParameterError").toJson();
@@ -197,6 +202,19 @@ public class UserResource extends Resource {
         } else {
             return jsonResponse.setStatus("InvalidPrivacyLevelNumber").toJson();
         }
+    }
+    
+    
+    //Sets the calling users pin to the one given as a parameter.
+    String setPin(Request req, Response res, User user) {
+        JsonResponse jsonResponse = new JsonResponse();
+        String pin = req.queryParams("pin");
+        
+        if (pin == null) {
+            return jsonResponse.setStatus("ParameterError").toJson();
+        }
+        
+        return jsonResponse.setStatus(getUserService().setPin(user, pin)).toJson();
     }
     
     
