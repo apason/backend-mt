@@ -13,6 +13,9 @@ import junit.framework.TestSuite;
 import java.util.Optional;
 import java.util.Date;
 
+import com.typesafe.config.ConfigFactory;
+import com.typesafe.config.Config;
+
 import static org.mockito.Mockito.*;
 
 public class TaskResourceTest extends TestCase {
@@ -20,6 +23,7 @@ public class TaskResourceTest extends TestCase {
     private UserService userService;
     private TaskService taskService;
     private TaskResource taskResource;
+    private Config appConfiguration;
     
     private Request req;
     private Response res;
@@ -38,6 +42,7 @@ public class TaskResourceTest extends TestCase {
     protected void setUp() {
         taskService = mock(TaskService.class);
         userService = mock(UserService.class);
+        appConfiguration = ConfigFactory.load();
         
         req = mock(Request.class);
         res = mock(Response.class);       
@@ -56,7 +61,7 @@ public class TaskResourceTest extends TestCase {
         when(taskService.getTaskById(1)).thenReturn(Optional.of(task));
         when(taskService.getTaskById(2)).thenReturn(Optional.empty());
         
-        taskResource = new TaskResource(userService, taskService);
+        taskResource = new TaskResource(userService, taskService, appConfiguration);
     }
 
     public void testDescribeTaskSuccess() {         

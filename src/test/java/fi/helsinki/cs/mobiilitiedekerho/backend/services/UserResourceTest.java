@@ -13,12 +13,16 @@ import junit.framework.TestSuite;
 import java.util.Optional;
 import java.util.Date;
 
+import com.typesafe.config.ConfigFactory;
+import com.typesafe.config.Config;
+
 import static org.mockito.Mockito.*;
 
 public class UserResourceTest extends TestCase {
     
     private UserService userService;
     private UserResource userResource;
+    private Config appConfiguration;
     
     private Subuser subuser; //for SubUser testing.
     private User user; //for SubUser testing.
@@ -42,7 +46,8 @@ public class UserResourceTest extends TestCase {
         res = mock(Response.class);       
 
         userService = mock(UserService.class);
-        userResource = new UserResource(userService);
+        appConfiguration = ConfigFactory.load();
+        userResource = new UserResource(userService, appConfiguration);
         
         
         user = new User();

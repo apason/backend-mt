@@ -13,6 +13,9 @@ import junit.framework.TestSuite;
 import java.util.Optional;
 import java.util.Date;
 
+import com.typesafe.config.ConfigFactory;
+import com.typesafe.config.Config;
+
 import static org.mockito.Mockito.*;
 
 public class LikeResourceTest extends TestCase {
@@ -20,6 +23,7 @@ public class LikeResourceTest extends TestCase {
     private UserService userService;
     private LikeService likeService;
     private AnswerService answerService;
+    private Config appConfiguration;
     private LikeResource likeResource;
     
     private Request req;
@@ -40,6 +44,7 @@ public class LikeResourceTest extends TestCase {
         likeService = mock(LikeService.class);
         userService = mock(UserService.class);
         answerService = mock(AnswerService.class);
+        appConfiguration = ConfigFactory.load();
         
         req = mock(Request.class);
         res = mock(Response.class);       
@@ -53,7 +58,7 @@ public class LikeResourceTest extends TestCase {
         //when(likeService.getLikeById(1)).thenReturn(Optional.of(like));
         //when(likeService.getLikeById(2)).thenReturn(Optional.empty());
         
-        likeResource = new LikeResource(likeService, userService, answerService);
+        likeResource = new LikeResource(likeService, userService, answerService, appConfiguration);
     }
 
     public void testDescribeLikeSuccess() {         
