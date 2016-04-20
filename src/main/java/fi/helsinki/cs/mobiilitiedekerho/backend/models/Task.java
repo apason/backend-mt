@@ -4,7 +4,8 @@ import java.util.Date;
 
 
 public class Task {
-    
+
+
     private int id;
     private int category_id;
     private Date created;
@@ -12,8 +13,11 @@ public class Task {
     private boolean enabled;
     private String name;
     private String info;
+    private int coordinate_x;
+    private int coordinate_y;
     private String uri;
     private String icon_uri;
+
 
     public int getId() {
         return id;
@@ -69,6 +73,22 @@ public class Task {
 
     public void setInfo(String info) {
         this.info = info;
+    }
+    
+    public int getCordinateX() {
+        return coordinate_x;
+    }
+
+    public void setCordinateX(int cordinate_x) {
+        this.coordinate_x = cordinate_x;
+    }
+    
+    public int getCordinateY() {
+        return coordinate_y;
+    }
+
+    public void setCordinateY(int cordinate_y) {
+        this.coordinate_y = cordinate_y;
     }
 
     public String getUri() {

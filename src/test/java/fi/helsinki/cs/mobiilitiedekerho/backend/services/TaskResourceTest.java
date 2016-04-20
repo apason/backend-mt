@@ -55,6 +55,8 @@ public class TaskResourceTest extends TestCase {
         task.setEnabled(true);
         task.setName("Jään sulaminen");
         task.setInfo("Tehtävässä tutkitaan, kuinka jää sulaa.");
+        task.setCordinateX(100);
+        task.setCordinateY(200);
         task.setUri("task_id_1.webm");
         task.setIcon_uri("task_icon_id_1.png");
         
@@ -69,7 +71,7 @@ public class TaskResourceTest extends TestCase {
         
         String jsonResponse = taskResource.describeTask(req, res);
         
-        String jsonExpected = "{\"objects\":[{\"id\":1,\"category_id\":1,\"created\":\"Jan 1, 1970 2:00:00 AM\",\"uploaded\":true,\"enabled\":true,\"name\":\"Jään sulaminen\",\"info\":\"Tehtävässä tutkitaan, kuinka jää sulaa.\",\"uri\":\"task_id_1.webm\",\"icon_uri\":\"task_icon_id_1.png\"}],\"status\":\"Success\"}";
+        String jsonExpected = "{\"objects\":[{\"id\":1,\"category_id\":1,\"created\":\"Jan 1, 1970 2:00:00 AM\",\"uploaded\":true,\"enabled\":true,\"name\":\"Jään sulaminen\",\"info\":\"Tehtävässä tutkitaan, kuinka jää sulaa.\",\"coordinate_x\":100,\"coordinate_y\":200,\"uri\":\"task_id_1.webm\",\"icon_uri\":\"task_icon_id_1.png\"}],\"status\":\"Success\"}";
         
         assertEquals(jsonResponse, jsonExpected);
     }

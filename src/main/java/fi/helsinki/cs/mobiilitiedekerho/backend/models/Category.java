@@ -5,6 +5,7 @@ import java.util.Date;
 
 public class Category {
 
+
     private int id;
     private Date created;
     private boolean uploaded;
@@ -14,6 +15,7 @@ public class Category {
     private int coordinate_y;
     private String bg_uri;
     private String icon_uri;
+
 
     public int getId() {
         return id;
