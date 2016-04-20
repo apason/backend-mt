@@ -12,13 +12,12 @@ import java.util.ArrayList;
 public class JsonResponse {
 
     private String status;
-
     private Object object;
 
     private ArrayList<String> properties;
-
     private ArrayList<String> values;
 
+    
     public JsonResponse() {
         this.object = null;
         this.status = "";

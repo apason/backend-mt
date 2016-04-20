@@ -13,6 +13,7 @@ public class Answer {
     private boolean enabled;
     private String uri;
 
+    
     public int getId() {
         return id;
     }

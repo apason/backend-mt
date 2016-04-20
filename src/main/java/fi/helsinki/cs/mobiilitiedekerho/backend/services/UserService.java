@@ -20,6 +20,7 @@ public class UserService {
     private final Sql2o sql2o;
     private final Key secretKey;
 
+
     public UserService(Sql2o sql2o, Key key) {
         this.sql2o = sql2o;
         this.secretKey = key;

@@ -22,6 +22,7 @@ public class LikeResource extends Resource {
     private final LikeService likeService;
     private final AnswerService answerService;
 
+
     public LikeResource(LikeService likeService, UserService userService, AnswerService answerService, Config appConfiguration) {
         super(userService, appConfiguration);
         this.likeService = likeService;

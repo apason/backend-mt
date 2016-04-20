@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fi.helsinki.cs.mobiilitiedekerho.backend.services;
 
 import com.amazonaws.AmazonClientException;
@@ -13,16 +8,14 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 
-/**
- *
- * @author juhanasaarinen
- */
+
 public class S3Helper {
     
     private String accessKey;
     private String secretAccessKey;
     private BasicAWSCredentials basicAWSCredentials;
     private AmazonS3Client s3Client;
+    
     
     public S3Helper(String accessKey, String secretAccessKey) {
         this.accessKey = accessKey;

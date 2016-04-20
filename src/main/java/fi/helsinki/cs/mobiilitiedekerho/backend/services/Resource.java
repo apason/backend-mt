@@ -19,6 +19,7 @@ abstract public class Resource {
     private S3Helper s3Helper;
     private final Config appConfiguration;
 
+    
     public Resource(UserService userService, Config appConfiguration) {
         this.userService = userService;
         this.appConfiguration = appConfiguration;

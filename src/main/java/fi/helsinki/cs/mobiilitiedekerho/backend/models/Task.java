@@ -5,7 +5,6 @@ import java.util.Date;
 
 public class Task {
 
-
     private int id;
     private int category_id;
     private Date created;

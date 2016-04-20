@@ -20,6 +20,7 @@ public class AnswerResource extends Resource {
 
     private final AnswerService answerService;
 
+
     public AnswerResource(UserService userService, AnswerService answerService, Config appConfiguration) {
         super(userService, appConfiguration);
         this.answerService = answerService;

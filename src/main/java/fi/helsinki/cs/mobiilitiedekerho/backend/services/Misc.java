@@ -12,6 +12,7 @@ public class Misc extends Resource {
 
     private final  Sql2o sql2o;
 
+    
     public Misc(UserService userService, Sql2o sql2o, Config appConfiguration) {
         super(userService, appConfiguration);
 

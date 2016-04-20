@@ -10,6 +10,7 @@ public class Subuser {
     private String nick;
     private String avatar_url;
 
+    
     public int getId() {
         return id;
     }

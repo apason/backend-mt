@@ -13,6 +13,7 @@ import com.typesafe.config.Config;
 
 public class UserResource extends Resource {
 
+
     public UserResource(UserService userService, Config appConfiguration) {
         super(userService, appConfiguration);
 

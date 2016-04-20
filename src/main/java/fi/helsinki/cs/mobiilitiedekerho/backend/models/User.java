@@ -13,6 +13,7 @@ public class User {
     private String pin;
     private int privacy_level; // 0, not setted, DEFAULT (which means: ???); 1, only to itself; 2 only to authenticated users; 2, everyone. TODO: Use Enum?
 
+    
     public int getId() {
         return id;
     }
