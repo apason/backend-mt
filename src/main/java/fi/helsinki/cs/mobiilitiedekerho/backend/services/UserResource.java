@@ -36,13 +36,8 @@ public class UserResource extends Resource {
         });
     	
         Spark.get("/DescribeUser", (req, res) -> {
-            requireAuthenticatedUser(req, res);
-            return describeUser(req, res);
-        });
-        
-        Spark.get("/DescribeCurrentUser", (req, res) -> {
             User user = requireAuthenticatedUser(req, res);
-            return describeCurrentUser(req, res, user); 
+            return describeUser(req, res, user);
         });
         
         Spark.get("/SetPrivacyLevel", (req, res) -> {
@@ -143,40 +138,8 @@ public class UserResource extends Resource {
         return jsonResponse.setStatus("UnexpectedError").toJson();
     }
 
-    // Describes the user indicated by
-    // user_id parameter.
-    // Should be removed?
-    String describeUser(Request req, Response res) {
-    	String userId = req.queryParams("user_id");
-    	int userIdInt;
-        JsonResponse jsonResponse = new JsonResponse();
-        ArrayList<User> users = new ArrayList<User>();
-
-        if (userId == null) {
-            return jsonResponse.setStatus("ParameterError").toJson();
-        }
-        
-        try {
-            userIdInt = Integer.parseInt(userId);
-        } catch (Exception e) {
-            return jsonResponse.setStatus("ParameterError").toJson();
-        }
-
-        Optional<User> user = getUserService().getUserById(userIdInt);
-
-        if (!user.isPresent()) {
-            jsonResponse.setStatus("UserNotFoundError");
-            return jsonResponse.toJson();
-        }
-
-        users.add(user.get());
-        jsonResponse.setObject(users);
-
-        return jsonResponse.setStatus("Success").toJson();
-    }
-    
     // Describes the current user indicated by the auth token.
-    String describeCurrentUser(Request req, Response res, User user) {
+    String describeUser(Request req, Response res, User user) {
         return new JsonResponse().setObject(user).setStatus("Success").toJson();
     }
     
