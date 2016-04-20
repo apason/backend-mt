@@ -10,12 +10,14 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import com.typesafe.config.Config;
+
 public class TaskResource extends Resource {
 
     private final TaskService taskService;
 
-    public TaskResource(UserService userService, TaskService taskService) {
-        super(userService);
+    public TaskResource(UserService userService, TaskService taskService, Config appConfiguration) {
+        super(userService, appConfiguration);
         this.taskService = taskService;
         
         defineRoutes();

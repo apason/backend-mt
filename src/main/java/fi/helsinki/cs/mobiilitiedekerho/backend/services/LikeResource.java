@@ -11,6 +11,8 @@ import spark.Request;
 import spark.Response;
 import spark.Spark;
 
+import com.typesafe.config.Config;
+
 public class LikeResource extends Resource {
 
     public enum Direction{
@@ -20,8 +22,8 @@ public class LikeResource extends Resource {
     private final LikeService likeService;
     private final AnswerService answerService;
 
-    public LikeResource(LikeService likeService, UserService userService, AnswerService answerService) {
-        super(userService);
+    public LikeResource(LikeService likeService, UserService userService, AnswerService answerService, Config appConfiguration) {
+        super(userService, appConfiguration);
         this.likeService = likeService;
         this.answerService = answerService;
         defineRoutes();

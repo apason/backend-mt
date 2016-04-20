@@ -9,10 +9,12 @@ import spark.Request;
 import spark.Response;
 import spark.Spark;
 
+import com.typesafe.config.Config;
+
 public class UserResource extends Resource {
 
-    public UserResource(UserService userService) {
-        super(userService);
+    public UserResource(UserService userService, Config appConfiguration) {
+        super(userService, appConfiguration);
 
         defineRoutes();
     }

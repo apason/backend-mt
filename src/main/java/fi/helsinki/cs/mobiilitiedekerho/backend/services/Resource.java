@@ -11,12 +11,27 @@ import fi.helsinki.cs.mobiilitiedekerho.backend.models.User;
 import fi.helsinki.cs.mobiilitiedekerho.backend.models.Subuser;
 import java.util.Optional;
 
+import com.typesafe.config.Config;
+
 abstract public class Resource {
 
     private final UserService userService;
+    private S3Helper s3Helper;
+    private final Config appConfiguration;
 
-    public Resource(UserService userService) {
+    public Resource(UserService userService, Config appConfiguration) {
         this.userService = userService;
+        this.appConfiguration = appConfiguration;
+        this.s3Helper = new S3Helper(
+                appConfiguration.getString("s3.access_key"),
+                appConfiguration.getString("s3.secret_access_key"));
+        System.out.println(appConfiguration.getString("s3.access_key"));
+        System.out.println(appConfiguration.getString("s3.secret_access_key"));
+    }
+    
+    /* This method is for setting a mock class in testing. */
+    public void setS3Helper(S3Helper h) {
+        this.s3Helper = h;
     }
 
     /*
@@ -115,5 +130,13 @@ abstract public class Resource {
     
     UserService getUserService() {
         return userService;
+    }
+    
+    S3Helper getS3Helper() {
+        return s3Helper;
+    }
+    
+    Config getAppConfiguration() {
+        return this.appConfiguration;
     }
 }

@@ -11,13 +11,15 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.List;
 
+import com.typesafe.config.Config;
+
 public class CategoryResource extends Resource {
 
     private final CategoryService categoryService;
     
     
-    public CategoryResource(UserService userService, CategoryService categoryService) {
-        super(userService);
+    public CategoryResource(UserService userService, CategoryService categoryService, Config appConfiguration) {
+        super(userService, appConfiguration);
         this.categoryService = categoryService;
 
         defineRoutes();
@@ -62,9 +64,23 @@ public class CategoryResource extends Resource {
             jsonResponse.setStatus("CategoryNotFoundError");
             return jsonResponse.toJson();
         }
-
+        
+        // Generate signed urls for bg and icon uris.
+        String bgUri = this.getS3Helper().generateSignedDownloadUrl(
+               this.getAppConfiguration().getString("app.graphics_bucket"),
+               category.get().getBg_uri()
+        );
+        
+        String iconUri = this.getS3Helper().generateSignedDownloadUrl(
+               this.getAppConfiguration().getString("app.graphics_bucket"),
+               category.get().getIcon_uri()
+        );
+        
+        category.get().setBg_uri(bgUri);
+        category.get().setIcon_uri(iconUri);
+        
         categories.add(category.get());
-
+        
         jsonResponse.setObject(categories);
 
         return jsonResponse.setStatus("Success").toJson();

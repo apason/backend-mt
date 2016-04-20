@@ -14,12 +14,14 @@ import java.util.Optional;
 
 import static java.lang.System.out;
 
+import com.typesafe.config.Config;
+
 public class AnswerResource extends Resource {
 
     private final AnswerService answerService;
 
-    public AnswerResource(UserService userService, AnswerService answerService) {
-        super(userService);
+    public AnswerResource(UserService userService, AnswerService answerService, Config appConfiguration) {
+        super(userService, appConfiguration);
         this.answerService = answerService;
 
         defineRoutes();

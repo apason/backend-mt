@@ -6,12 +6,14 @@ import spark.Response;
 
 import java.util.List;
 
+import com.typesafe.config.Config;
+
 public class Misc extends Resource {
 
     private final  Sql2o sql2o;
 
-    public Misc(UserService userService, Sql2o sql2o) {
-        super(userService);
+    public Misc(UserService userService, Sql2o sql2o, Config appConfiguration) {
+        super(userService, appConfiguration);
 
         this.sql2o = sql2o;
         defineRoutes();
