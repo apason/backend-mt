@@ -26,8 +26,6 @@ abstract public class Resource {
         this.s3Helper = new S3Helper(
                 appConfiguration.getString("s3.access_key"),
                 appConfiguration.getString("s3.secret_access_key"));
-        System.out.println(appConfiguration.getString("s3.access_key"));
-        System.out.println(appConfiguration.getString("s3.secret_access_key"));
     }
     
     /* This method is for setting a mock class in testing. */
