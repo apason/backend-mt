@@ -4,6 +4,7 @@ import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.HttpMethod;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
@@ -18,12 +19,15 @@ public class S3Helper {
     
     
     public S3Helper(String accessKey, String secretAccessKey) {
+        System.setProperty("SDKGlobalConfiguration.ENFORCE_S3_SIGV4_SYSTEM_PROPERTY", "true");
+        
         this.accessKey = accessKey;
         this.secretAccessKey = secretAccessKey;
         
         basicAWSCredentials = new BasicAWSCredentials(accessKey, secretAccessKey);
         
         s3Client = new AmazonS3Client(basicAWSCredentials);
+        s3Client.setRegion(com.amazonaws.regions.Region.getRegion(Regions.EU_CENTRAL_1));
     }
     
     public String generateSignedDownloadUrl(String bucketName, String objectKey) {
@@ -44,6 +48,7 @@ public class S3Helper {
                 = new GeneratePresignedUrlRequest(bucketName, objectKey);
         generatePresignedUrlRequest.setMethod(method);
         generatePresignedUrlRequest.setExpiration(expiration);
-        return s3Client.generatePresignedUrl(generatePresignedUrlRequest).toString();
+        String escapedUrl = s3Client.generatePresignedUrl(generatePresignedUrlRequest).toString();
+        return escapedUrl;
     }
 }
