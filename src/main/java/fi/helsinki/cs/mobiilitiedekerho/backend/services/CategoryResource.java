@@ -65,7 +65,7 @@ public class CategoryResource extends Resource {
             return jsonResponse.toJson();
         }
         
-        categories.add(modifyUriToSignedDownloadUrl(category.get()));
+        categories.add(modifyUrisToSignedDownloadUrls(category.get()));
         
         jsonResponse.setObject(categories);
 
@@ -76,13 +76,13 @@ public class CategoryResource extends Resource {
         JsonResponse jsonResponse = new JsonResponse();
         List<Category> categories = categoryService.getAllCategories();
         for(Category c : categories) {
-            c = modifyUriToSignedDownloadUrl(c);
+            c = modifyUrisToSignedDownloadUrls(c);
         }
         return jsonResponse.setStatus("Success").setObject(categories).toJson();
     }
     
     // Generate signed urls for bg and icon uris.
-    Category modifyUriToSignedDownloadUrl(Category c) {
+    Category modifyUrisToSignedDownloadUrls(Category c) {
         String bgUri = this.getS3Helper().generateSignedDownloadUrl(
                this.getAppConfiguration().getString("app.graphics_bucket"),
                c.getBg_uri()
