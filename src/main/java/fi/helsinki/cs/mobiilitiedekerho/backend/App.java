@@ -14,13 +14,15 @@ import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.Config;
 
 public class App {
+    
+    private static Config appConfiguration;
 
     // Backend initialization.
     public static void main(String[] args) {
         SparkConfiguration();
         
-        // Load application-wide confguration from application.json 
-        Config appConfiguration = ConfigFactory.load();
+        // Load application-wide confguration from application.conf 
+        appConfiguration = ConfigFactory.load();
         
         // Sql2o object for the services
         Sql2o sql2o = new Sql2o(App.configureHikariConnectionPool());
@@ -28,6 +30,7 @@ public class App {
         // Generates a secret key for JSON Web Token signatures.
         Key key = MacProvider.generateKey();
         
+        // Create service instances
         UserService userService = new UserService(sql2o, key);        
         TaskService taskService = new TaskService(sql2o);
         AnswerService answerService = new AnswerService(sql2o, userService);
@@ -36,10 +39,10 @@ public class App {
 
 
         
-        //This class is 'both' resource and service. 
+        // This class is 'both' resource and service. 
         Misc misc = new Misc(userService, sql2o, appConfiguration);
 
-        //Start resources.
+        // Create resources.
         LikeResource likeResource = new LikeResource(likeService, userService, answerService, appConfiguration);
         TaskResource taskResource = new TaskResource(userService, taskService, appConfiguration);
         AnswerResource answerResource = new AnswerResource(userService, answerService, appConfiguration);
@@ -48,15 +51,12 @@ public class App {
     }
 
     // Configures Hikari Connection Pool.
-    private static HikariDataSource configureHikariConnectionPool() {
-        // Load application-wide confguration from application.json
-        Config appConf = ConfigFactory.load();
-        
+    private static HikariDataSource configureHikariConnectionPool() {        
         HikariConfig hikariConfig = new HikariConfig();
         
-        hikariConfig.setJdbcUrl(appConf.getString("db.jdbc_"));
-        hikariConfig.setUsername(appConf.getString("db.username"));
-        hikariConfig.setPassword(appConf.getString("db.password"));
+        hikariConfig.setJdbcUrl(appConfiguration.getString("db.jdbc_"));
+        hikariConfig.setUsername(appConfiguration.getString("db.username"));
+        hikariConfig.setPassword(appConfiguration.getString("db.password"));
         hikariConfig.addDataSourceProperty("cachePrepStmts", "true");
         hikariConfig.addDataSourceProperty("prepStmtCacheSize", "250");
         hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
