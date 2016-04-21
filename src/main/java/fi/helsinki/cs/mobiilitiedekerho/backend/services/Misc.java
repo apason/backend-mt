@@ -85,7 +85,7 @@ public class Misc extends Resource {
             List<String> BG_uri = con.createQuery(sql)
             .executeAndFetch(String.class);
 
-            return jsonResponse.addPropery("instructions", this.getS3Helper().generateSignedDownloadUrl(this.getAppConfiguration().getString("app.graphics_bucket"), BG_uri.get(0)))
+            return jsonResponse.addPropery("category_menu_bg_uri", this.getS3Helper().generateSignedDownloadUrl(this.getAppConfiguration().getString("app.graphics_bucket"), BG_uri.get(0)))
                 .setStatus("Success")
                 .toJson();
         } catch (Exception e) {
