@@ -64,7 +64,7 @@ public class TaskResource extends Resource {
             return jsonResponse.toJson();
         }
 
-        tasks.add(task.get());
+        tasks.add(modifyUriToSignedDownloadUrls(task.get()));
 
         jsonResponse.setObject(tasks);
 
@@ -94,10 +94,31 @@ public class TaskResource extends Resource {
             jsonResponse.setStatus("TaskNotFoundError");
             return jsonResponse.toJson();
         }
+        
+        for (Task t: tasks) {
+            t = modifyUriToSignedDownloadUrls(t);
+        }
 	
         jsonResponse.setObject(tasks);
 
         return jsonResponse.setStatus("Success").toJson();
     }
+    
+    // Generate signed urls for task video and icon uri.
+    Task modifyUriToSignedDownloadUrls(Task t) {
+        String videoUri = this.getS3Helper().generateSignedDownloadUrl(
+                this.getAppConfiguration().getString("app.task_bucket"),
+                t.getUri()
+        );
+        
+        String iconUri = this.getS3Helper().generateSignedDownloadUrl(
+                this.getAppConfiguration().getString("app.graphics_bucket"),
+                t.getIcon_uri()
+        );        
 
+        t.setUri(videoUri);
+        t.setIcon_uri(iconUri);
+
+        return t;
+    }
 }

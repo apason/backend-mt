@@ -95,25 +95,25 @@ public class AnswerResource extends Resource {
             String authToken = req.queryParams("auth_token");
             String userType = getUserType(authToken);
             if (!userType.equals("authenticated"))
-                return jsonResponse.setStatus("InsuficientPrivileges").toJson();
+                return jsonResponse.setStatus("InsufficientPrivileges").toJson();
         }
         else if (priLv == 1) { //Only to itself.
             // First Checks user-type before getting user, avoid spark.halt.
             String authToken = req.queryParams("auth_token");
             String userType = getUserType(authToken);
             if (!userType.equals("authenticated"))
-                return jsonResponse.setStatus("InsuficientPrivileges").toJson();
+                return jsonResponse.setStatus("InsufficientPrivileges").toJson();
             else {
                 //Only to itself. Subuser must be a subuser of the calling user.
                 User user = requireAuthenticatedUser(req, res);
                 if (getUserService().requireSubUser(user, answer.get().getSubuser_id()) == null)
-                    return jsonResponse.setStatus("InsuficientPrivileges").toJson();
+                    return jsonResponse.setStatus("InsufficientPrivileges").toJson();
             }
         }
         // END
         
         
-        answers.add(answer.get());
+        answers.add(modifyUriToSignedDownloadUrl(answer.get()));
 
         jsonResponse.setObject(answers);
 
@@ -177,6 +177,10 @@ public class AnswerResource extends Resource {
                 }
             }
         }
+        
+        for (Answer a: answers) {
+            a = modifyUriToSignedDownloadUrl(a);
+        }
 
         jsonResponse.setObject(answers);
 
@@ -212,19 +216,19 @@ public class AnswerResource extends Resource {
             String authToken = req.queryParams("auth_token");
             String userType = getUserType(authToken);
             if (!userType.equals("authenticated"))
-            	return jsonResponse.setStatus("InsuficientPrivileges").toJson();
+            	return jsonResponse.setStatus("InsufficientPrivileges").toJson();
         }
         else if (priLv == 1) { //Only to itself.
             // First Checks user-type before getting user, avoid spark.halt.
             String authToken = req.queryParams("auth_token");
             String userType = getUserType(authToken);
             if (!userType.equals("authenticated"))
-                return jsonResponse.setStatus("InsuficientPrivileges").toJson();
+                return jsonResponse.setStatus("InsufficientPrivileges").toJson();
             else {
                 //Only to itself. Subuser must be a subuser of the calling user.
                 User user = requireAuthenticatedUser(req, res);
                 if (getUserService().requireSubUser(user, subUserIdInt) == null)
-                    return jsonResponse.setStatus("InsuficientPrivileges").toJson();
+                    return jsonResponse.setStatus("InsufficientPrivileges").toJson();
             }
         }
         // END
@@ -235,6 +239,10 @@ public class AnswerResource extends Resource {
         if (answers.isEmpty()) {
             jsonResponse.setStatus("AnswerNotFoundError");
             return jsonResponse.toJson();
+        }
+        
+        for (Answer a: answers) {
+            a = modifyUriToSignedDownloadUrl(a);
         }
         
         jsonResponse.setObject(answers);
@@ -290,7 +298,9 @@ public class AnswerResource extends Resource {
         return jsonResponse
 	    .addPropery("task_id", taskId)
 	    .addPropery("answer_id", "" + answer.get().getId())
-	    .addPropery("answer_uri", answer.get().getUri())
+	    .addPropery("answer_uri", this.getS3Helper().generateSignedUploadUrl(
+                    this.getAppConfiguration().getString("app.answer_bucket"),
+                    answer.get().getUri()))
 	    .setStatus("Success")
 	    .toJson();
     }
@@ -332,5 +342,17 @@ public class AnswerResource extends Resource {
 
         return jsonResponse.toJson();
 
+    }
+    
+    // Generate signed url for answer uri.
+    Answer modifyUriToSignedDownloadUrl(Answer a) {
+        String uri = this.getS3Helper().generateSignedDownloadUrl(
+                this.getAppConfiguration().getString("app.answer_bucket"),
+                a.getUri()
+        );
+
+        a.setUri(uri);
+
+        return a;
     }
 }

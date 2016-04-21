@@ -229,11 +229,27 @@ public class UserResource extends Resource {
 
     String describeSubUsers(Request req, Response res, User user){
         JsonResponse jsonResponse = new JsonResponse();
-        List<Subuser> users = getUserService().describeSubUsers(user);
-        if(users == null || users.isEmpty())
+        List<Subuser> subusers = getUserService().describeSubUsers(user);
+        if(subusers == null || subusers.isEmpty())
             return jsonResponse.setStatus("NoSubUsersFound").toJson();
-
+        
+        for (Subuser su: subusers) {
+            su = modifyUriToSignedDownloadUrl(su);
+        }
+        
         return jsonResponse.setStatus("Success")
-            .setObject(users).toJson();
+            .setObject(subusers).toJson();
     }
+    
+    // Generate signed url for subuser avatar uri.
+    Subuser modifyUriToSignedDownloadUrl(Subuser su) {
+        String url = this.getS3Helper().generateSignedDownloadUrl(
+                this.getAppConfiguration().getString("app.avatar_bucket"),
+                su.getAvatar_url()
+        );
+
+        su.setAvatar_url(url);
+
+        return su;
+    }     
 }

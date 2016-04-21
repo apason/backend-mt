@@ -65,21 +65,7 @@ public class CategoryResource extends Resource {
             return jsonResponse.toJson();
         }
         
-        // Generate signed urls for bg and icon uris.
-        String bgUri = this.getS3Helper().generateSignedDownloadUrl(
-               this.getAppConfiguration().getString("app.graphics_bucket"),
-               category.get().getBg_uri()
-        );
-        
-        String iconUri = this.getS3Helper().generateSignedDownloadUrl(
-               this.getAppConfiguration().getString("app.graphics_bucket"),
-               category.get().getIcon_uri()
-        );
-        
-        category.get().setBg_uri(bgUri);
-        category.get().setIcon_uri(iconUri);
-        
-        categories.add(category.get());
+        categories.add(modifyUriToSignedDownloadUrl(category.get()));
         
         jsonResponse.setObject(categories);
 
@@ -89,7 +75,27 @@ public class CategoryResource extends Resource {
     String DescribeCategories(Request req, Response res){
         JsonResponse jsonResponse = new JsonResponse();
         List<Category> categories = categoryService.getAllCategories();
+        for(Category c : categories) {
+            c = modifyUriToSignedDownloadUrl(c);
+        }
         return jsonResponse.setStatus("Success").setObject(categories).toJson();
     }
     
+    // Generate signed urls for bg and icon uris.
+    Category modifyUriToSignedDownloadUrl(Category c) {
+        String bgUri = this.getS3Helper().generateSignedDownloadUrl(
+               this.getAppConfiguration().getString("app.graphics_bucket"),
+               c.getBg_uri()
+        );
+        
+        String iconUri = this.getS3Helper().generateSignedDownloadUrl(
+               this.getAppConfiguration().getString("app.graphics_bucket"),
+               c.getIcon_uri()
+        );
+        
+        c.setBg_uri(bgUri);
+        c.setIcon_uri(iconUri);
+
+        return c;
+    }
 }
