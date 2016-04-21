@@ -29,9 +29,15 @@ public class Misc extends Resource {
             return getEULA();
         
         });
+        
         Spark.get("/GetInstructions", (req, res) -> {
             requireAnonymousUser(req, res);
             return getInstructions();
+        });
+        
+        Spark.get("/GetCategoryMenuBG", (req, res) -> {
+            requireAnonymousUser(req, res);
+            return getCategoryMenuBG();
         });
     }
 
@@ -63,6 +69,23 @@ public class Misc extends Resource {
             .executeAndFetch(String.class);
 
             return jsonResponse.addPropery("instructions", instructions.get(0))
+                .setStatus("Success")
+                .toJson();
+        } catch (Exception e) {
+            return jsonResponse.setStatus("InfoNotFound").toJson();
+        }
+    }
+    
+    private String getCategoryMenuBG() {
+        JsonResponse jsonResponse = new JsonResponse();
+
+        String sql = "SELECT category_menu_bg_uri FROM info ";
+
+        try(Connection con = sql2o.open()){
+            List<String> BG_uri = con.createQuery(sql)
+            .executeAndFetch(String.class);
+
+            return jsonResponse.addPropery("instructions", this.getS3Helper().generateSignedDownloadUrl(this.getAppConfiguration().getString("app.graphics_bucket"), BG_uri.get(0)))
                 .setStatus("Success")
                 .toJson();
         } catch (Exception e) {
