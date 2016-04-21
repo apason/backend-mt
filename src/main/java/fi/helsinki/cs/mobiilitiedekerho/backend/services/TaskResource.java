@@ -64,7 +64,7 @@ public class TaskResource extends Resource {
             return jsonResponse.toJson();
         }
 
-        tasks.add(modifyUriToSignedDownloadUrls(task.get()));
+        tasks.add(modifyUrisToSignedDownloadUrls(task.get()));
 
         jsonResponse.setObject(tasks);
 
@@ -96,7 +96,7 @@ public class TaskResource extends Resource {
         }
         
         for (Task t: tasks) {
-            t = modifyUriToSignedDownloadUrls(t);
+            t = modifyUrisToSignedDownloadUrls(t);
         }
 	
         jsonResponse.setObject(tasks);
@@ -105,7 +105,7 @@ public class TaskResource extends Resource {
     }
     
     // Generate signed urls for task video and icon uri.
-    Task modifyUriToSignedDownloadUrls(Task t) {
+    Task modifyUrisToSignedDownloadUrls(Task t) {
         String videoUri = this.getS3Helper().generateSignedDownloadUrl(
                 this.getAppConfiguration().getString("app.task_bucket"),
                 t.getUri()
