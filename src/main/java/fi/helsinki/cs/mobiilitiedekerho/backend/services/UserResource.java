@@ -207,7 +207,7 @@ public class UserResource extends Resource {
         
         Optional<Subuser> subuser = getUserService().getSubUserById(subuserId);
         //No need to check as must exist.
-        return jsonResponse.setStatus("Success").setObject(subuser.get()).toJson();
+        return jsonResponse.setStatus("Success").setObject(modifyUriToSignedDownloadUrl(subuser.get())).toJson();
     }
 
     //It can be assumed that the subuser exist (requireSubUser() in defineRoutes
@@ -222,7 +222,7 @@ public class UserResource extends Resource {
         ArrayList<Subuser> subUsers = new ArrayList<Subuser>();
         JsonResponse jsonResponse = new JsonResponse();
 
-        subUsers.add(subUser);	
+        subUsers.add(modifyUriToSignedDownloadUrl(subUser));
         return jsonResponse.setStatus("Success")
             .setObject(subUsers).toJson();
     }
