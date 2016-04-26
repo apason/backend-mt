@@ -31,7 +31,7 @@ public class AnswerResource extends Resource {
         mimeTypes = new HashMap<String, String>();
         mimeTypes.put("mp4", "video/mp4");
         mimeTypes.put("webm", "video/webm");
-        mimeTypes.put("mkv", "video/mkv");
+        mimeTypes.put("mkv", "video/x-matroska");
         mimeTypes.put("jpeg", "image/jpeg"); /*Or alternatively the ".format" can be .jpg:*/ mimeTypes.put("jpg", "image/jpeg");
         mimeTypes.put("png", "image/png");
         mimeTypes.put("gif", "image/gif");
