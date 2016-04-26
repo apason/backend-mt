@@ -9,6 +9,7 @@ import spark.Response;
 import spark.Request;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Optional;
 
@@ -19,11 +20,21 @@ import com.typesafe.config.Config;
 public class AnswerResource extends Resource {
 
     private final AnswerService answerService;
+    
+    private HashMap<String, String> mimeTypes;
 
 
     public AnswerResource(UserService userService, AnswerService answerService, Config appConfiguration) {
         super(userService, appConfiguration);
         this.answerService = answerService;
+        
+        mimeTypes = new HashMap<String, String>();
+        mimeTypes.put("mp4", "video/mp4");
+        mimeTypes.put("webm", "video/webm");
+        mimeTypes.put("mkv", "video/mkv");
+        mimeTypes.put("jpeg", "image/jpeg"); /*Or alternatively the ".format" can be .jpg:*/ mimeTypes.put("jpg", "image/jpeg");
+        mimeTypes.put("png", "image/png");
+        mimeTypes.put("gif", "image/gif");
 
         defineRoutes();
     }
@@ -270,13 +281,7 @@ public class AnswerResource extends Resource {
             return jsonResponse.toJson();
 	}
         
-        if ( !( fileType.equals("mp4") ||
-                fileType.equals("webm") ||
-                fileType.equals("mkv") ||
-                fileType.equals("jpeg") ||
-                fileType.equals("jpg") ||
-                fileType.equals("png")
-                )) {
+        if (mimeTypes.get(fileType) == null) {
             jsonResponse.setStatus("FileTypeError");
             return jsonResponse.toJson();
         }
@@ -300,7 +305,8 @@ public class AnswerResource extends Resource {
 	    .addPropery("answer_id", "" + answer.get().getId())
 	    .addPropery("answer_uri", this.getS3Helper().generateSignedUploadUrl(
                     this.getAppConfiguration().getString("app.answer_bucket"),
-                    answer.get().getUri()))
+                    answer.get().getUri(),
+                    mimeTypes.get(fileType)))
 	    .setStatus("Success")
 	    .toJson();
     }

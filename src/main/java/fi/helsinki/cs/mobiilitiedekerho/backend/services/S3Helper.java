@@ -8,6 +8,7 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
+import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
 
 
 public class S3Helper {
@@ -31,24 +32,39 @@ public class S3Helper {
     }
     
     public String generateSignedDownloadUrl(String bucketName, String objectKey) {
-        return generateSignedUrl(bucketName, objectKey, HttpMethod.GET);
+        return generateSignedUrl(bucketName, objectKey, HttpMethod.GET, null);
     }
 
-    public String generateSignedUploadUrl(String bucketName, String objectKey) {
-        return generateSignedUrl(bucketName, objectKey, HttpMethod.PUT);
+    public String generateSignedUploadUrl(String bucketName, String objectKey, String MimeTypee) {
+        return generateSignedUrl(bucketName, objectKey, HttpMethod.PUT,  MimeTypee);
     }
     
-    private String generateSignedUrl(String bucketName, String objectKey, HttpMethod method) {
+    private String generateSignedUrl(String bucketName, String objectKey, HttpMethod method, String MimeTypee) {
         java.util.Date expiration = new java.util.Date();
         long milliSeconds = expiration.getTime();
         milliSeconds += 1000 * 60 * 15; // Set timeout to 15 minutes.
         expiration.setTime(milliSeconds);
 
+        //Generates signed url
         GeneratePresignedUrlRequest generatePresignedUrlRequest
                 = new GeneratePresignedUrlRequest(bucketName, objectKey);
         generatePresignedUrlRequest.setMethod(method);
         generatePresignedUrlRequest.setExpiration(expiration);
+        
+        if (MimeTypee != null) {
+            // generatePresignedUrlRequest.setContentType(MimeTypee);
+            // generatePresignedUrlRequest.setContentDisposition("inline"); //in some way, this methdo does not exists!
+            // This is a "hack" that works!
+            // And now that we are lets use this too for Content-Type in name of coherence, bet this is more efficient also.
+        	ResponseHeaderOverrides headerOverrides = new ResponseHeaderOverrides();
+            headerOverrides.setContentDisposition("inline");
+            headerOverrides.setContentType(MimeTypee);
+            generatePresignedUrlRequest.withResponseHeaders(headerOverrides);
+        }
+        //
+        
         String escapedUrl = s3Client.generatePresignedUrl(generatePresignedUrlRequest).toString();
+        
         return escapedUrl;
     }
 }
