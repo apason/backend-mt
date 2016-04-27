@@ -292,8 +292,12 @@ public class AnswerResource extends Resource {
         } catch (Exception e) {
             return jsonResponse.setStatus("ParameterError").toJson();
         }
+        
+        String answerType;
+        if (mimeTypes.get(fileType).contains("video")) answerType = "video";
+        else answerType = "image";
 
-        Optional<Answer> answer = answerService.setInitialAnswer(subUser, taskIdInt, fileType);
+        Optional<Answer> answer = answerService.setInitialAnswer(subUser, taskIdInt, answerType);
 
         if (!answer.isPresent()) {
             jsonResponse.setStatus("ParameterError");
