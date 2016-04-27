@@ -75,11 +75,13 @@ public class AnswerResource extends Resource {
         });
     }
     
-    boolean userHasPermissionToSeeAnswer(int answerSubUserId, int privacyLevel, Request req, Response res) {
+    private boolean userHasPermissionToSeeAnswer(int answerSubUserId, int privacyLevel, Request req, Response res) {
 
         switch (privacyLevel) {
-            case 1: {
-                // Only the answer submitter can see this answer.
+            case 0: //Privacy level not setted explicitly by the user, it is like 1 otherwise.
+            case 1:
+            {
+                // Only the answer's submitter can see this answer.
                 // First we check user type before getting user to avoid spark.halt.
                 String authToken = req.queryParams("auth_token");
                 String userType = getUserType(authToken);
@@ -105,11 +107,13 @@ public class AnswerResource extends Resource {
                 break;
             }
 
-            default:
-                return false;
+            case 3:
+            	// Anyone can see the answer.
+                return true;
+                break; //Useless but well... :^
         }
 
-        return true;
+        return true; //If in Cases 0,1 and 2 it is possible to see the answer, 'the method-run' ends up here. 
     }
     
 
