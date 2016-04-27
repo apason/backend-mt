@@ -39,29 +39,24 @@ public class S3Helper {
         return generateSignedUrl(bucketName, objectKey, HttpMethod.PUT,  MimeTypee);
     }
     
-    private String generateSignedUrl(String bucketName, String objectKey, HttpMethod method, String MimeTypee) {
+    private String generateSignedUrl(String bucketName, String objectKey, HttpMethod method, String mimeType) {
         java.util.Date expiration = new java.util.Date();
         long milliSeconds = expiration.getTime();
         milliSeconds += 1000 * 60 * 15; // Set timeout to 15 minutes.
         expiration.setTime(milliSeconds);
 
-        //Generates signed url
+        // Generates signed url
         GeneratePresignedUrlRequest generatePresignedUrlRequest
                 = new GeneratePresignedUrlRequest(bucketName, objectKey);
         generatePresignedUrlRequest.setMethod(method);
         generatePresignedUrlRequest.setExpiration(expiration);
         
-        if (MimeTypee != null) {
-            // generatePresignedUrlRequest.setContentType(MimeTypee);
-            // generatePresignedUrlRequest.setContentDisposition("inline"); //in some way, this methdo does not exists!
-            // This is a "hack" that works!
-            // And now that we are lets use this too for Content-Type in name of coherence, bet this is more efficient also.
-        	ResponseHeaderOverrides headerOverrides = new ResponseHeaderOverrides();
+        if (mimeType != null) {
+            ResponseHeaderOverrides headerOverrides = new ResponseHeaderOverrides();
             headerOverrides.setContentDisposition("inline");
-            headerOverrides.setContentType(MimeTypee);
+            headerOverrides.setContentType(mimeType);
             generatePresignedUrlRequest.withResponseHeaders(headerOverrides);
         }
-        //
         
         String escapedUrl = s3Client.generatePresignedUrl(generatePresignedUrlRequest).toString();
         
