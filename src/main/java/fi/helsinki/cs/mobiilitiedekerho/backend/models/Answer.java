@@ -11,7 +11,7 @@ public class Answer {
     private Date created;
     private boolean uploaded;
     private boolean enabled;
-    private String type;
+    private String answer_type;
     private String uri;
 
     
@@ -63,12 +63,12 @@ public class Answer {
         this.enabled = enabled;
     }
     
-    public String getType() {
-        return type;
+    public String getAnswerType() {
+        return answer_type;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setAnswerType(String answer_type) {
+        this.answer_type = answer_type;
     }
 
     public String getUri() {

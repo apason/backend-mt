@@ -100,7 +100,7 @@ public class AnswerService {
     }
 
     // handles StartAnswerUpload api-call.
-    public Optional<Answer> setInitialAnswer(Subuser subUser, Integer taskId, String fileType, String type){
+    public Optional<Answer> setInitialAnswer(Subuser subUser, Integer taskId, String fileType, String answer_type){
         Date date = new Date();
 
         List<Answer> answer;
@@ -114,16 +114,16 @@ public class AnswerService {
         //create new disabled answer instance to be uploaded
         String sql =
             "INSERT INTO answer " +
-            "(task_id, subuser_id, created, type) " +
+            "(task_id, subuser_id, created, answer_type) " +
             "VALUES " +
-            "(:task_id, :subuser_id, NOW(), :type)";
+            "(:task_id, :subuser_id, NOW(), :answer_type)";
 
         try(Connection con = sql2o.open()) {
         
             newAnswerId  = con.createQuery(sql, true)
                 .addParameter("task_id", taskId)
                 .addParameter("subuser_id", subUser.getId())
-                .addParameter("type", type)
+                .addParameter("answer_type", answer_type)
                 .executeUpdate()
                 .getKey(Integer.class);
         }
