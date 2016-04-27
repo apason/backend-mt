@@ -11,12 +11,26 @@ import fi.helsinki.cs.mobiilitiedekerho.backend.models.User;
 import fi.helsinki.cs.mobiilitiedekerho.backend.models.Subuser;
 import java.util.Optional;
 
+import com.typesafe.config.Config;
+
 abstract public class Resource {
 
     private final UserService userService;
+    private S3Helper s3Helper;
+    private final Config appConfiguration;
 
-    public Resource(UserService userService) {
+    
+    public Resource(UserService userService, Config appConfiguration) {
         this.userService = userService;
+        this.appConfiguration = appConfiguration;
+        this.s3Helper = new S3Helper(
+                appConfiguration.getString("s3.access_key"),
+                appConfiguration.getString("s3.secret_access_key"));
+    }
+    
+    /* This method is for setting a mock class in testing. */
+    public void setS3Helper(S3Helper h) {
+        this.s3Helper = h;
     }
 
     /*
@@ -25,26 +39,26 @@ abstract public class Resource {
      * is used. Otherwise Subuser object of that id is returned.
      */
     Subuser requireSubUser(Request req, Response res, User u){
-	String subUserIdString = req.queryParams("subuser_id");
-	if(subUserIdString == null)
-	    Spark.halt(401, parameterError());
-	Integer subUserId = Integer.parseInt(subUserIdString);
-	if(subUserId == null)
-	    Spark.halt(401, parameterError());
-	
-	Subuser subUser = userService.requireSubUser(u, subUserId);
-	if(subUser == null)
-	    Spark.halt(401, subUserError());
+        String subUserIdString = req.queryParams("subuser_id");
+        if(subUserIdString == null)
+            Spark.halt(401, parameterError());
+        Integer subUserId = Integer.parseInt(subUserIdString);
+        if(subUserId == null)
+            Spark.halt(401, parameterError());
+        
+        Subuser subUser = userService.requireSubUser(u, subUserId);
+        if(subUser == null)
+            Spark.halt(401, subUserError());
 
-	return subUser;
+        return subUser;
     }
 
     String getUserType(String authToken){
-	return Jwts.parser()
-	    .setSigningKey(getUserService().getSecretKey())
-	    .parseClaimsJws(authToken)
-	    .getBody()
-	    .get("user_type", String.class);
+        return Jwts.parser()
+            .setSigningKey(getUserService().getSecretKey())
+            .parseClaimsJws(authToken)
+            .getBody()
+            .get("user_type", String.class);
     }
 
     // Checks if the user is authenticated with an auth token.
@@ -93,9 +107,9 @@ abstract public class Resource {
         }
     }
 
-   String subUserError(){
-       return new JsonResponse().setStatus("SubuserError").toJson();
-   }
+    String subUserError(){
+        return new JsonResponse().setStatus("SubuserError").toJson();
+    }
 
     String authenticationFailure() {
         return new JsonResponse().setStatus("AuthenticationFailure").toJson();
@@ -115,5 +129,13 @@ abstract public class Resource {
     
     UserService getUserService() {
         return userService;
+    }
+    
+    S3Helper getS3Helper() {
+        return s3Helper;
+    }
+    
+    Config getAppConfiguration() {
+        return this.appConfiguration;
     }
 }

@@ -10,6 +10,7 @@ public class Like {
     private int answer_id;
     private Date created;
     
+    
     public int getId() {
         return id;
     }

@@ -10,12 +10,15 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import com.typesafe.config.Config;
+
 public class TaskResource extends Resource {
 
     private final TaskService taskService;
 
-    public TaskResource(UserService userService, TaskService taskService) {
-        super(userService);
+
+    public TaskResource(UserService userService, TaskService taskService, Config appConfiguration) {
+        super(userService, appConfiguration);
         this.taskService = taskService;
         
         defineRoutes();
@@ -40,7 +43,7 @@ public class TaskResource extends Resource {
         String taskId = req.queryParams("task_id");
         int taskIdInt;
         JsonResponse jsonResponse = new JsonResponse();
-	ArrayList<Task> tasks = new ArrayList<Task>();
+        ArrayList<Task> tasks = new ArrayList<Task>();
 
         if (taskId == null) {
             return jsonResponse.setStatus("ParameterError").toJson();
@@ -61,8 +64,8 @@ public class TaskResource extends Resource {
             return jsonResponse.toJson();
         }
 
-	tasks.add(task.get());
-	
+        tasks.add(modifyUrisToSignedDownloadUrls(task.get()));
+
         jsonResponse.setObject(tasks);
 
         return jsonResponse.setStatus("Success").toJson();
@@ -91,10 +94,31 @@ public class TaskResource extends Resource {
             jsonResponse.setStatus("TaskNotFoundError");
             return jsonResponse.toJson();
         }
+        
+        for (Task t: tasks) {
+            t = modifyUrisToSignedDownloadUrls(t);
+        }
 	
         jsonResponse.setObject(tasks);
 
         return jsonResponse.setStatus("Success").toJson();
     }
+    
+    // Generate signed urls for task video and icon uri.
+    Task modifyUrisToSignedDownloadUrls(Task t) {
+        String videoUri = this.getS3Helper().generateSignedDownloadUrl(
+                this.getAppConfiguration().getString("app.task_bucket"),
+                t.getUri()
+        );
+        
+        String iconUri = this.getS3Helper().generateSignedDownloadUrl(
+                this.getAppConfiguration().getString("app.graphics_bucket"),
+                t.getIcon_uri()
+        );        
 
+        t.setUri(videoUri);
+        t.setIcon_uri(iconUri);
+
+        return t;
+    }
 }

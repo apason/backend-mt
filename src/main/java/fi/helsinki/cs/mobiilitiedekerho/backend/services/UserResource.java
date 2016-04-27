@@ -9,10 +9,13 @@ import spark.Request;
 import spark.Response;
 import spark.Spark;
 
+import com.typesafe.config.Config;
+
 public class UserResource extends Resource {
 
-    public UserResource(UserService userService) {
-        super(userService);
+
+    public UserResource(UserService userService, Config appConfiguration) {
+        super(userService, appConfiguration);
 
         defineRoutes();
     }
@@ -34,18 +37,18 @@ public class UserResource extends Resource {
         });
     	
         Spark.get("/DescribeUser", (req, res) -> {
-            requireAuthenticatedUser(req, res);
-            return describeUser(req, res);
-        });
-        
-        Spark.get("/DescribeCurrentUser", (req, res) -> {
             User user = requireAuthenticatedUser(req, res);
-            return describeCurrentUser(req, res, user); 
+            return describeUser(req, res, user);
         });
         
         Spark.get("/SetPrivacyLevel", (req, res) -> {
             User user = requireAuthenticatedUser(req, res);
             return setPrivacyLevel(req, res, user); 
+        });
+        
+        Spark.get("/SetPin", (req, res) -> {
+            User user = requireAuthenticatedUser(req, res);
+            return setPin(req, res, user); 
         });
         
         Spark.get("/CreateSubUser", (req, res) -> {
@@ -96,6 +99,11 @@ public class UserResource extends Resource {
                         .toJson();
             }
         }
+        // else if ((email != null) || (password != null)) {
+        // 	  Error as one parameter is set but the other not.
+        //    Should not happen, but anyways...
+        // }
+        // else
         auth_token = getUserService().generateAnonymousToken(req.ip());
 
         return new JsonResponse()
@@ -131,40 +139,8 @@ public class UserResource extends Resource {
         return jsonResponse.setStatus("UnexpectedError").toJson();
     }
 
-    // Describes the user indicated by
-    // user_id parameter.
-    // Should be removed?
-    String describeUser(Request req, Response res) {
-    	String userId = req.queryParams("user_id");
-    	int userIdInt;
-        JsonResponse jsonResponse = new JsonResponse();
-        ArrayList<User> users = new ArrayList<User>();
-
-        if (userId == null) {
-            return jsonResponse.setStatus("ParameterError").toJson();
-        }
-        
-        try {
-            userIdInt = Integer.parseInt(userId);
-        } catch (Exception e) {
-            return jsonResponse.setStatus("ParameterError").toJson();
-        }
-
-        Optional<User> user = getUserService().getUserById(userIdInt);
-
-        if (!user.isPresent()) {
-            jsonResponse.setStatus("UserNotFoundError");
-            return jsonResponse.toJson();
-        }
-
-        users.add(user.get());
-        jsonResponse.setObject(users);
-
-        return jsonResponse.setStatus("Success").toJson();
-    }
-    
     // Describes the current user indicated by the auth token.
-    String describeCurrentUser(Request req, Response res, User user) {
+    String describeUser(Request req, Response res, User user) {
         return new JsonResponse().setObject(user).setStatus("Success").toJson();
     }
     
@@ -172,8 +148,8 @@ public class UserResource extends Resource {
     //Sets the calling users privacy_level to the one given as a parameter.
     String setPrivacyLevel(Request req, Response res, User user) {
         JsonResponse jsonResponse = new JsonResponse();
-         String privacyLevel = req.queryParams("privacy_level");
-         int privacyLevelInt;
+        String privacyLevel = req.queryParams("privacy_level");
+        int privacyLevelInt;
          
         if (privacyLevel == null) {
             return jsonResponse.setStatus("ParameterError").toJson();
@@ -192,6 +168,19 @@ public class UserResource extends Resource {
         } else {
             return jsonResponse.setStatus("InvalidPrivacyLevelNumber").toJson();
         }
+    }
+    
+    
+    //Sets the calling users pin to the one given as a parameter.
+    String setPin(Request req, Response res, User user) {
+        JsonResponse jsonResponse = new JsonResponse();
+        String pin = req.queryParams("pin");
+        
+        if (pin == null) {
+            return jsonResponse.setStatus("ParameterError").toJson();
+        }
+        
+        return jsonResponse.setStatus(getUserService().setPin(user, pin)).toJson();
     }
     
     
@@ -218,7 +207,7 @@ public class UserResource extends Resource {
         
         Optional<Subuser> subuser = getUserService().getSubUserById(subuserId);
         //No need to check as must exist.
-        return jsonResponse.setStatus("Success").setObject(subuser.get()).toJson();
+        return jsonResponse.setStatus("Success").setObject(modifyUriToSignedDownloadUrl(subuser.get())).toJson();
     }
 
     //It can be assumed that the subuser exist (requireSubUser() in defineRoutes
@@ -233,18 +222,34 @@ public class UserResource extends Resource {
         ArrayList<Subuser> subUsers = new ArrayList<Subuser>();
         JsonResponse jsonResponse = new JsonResponse();
 
-        subUsers.add(subUser);	
+        subUsers.add(modifyUriToSignedDownloadUrl(subUser));
         return jsonResponse.setStatus("Success")
             .setObject(subUsers).toJson();
     }
 
     String describeSubUsers(Request req, Response res, User user){
         JsonResponse jsonResponse = new JsonResponse();
-        List<Subuser> users = getUserService().describeSubUsers(user);
-        if(users == null || users.isEmpty())
+        List<Subuser> subusers = getUserService().describeSubUsers(user);
+        if(subusers == null || subusers.isEmpty())
             return jsonResponse.setStatus("NoSubUsersFound").toJson();
-
+        
+        for (Subuser su: subusers) {
+            su = modifyUriToSignedDownloadUrl(su);
+        }
+        
         return jsonResponse.setStatus("Success")
-            .setObject(users).toJson();
+            .setObject(subusers).toJson();
     }
+    
+    // Generate signed url for subuser avatar uri.
+    Subuser modifyUriToSignedDownloadUrl(Subuser su) {
+        String url = this.getS3Helper().generateSignedDownloadUrl(
+                this.getAppConfiguration().getString("app.avatar_bucket"),
+                su.getAvatar_url()
+        );
+
+        su.setAvatar_url(url);
+
+        return su;
+    }     
 }

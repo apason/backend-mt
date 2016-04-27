@@ -15,6 +15,7 @@ public class Category {
     private String bg_uri;
     private String icon_uri;
 
+
     public int getId() {
         return id;
     }

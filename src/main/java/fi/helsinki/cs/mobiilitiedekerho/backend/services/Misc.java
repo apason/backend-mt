@@ -1,85 +1,95 @@
 package fi.helsinki.cs.mobiilitiedekerho.backend.services;
+
 import org.sql2o.*;
+
 import spark.Spark;
 import spark.Request;
 import spark.Response;
 
 import java.util.List;
 
-public class Misc {
+import com.typesafe.config.Config;
 
-    Sql2o sql2o;
 
-    public Misc(Sql2o sql2o){
-	this.sql2o = sql2o;
-	defineRoutes();
+public class Misc extends Resource {
+
+    private final  Sql2o sql2o;
+
+    
+    public Misc(UserService userService, Sql2o sql2o, Config appConfiguration) {
+        super(userService, appConfiguration);
+
+        this.sql2o = sql2o;
+        defineRoutes();
     }
 
-    private void defineRoutes(){
-	Spark.get("/GetBuckets", (req, res) -> {
-	    return getBuckets();
-	});
-	Spark.get("/GetEULA", (req, res) -> {
-	    return getEULA();
-	
-	});
+    private void defineRoutes() {
+        Spark.get("/GetEULA", (req, res) -> {
+            requireAnonymousUser(req, res);
+            return getEULA();
+        
+        });
+        
+        Spark.get("/GetInstructions", (req, res) -> {
+            requireAnonymousUser(req, res);
+            return getInstructions();
+        });
+        
+        Spark.get("/GetCategoryMenuBG", (req, res) -> {
+            requireAnonymousUser(req, res);
+            return getCategoryMenuBG();
+        });
     }
 
-    String getBuckets(){
-	JsonResponse jsonResponse = new JsonResponse();
 
-	String sql;
-	List<String> res;
-	    
-	try(Connection con = sql2o.open()){
-	    
-	sql = "SELECT tasks_bucket FROM info";
+    private String getEULA() {
+        JsonResponse jsonResponse = new JsonResponse();
 
-	res = con.createQuery(sql)
-	    .executeAndFetch(String.class);
+        String sql = "SELECT eula FROM info ";
 
-	jsonResponse.addPropery("tasks_bucket", res.get(0));
+        try(Connection con = sql2o.open()){
+            List<String> eula = con.createQuery(sql)
+            .executeAndFetch(String.class);
 
-	sql = "SELECT answers_bucket FROM info";
-
-	res = con.createQuery(sql)
-	    .executeAndFetch(String.class);
-
-	jsonResponse.addPropery("answers_bucket", res.get(0));
-
-	sql = "SELECT graphics_bucket FROM info";
-
-	res = con.createQuery(sql)
-	    .executeAndFetch(String.class);
-
-	jsonResponse.addPropery("graphics_bucket", res.get(0));
-
-	sql = "SELECT s3_location FROM info";
-
-	res = con.createQuery(sql)
-	    .executeAndFetch(String.class);
-
-	jsonResponse.addPropery("s3_location", res.get(0));
-
-	return jsonResponse.setStatus("Success").toJson();
-
-	}
-    }
-
-    String getEULA(){
-	JsonResponse jsonResponse = new JsonResponse();
-
-	String sql
-	    = "SELECT eula FROM info ";
-
-	    try(Connection con = sql2o.open()){
-		List<String> eula = con.createQuery(sql)
-		.executeAndFetch(String.class);
-
-		return jsonResponse.addPropery("eula", eula.get(0))
-		    .setStatus("success")
-		    .toJson();
-	    }
+            return jsonResponse.addPropery("eula", eula.get(0))
+                .setStatus("Success")
+                .toJson();
+        } catch (Exception e) {
+            return jsonResponse.setStatus("InfoNotFound").toJson();
+        }
     }
     
+    private String getInstructions() {
+        JsonResponse jsonResponse = new JsonResponse();
+
+        String sql = "SELECT instructions FROM info ";
+
+        try(Connection con = sql2o.open()){
+            List<String> instructions = con.createQuery(sql)
+            .executeAndFetch(String.class);
+
+            return jsonResponse.addPropery("instructions", instructions.get(0))
+                .setStatus("Success")
+                .toJson();
+        } catch (Exception e) {
+            return jsonResponse.setStatus("InfoNotFound").toJson();
+        }
+    }
+    
+    private String getCategoryMenuBG() {
+        JsonResponse jsonResponse = new JsonResponse();
+
+        String sql = "SELECT category_menu_bg_uri FROM info ";
+
+        try(Connection con = sql2o.open()){
+            List<String> BG_uri = con.createQuery(sql)
+            .executeAndFetch(String.class);
+
+            return jsonResponse.addPropery("category_menu_bg_uri", this.getS3Helper().generateSignedDownloadUrl(this.getAppConfiguration().getString("app.graphics_bucket"), BG_uri.get(0)))
+                .setStatus("Success")
+                .toJson();
+        } catch (Exception e) {
+            return jsonResponse.setStatus("InfoNotFound").toJson();
+        }
+    }
 }

@@ -11,13 +11,15 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.List;
 
+import com.typesafe.config.Config;
+
 public class CategoryResource extends Resource {
 
     private final CategoryService categoryService;
     
     
-    public CategoryResource(UserService userService, CategoryService categoryService) {
-        super(userService);
+    public CategoryResource(UserService userService, CategoryService categoryService, Config appConfiguration) {
+        super(userService, appConfiguration);
         this.categoryService = categoryService;
 
         defineRoutes();
@@ -26,13 +28,13 @@ public class CategoryResource extends Resource {
     // Defines routes for CategoryResource.
     private void defineRoutes() {
         Spark.get("/DescribeCategory", (req, res) -> {
-	    requireAnonymousUser(req, res);
+            requireAnonymousUser(req, res);
             return this.describeCategory(req, res);
         });
-	Spark.get("/DescribeCategories", (req, res) -> {
-	    requireAnonymousUser(req, res);
-	    return this.DescribeCategories(req, res);
-	});
+        Spark.get("/DescribeCategories", (req, res) -> {
+            requireAnonymousUser(req, res);
+            return this.DescribeCategories(req, res);
+        });
     }
     
     // Describes an category indicated by category_id.
@@ -62,9 +64,9 @@ public class CategoryResource extends Resource {
             jsonResponse.setStatus("CategoryNotFoundError");
             return jsonResponse.toJson();
         }
-
-        categories.add(category.get());
-
+        
+        categories.add(modifyUrisToSignedDownloadUrls(category.get()));
+        
         jsonResponse.setObject(categories);
 
         return jsonResponse.setStatus("Success").toJson();
@@ -73,7 +75,27 @@ public class CategoryResource extends Resource {
     String DescribeCategories(Request req, Response res){
         JsonResponse jsonResponse = new JsonResponse();
         List<Category> categories = categoryService.getAllCategories();
+        for(Category c : categories) {
+            c = modifyUrisToSignedDownloadUrls(c);
+        }
         return jsonResponse.setStatus("Success").setObject(categories).toJson();
     }
     
+    // Generate signed urls for bg and icon uris.
+    Category modifyUrisToSignedDownloadUrls(Category c) {
+        String bgUri = this.getS3Helper().generateSignedDownloadUrl(
+               this.getAppConfiguration().getString("app.graphics_bucket"),
+               c.getBg_uri()
+        );
+        
+        String iconUri = this.getS3Helper().generateSignedDownloadUrl(
+               this.getAppConfiguration().getString("app.graphics_bucket"),
+               c.getIcon_uri()
+        );
+        
+        c.setBg_uri(bgUri);
+        c.setIcon_uri(iconUri);
+
+        return c;
+    }
 }

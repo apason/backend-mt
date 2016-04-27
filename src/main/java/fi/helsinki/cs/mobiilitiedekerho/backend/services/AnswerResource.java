@@ -9,20 +9,41 @@ import spark.Response;
 import spark.Request;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Optional;
 
 import static java.lang.System.out;
 
+import com.typesafe.config.Config;
+
 public class AnswerResource extends Resource {
 
     private final AnswerService answerService;
+    
+    private HashMap<String, String> mimeTypes;
 
-    public AnswerResource(UserService userService, AnswerService answerService) {
-        super(userService);
+
+    public AnswerResource(UserService userService, AnswerService answerService, Config appConfiguration) {
+        super(userService, appConfiguration);
         this.answerService = answerService;
+        mimeTypes = new HashMap<String, String>();
+        
+        configureAllowedMimeTypes();
 
         defineRoutes();
+    }
+    
+    private void configureAllowedMimeTypes() {
+        /* List of allowed answer mime types. */
+        mimeTypes.put("mp4", "video/mp4");
+        mimeTypes.put("webm", "video/webm");
+        mimeTypes.put("mkv", "video/x-matroska");
+        /* image/jpeg can end with .jpg or .jpeg */
+        mimeTypes.put("jpeg", "image/jpeg");
+        mimeTypes.put("jpg", "image/jpeg");
+        mimeTypes.put("png", "image/png");
+        mimeTypes.put("gif", "image/gif");        
     }
 
     // Defines routes for AnswerResource.
@@ -53,6 +74,48 @@ public class AnswerResource extends Resource {
             return this.endAnswerUpload(req, res, u);
         });
     }
+    
+    private boolean userHasPermissionToSeeAnswer(int answerSubUserId, int privacyLevel, Request req, Response res) {
+
+        switch (privacyLevel) {
+            case 0: //Privacy level not setted explicitly by the user, it is like 1 otherwise.
+            case 1:
+            {
+                // Only the answer's submitter can see this answer.
+                // First we check user type before getting user to avoid spark.halt.
+                String authToken = req.queryParams("auth_token");
+                String userType = getUserType(authToken);
+                if (!userType.equals("authenticated")) {
+                    return false;
+                }
+
+                // Answer subuser must be a subuser of the calling user.
+                User user = requireAuthenticatedUser(req, res);
+                if (getUserService().requireSubUser(user, answerSubUserId) == null) {
+                    return false;
+                }
+                break;
+            }
+
+            case 2: {
+                // To see this answer, the user has to be authenticated.                
+                String authToken = req.queryParams("auth_token");
+                String userType = getUserType(authToken);
+                if (!userType.equals("authenticated")) {
+                    return false;
+                }
+                break;
+            }
+
+            case 3:
+            	// Anyone can see the answer.
+                return true;
+                break; //Useless but well... :^
+        }
+
+        return true; //If in Cases 0,1 and 2 it is possible to see the answer, 'the method-run' ends up here. 
+    }
+    
 
     // Describes an answer indicated by answer_id.
     // If the answer is not found, returns status: AnswerNotFoundError.
@@ -80,37 +143,19 @@ public class AnswerResource extends Resource {
             jsonResponse.setStatus("AnswerNotFoundError");
             return jsonResponse.toJson();
         }
-
         
-        //Check if asker has the privileges to get the answers.
-        int priLv = getUserService().getSubUserPrivacyLevel(answer.get().getSubuser_id());
+        int privacyLevel = this.getUserService().getSubUserPrivacyLevel(answer.get().getSubuser_id());
         
-        if (priLv == -1)
-        	return jsonResponse.setStatus("SubuserNotFoundError").toJson(); //TODO: ???
-        else if (priLv == 2) { //At least authenticated user is needed.
-            // Check user-type because privacy-level.
-            String authToken = req.queryParams("auth_token");
-            String userType = getUserType(authToken);
-            if (!userType.equals("authenticated"))
-                return jsonResponse.setStatus("InsuficientPrivileges").toJson();
+        if (privacyLevel == -1) {
+            jsonResponse.setStatus("SubuserNotFoundError");
+            return jsonResponse.toJson();            
         }
-        else if (priLv == 1) { //Only to itself.
-            // First Checks user-type before getting user, avoid spark.halt.
-            String authToken = req.queryParams("auth_token");
-            String userType = getUserType(authToken);
-            if (!userType.equals("authenticated"))
-                return jsonResponse.setStatus("InsuficientPrivileges").toJson();
-            else {
-                //Only to itself. Subuser must be a subuser of the calling user.
-                User user = requireAuthenticatedUser(req, res);
-                if (getUserService().requireSubUser(user, answer.get().getSubuser_id()) == null)
-                    return jsonResponse.setStatus("InsuficientPrivileges").toJson();
-            }
+                
+        if (!userHasPermissionToSeeAnswer(answer.get().getSubuser_id(), privacyLevel, req, res)) {
+            return jsonResponse.setStatus("InsufficientPrivileges").toJson();
         }
-        // END
         
-        
-        answers.add(answer.get());
+        answers.add(modifyUriToSignedDownloadUrl(answer.get()));
 
         jsonResponse.setObject(answers);
 
@@ -144,35 +189,25 @@ public class AnswerResource extends Resource {
             return jsonResponse.toJson();
         }
         
-        //Removes the answers that the user has no right to see. //TODO: Or should it tell them as inaccessible, bah "no good" for that.
+        // Removes the answers that the user has no right to see.
         Iterator<Answer> iterator = answers.iterator();
         while (iterator.hasNext()) {
-        	Answer answer = iterator.next();
-        	//Check if asker has the privileges to get the answer. Remove if hasn't.
-            int priLv = getUserService().getSubUserPrivacyLevel(answer.getSubuser_id());
+            Answer answer = iterator.next();
             
-            if (priLv == -1)
-            	iterator.remove(); //TODO: ???
-            else if (priLv == 2) { //At least authenticated user is needed.
-                // Check user-type because privacy-level.
-                String authToken = req.queryParams("auth_token");
-                String userType = getUserType(authToken);
-                if (!userType.equals("authenticated"))
-                	iterator.remove();
+            // Check if asker has the privileges to get the answer. Remove if he hasn't.
+            int privacyLevel = getUserService().getSubUserPrivacyLevel(answer.getSubuser_id());
+            
+            if (privacyLevel == -1) {
+                iterator.remove();
             }
-            else if (priLv == 1) { //Only to itself.
-                // First Checks user-type before getting user, avoid spark.halt.
-                String authToken = req.queryParams("auth_token");
-                String userType = getUserType(authToken);
-                if (!userType.equals("authenticated"))
-                    iterator.remove();
-                else {
-                    //Only to itself. Subuser must be a subuser of the calling user.
-                    User user = requireAuthenticatedUser(req, res);
-                    if (getUserService().requireSubUser(user, answer.getSubuser_id()) == null)
-                        iterator.remove();
-                }
+            
+            if (!userHasPermissionToSeeAnswer(answer.getSubuser_id(), privacyLevel, req, res)) {
+                iterator.remove();
             }
+        }
+        
+        for (Answer a: answers) {
+            a = modifyUriToSignedDownloadUrl(a);
         }
 
         jsonResponse.setObject(answers);
@@ -199,32 +234,16 @@ public class AnswerResource extends Resource {
             return jsonResponse.setStatus("ParameterError").toJson();
         }
         
-        //Check if asker has the privileges to get the answers.
-        int priLv = getUserService().getSubUserPrivacyLevel(subUserIdInt);
+        // Check if asker has the privileges to see the answers.
+        int privacyLevel = getUserService().getSubUserPrivacyLevel(subUserIdInt);
         
-        if (priLv == -1)
-        	return jsonResponse.setStatus("SubuserNotFoundError").toJson();
-        else if (priLv == 2) { //At least authenticated user is needed.
-            // Check user-type because privacy-level.
-            String authToken = req.queryParams("auth_token");
-            String userType = getUserType(authToken);
-            if (!userType.equals("authenticated"))
-            	return jsonResponse.setStatus("InsuficientPrivileges").toJson();
+        if (privacyLevel == -1) {
+            return jsonResponse.setStatus("SubuserNotFoundError").toJson();
         }
-        else if (priLv == 1) { //Only to itself.
-            // First Checks user-type before getting user, avoid spark.halt.
-            String authToken = req.queryParams("auth_token");
-            String userType = getUserType(authToken);
-            if (!userType.equals("authenticated"))
-                return jsonResponse.setStatus("InsuficientPrivileges").toJson();
-            else {
-                //Only to itself. Subuser must be a subuser of the calling user.
-                User user = requireAuthenticatedUser(req, res);
-                if (getUserService().requireSubUser(user, subUserIdInt) == null)
-                    return jsonResponse.setStatus("InsuficientPrivileges").toJson();
-            }
+        
+        if (!userHasPermissionToSeeAnswer(subUserIdInt, privacyLevel, req, res)) {
+            return jsonResponse.setStatus("InsufficientPrivileges").toJson();
         }
-        // END
         
         ArrayList<Answer> answers = new ArrayList<Answer>();
         answers = (ArrayList<Answer>) answerService.getAnswersBySubUser(subUserIdInt);
@@ -232,6 +251,10 @@ public class AnswerResource extends Resource {
         if (answers.isEmpty()) {
             jsonResponse.setStatus("AnswerNotFoundError");
             return jsonResponse.toJson();
+        }
+        
+        for (Answer a: answers) {
+            a = modifyUriToSignedDownloadUrl(a);
         }
         
         jsonResponse.setObject(answers);
@@ -259,25 +282,26 @@ public class AnswerResource extends Resource {
             return jsonResponse.toJson();
 	}
         
-        if ( !( fileType.equals("mp4") ||
-                fileType.equals("webm") ||
-                fileType.equals("mkv") ||
-                fileType.equals("jpeg") ||
-                fileType.equals("jpg") ||
-                fileType.equals("png")
-                )) {
+        if (!mimeTypes.containsKey(fileType)) {
             jsonResponse.setStatus("FileTypeError");
             return jsonResponse.toJson();
         }
-        
         
         try {
            taskIdInt = Integer.parseInt(taskId);
         } catch (Exception e) {
             return jsonResponse.setStatus("ParameterError").toJson();
         }
+        
+        String answerType;
+        if (mimeTypes.get(fileType).contains("video")) {
+            answerType = "video";
+        }
+        else {
+            answerType = "image";
+        }
 
-        Optional<Answer> answer = answerService.setInitialAnswer(subUser, taskIdInt, fileType);
+        Optional<Answer> answer = answerService.setInitialAnswer(subUser, taskIdInt, fileType, answerType);
 
         if (!answer.isPresent()) {
             jsonResponse.setStatus("ParameterError");
@@ -287,7 +311,10 @@ public class AnswerResource extends Resource {
         return jsonResponse
 	    .addPropery("task_id", taskId)
 	    .addPropery("answer_id", "" + answer.get().getId())
-	    .addPropery("answer_uri", answer.get().getUri())
+	    .addPropery("answer_uri", this.getS3Helper().generateSignedUploadUrl(
+                    this.getAppConfiguration().getString("app.answer_bucket"),
+                    answer.get().getUri(),
+                    mimeTypes.get(fileType)))
 	    .setStatus("Success")
 	    .toJson();
     }
@@ -316,18 +343,30 @@ public class AnswerResource extends Resource {
 
         if (uploadStatus.equals("success")) {
             jsonResponse
-		.setStatus(answerService
-			   .enableAnswer(answerId, user));
-	    
+                .setStatus(answerService
+                            .enableAnswer(answerId, user));
+            
         } else if (uploadStatus.equals("failure")) {
             jsonResponse
-		.setStatus(answerService
-			   .deleteAnswer(answerId, user));
+                .setStatus(answerService
+                            .deleteAnswer(answerId, user));
         } else {
             jsonResponse.setStatus("InvalidStatus");
         }
 
         return jsonResponse.toJson();
 
+    }
+    
+    // Generate signed url for answer uri.
+    Answer modifyUriToSignedDownloadUrl(Answer a) {
+        String uri = this.getS3Helper().generateSignedDownloadUrl(
+                this.getAppConfiguration().getString("app.answer_bucket"),
+                a.getUri()
+        );
+
+        a.setUri(uri);
+
+        return a;
     }
 }

@@ -1,6 +1,7 @@
 package fi.helsinki.cs.mobiilitiedekerho.backend.services;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -12,13 +13,12 @@ import java.util.ArrayList;
 public class JsonResponse {
 
     private String status;
-
     private Object object;
 
     private ArrayList<String> properties;
-
     private ArrayList<String> values;
 
+    
     public JsonResponse() {
         this.object = null;
         this.status = "";
@@ -63,7 +63,7 @@ public class JsonResponse {
 
     // Generates the JSON response.
     public String toJson() {
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
         JsonObject jsonElement = new JsonObject();
         if (this.object != null) {
             jsonElement.add("objects", gson.toJsonTree(this.object));
