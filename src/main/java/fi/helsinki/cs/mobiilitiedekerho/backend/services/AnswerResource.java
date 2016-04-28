@@ -13,8 +13,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Optional;
 
-import static java.lang.System.out;
-
 import com.typesafe.config.Config;
 
 public class AnswerResource extends Resource {
@@ -24,7 +22,9 @@ public class AnswerResource extends Resource {
     private HashMap<String, String> mimeTypes;
 
 
-    public AnswerResource(UserService userService, AnswerService answerService, Config appConfiguration) {
+    public AnswerResource(UserService userService,
+            AnswerService answerService,
+            Config appConfiguration) {
         super(userService, appConfiguration);
         this.answerService = answerService;
         mimeTypes = new HashMap<String, String>();
@@ -75,14 +75,22 @@ public class AnswerResource extends Resource {
         });
     }
     
+    /* Privacy levels
+    ** 0 - Privacy level not set by the user (default situation).
+    ** 1 - Only the user who submitted the answer can see it.
+    ** 2 - Only authenticated users can see the answer.
+    ** 3 - Everyone can see the answer.
+    */
+    
     private boolean userHasPermissionToSeeAnswer(int answerSubUserId, int privacyLevel, Request req, Response res) {
 
         switch (privacyLevel) {
-            case 0: //Privacy level not setted explicitly by the user, it is like 1 otherwise.
+            case 0: // Privacy level not setted explicitly by the user. We assume it is 1.
             case 1:
             {
                 // Only the answer's submitter can see this answer.
-                // First we check user type before getting user to avoid spark.halt.
+                // First we check current users type (anonymous vs authenticated)
+                // before calling requireSubUser.
                 String authToken = req.queryParams("auth_token");
                 String userType = getUserType(authToken);
                 if (!userType.equals("authenticated")) {
@@ -110,13 +118,12 @@ public class AnswerResource extends Resource {
             case 3:
             	// Anyone can see the answer.
                 return true;
-                break; //Useless but well... :^
         }
 
-        return true; //If in Cases 0,1 and 2 it is possible to see the answer, 'the method-run' ends up here. 
+        return true; // All checks passed - current user can see the answer.
     }
-    
 
+    
     // Describes an answer indicated by answer_id.
     // If the answer is not found, returns status: AnswerNotFoundError.
     String describeAnswer(Request req, Response res) {
