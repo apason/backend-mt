@@ -85,7 +85,7 @@ public class AnswerResource extends Resource {
     private boolean userHasPermissionToSeeAnswer(int answerSubUserId, int privacyLevel, Request req, Response res) {
 
         switch (privacyLevel) {
-            case 0: // Privacy level not setted explicitly by the user. We assume it is 1.
+            case 0: // Privacy level not setted explicitly by the user. We assume the level is 1.
             case 1:
             {
                 // Only the answer's submitter can see this answer.
@@ -252,8 +252,7 @@ public class AnswerResource extends Resource {
             return jsonResponse.setStatus("InsufficientPrivileges").toJson();
         }
         
-        ArrayList<Answer> answers = new ArrayList<Answer>();
-        answers = (ArrayList<Answer>) answerService.getAnswersBySubUser(subUserIdInt);
+        ArrayList<Answer> answers = (ArrayList<Answer>) answerService.getAnswersBySubUser(subUserIdInt);
         
         if (answers.isEmpty()) {
             jsonResponse.setStatus("AnswerNotFoundError");
