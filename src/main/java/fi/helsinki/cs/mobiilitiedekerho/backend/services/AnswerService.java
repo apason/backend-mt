@@ -5,18 +5,12 @@ import fi.helsinki.cs.mobiilitiedekerho.backend.models.Task;
 import fi.helsinki.cs.mobiilitiedekerho.backend.models.User;
 import fi.helsinki.cs.mobiilitiedekerho.backend.models.Subuser;
 
-import fi.helsinki.cs.mobiilitiedekerho.backend.services.UserService;
-
 import java.util.Date;
-
-import java.text.SimpleDateFormat;
 
 import org.sql2o.*;
 
 import java.util.List;
 import java.util.Optional;
-
-import static java.lang.System.out;
 
 public class AnswerService {
 
