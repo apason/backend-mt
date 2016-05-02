@@ -163,7 +163,7 @@ public class AnswerService {
         else{
             String sql =
                 "UPDATE answer SET " +
-                "loaded = NOW(), " +
+                "uploaded = true, " +
                 "enabled = true " +
                 "WHERE id = :id";
                 
