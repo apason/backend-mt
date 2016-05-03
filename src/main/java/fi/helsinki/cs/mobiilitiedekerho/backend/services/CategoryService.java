@@ -41,49 +41,6 @@ public class CategoryService {
         }
     }
     
-    // // Saves the category to the database.
-    // public void saveCategory(Category category) {
-    //     String sql
-    //             = "INSERT INTO category(iconName, iconAnimatedName, BGName, name, loaded, tasks)"
-    //             + "VALUES (:iconName, :iconAnimatedName, :BGName, :name, :loaded, :tasks)";
-
-    //     try (Connection con = sql2o.open()) {
-    //         con.createQuery(sql).bind(category).executeUpdate();
-    //     }
-    // }
-    
-    // //Add a task to the category's list of tasks'.
-    // public String addTask(int categoryId, Task task) {
-    
-    //     Connection con = null;
-    //     //Get the tasks' list:
-    //     ArrayList<Tasks> tasks = null;
-    //     String sql
-    //             = "SELECT tasks"
-    //             + "FROM category "
-    //             + "WHERE id = :id";
-
-    //     try (con = sql2o.open()) {
-    //         tasks = con.createQuery(sql)
-    //             .addParameter("id", categoryId)
-    //             .executeAndFetch(Category.class);
-    //         if (tasks.isEmpty()) return "Cannot find category";
-    //     }
-    
-    
-    //     tasks.add(task);
-    //     String sql
-    //             = "UPDATE category"
-    //             + "SET tasks = :tasks"
-    //             + "WHERE id = :id";
-                
-    //     con.createQuery(sql)
-    //         .addParameter("id", categoryId)
-    //         .executeUpdate();
-
-    //     return "Success";
-    // }
-
     // Lists all categories from the database.
     public List<Category> getAllCategories() {
         String sql
@@ -95,5 +52,49 @@ public class CategoryService {
                 .executeAndFetch(Category.class);
         }
     }
+
+
+//     // Saves the category to the database.
+//     public void saveCategory(Category category) {
+//         String sql
+//                 = "INSERT INTO category(iconName, iconAnimatedName, BGName, name, loaded, tasks)"
+//                 + "VALUES (:iconName, :iconAnimatedName, :BGName, :name, :loaded, :tasks)";
+// 
+//         try (Connection con = sql2o.open()) {
+//             con.createQuery(sql).bind(category).executeUpdate();
+//         }
+//     }
+//     
+//     //Add a task to the category's list of tasks'.
+//     public String addTask(int categoryId, Task task) {
+//     
+//         Connection con = null;
+//         Get the tasks' list:
+//         ArrayList<Tasks> tasks = null;
+//         String sql
+//                 = "SELECT tasks"
+//                 + "FROM category "
+//                 + "WHERE id = :id";
+// 
+//         try (con = sql2o.open()) {
+//             tasks = con.createQuery(sql)
+//                 .addParameter("id", categoryId)
+//                 .executeAndFetch(Category.class);
+//             if (tasks.isEmpty()) return "Cannot find category";
+//         }
+//     
+//     
+//         tasks.add(task);
+//         String sql
+//                 = "UPDATE category"
+//                 + "SET tasks = :tasks"
+//                 + "WHERE id = :id";
+//                 
+//         con.createQuery(sql)
+//             .addParameter("id", categoryId)
+//             .executeUpdate();
+// 
+//         return "Success";
+//     }
     
 }
