@@ -25,6 +25,7 @@ public class LikeService {
         this.sql2o = sql2o;
     }    
 
+    // Get likes pointing to teh given answer indicated by answerId.
     public List<Like> getLikesByAnswer(int answerId){
         String sql
             = "SELECT * FROM slaikka "
@@ -37,9 +38,9 @@ public class LikeService {
 
             return likes;
         }
-        }
+    }
 
-
+    // Get all the likes to asnwer made by the SubuSer as parameter.
     public List<Like> describeLikesToSubuser(Subuser subUser){
         String sql
             = "SELECT * FROM slaikka "
@@ -56,6 +57,7 @@ public class LikeService {
         }
     }
 
+    // Get all likes made by a SubUser.
     public List<Like> describeLikesFromSubuser(Subuser subUser){
         String sql
             = "SELECT * FROM slaikka "
@@ -70,7 +72,8 @@ public class LikeService {
         }
     }
 
-    //TODO: Check for duplicates.
+
+    // Like a answer pointed by answer_id and like by subUser.
     public int likeAnswer(int answerId, Subuser subUser){
 
         //check for duplicates
@@ -95,6 +98,7 @@ public class LikeService {
             }
     }
 
+    // Check if a like exists to the given answer by the given SubUser.
     private boolean likeExists(int answerId, Subuser subUser){
         String sql
             = "SELECT * FROM slaikka "
