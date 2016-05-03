@@ -1,3 +1,6 @@
+// Test Commented out, because it is obligatory to pass a working appConfiguration for testing + S3 stuff.
+// TODO: Fix tests?
+//
 // package fi.helsinki.cs.mobiilitiedekerho.backend.services;
 // 
 // import fi.helsinki.cs.mobiilitiedekerho.backend.models.*;
@@ -64,24 +67,20 @@
 //     public void testDescribeLikeSuccess() {         
 //         when(req.queryParams("like_id")).thenReturn("1"); 
 //         
-// //         String jsonResponse = likeResource.describeLike(req, res);
-// //         
-// //         String jsonExpected = "";
-// //                 
-// //         assertEquals(jsonResponse, jsonExpected);
-// 
-//         assertTrue(true);
+//         String jsonResponse = likeResource.describeLike(req, res);
+//         
+//         String jsonExpected = "";
+//                 
+//         assertEquals(jsonResponse, jsonExpected);
 //     }
 // 
 //     public void testDescribeLikeNotFound() {         
 //         when(req.queryParams("like_id")).thenReturn("2"); 
 //         
-// //         String jsonResponse = likeResource.describeLike(req, res);
-// //         
-// //         String jsonExpected = "{\"status\":\"LikeNotFoundError\"}";
-// //         
-// //         assertEquals(jsonResponse, jsonExpected);
-// 
-//         assertTrue(true);
+//         String jsonResponse = likeResource.describeLike(req, res);
+//         
+//         String jsonExpected = "{\"status\":\"LikeNotFoundError\"}";
+//         
+//         assertEquals(jsonResponse, jsonExpected);
 //     }
 // }
