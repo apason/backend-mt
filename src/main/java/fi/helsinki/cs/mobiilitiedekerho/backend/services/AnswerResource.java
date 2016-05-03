@@ -81,7 +81,6 @@ public class AnswerResource extends Resource {
     ** 2 - Only authenticated users can see the answer.
     ** 3 - Everyone can see the answer.
     */
-    
     private boolean userHasPermissionToSeeAnswer(int answerSubUserId, int privacyLevel, Request req, Response res) {
 
         switch (privacyLevel) {
@@ -116,7 +115,7 @@ public class AnswerResource extends Resource {
             }
 
             case 3:
-            	// Anyone can see the answer.
+                // Anyone can see the answer.
                 return true;
         }
 

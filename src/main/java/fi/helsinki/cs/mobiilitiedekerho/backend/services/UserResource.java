@@ -100,7 +100,7 @@ public class UserResource extends Resource {
             }
         }
         // else if ((email != null) || (password != null)) {
-        // 	  Error as one parameter is set but the other not.
+        //    Error as one parameter is set but the other not.
         //    Should not happen, but anyways...
         // }
         // else
@@ -205,9 +205,11 @@ public class UserResource extends Resource {
 
         int subuserId = getUserService().createSubUser(user, subuserNick);
         
-        Optional<Subuser> subuser = getUserService().getSubUserById(subuserId);
+        ArrayList<Subuser> subUsers = new ArrayList<Subuser>();
+        Optional<Subuser> subUser = getUserService().getSubUserById(subuserId);
+        subUsers.add(modifyUriToSignedDownloadUrl(subUser.get()));
         //No need to check as must exist.
-        return jsonResponse.setStatus("Success").setObject(modifyUriToSignedDownloadUrl(subuser.get())).toJson();
+        return jsonResponse.setStatus("Success").setObject(subUsers).toJson();
     }
 
     //It can be assumed that the subuser exist (requireSubUser() in defineRoutes
