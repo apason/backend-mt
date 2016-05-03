@@ -1,20 +1,10 @@
 package fi.helsinki.cs.mobiilitiedekerho.backend.services;
 
-import fi.helsinki.cs.mobiilitiedekerho.backend.models.User;
 import fi.helsinki.cs.mobiilitiedekerho.backend.models.Subuser;
 import fi.helsinki.cs.mobiilitiedekerho.backend.models.Like;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.JwtException;
-import java.security.Key;
-
 import org.sql2o.*;
 
 import java.util.List;
-import java.security.MessageDigest;
-import java.util.Date;
-import java.util.Optional;
 
 public class LikeService {
 
@@ -25,7 +15,7 @@ public class LikeService {
         this.sql2o = sql2o;
     }    
 
-    // Get likes pointing to teh given answer indicated by answerId.
+    // Get likes pointing to the given answer indicated by answerId.
     public List<Like> getLikesByAnswer(int answerId){
         String sql
             = "SELECT * FROM slaikka "
@@ -40,7 +30,7 @@ public class LikeService {
         }
     }
 
-    // Get all the likes to asnwer made by the SubuSer as parameter.
+    // Get all the likes to answer made by the SubuSer as parameter.
     public List<Like> describeLikesToSubuser(Subuser subUser){
         String sql
             = "SELECT * FROM slaikka "

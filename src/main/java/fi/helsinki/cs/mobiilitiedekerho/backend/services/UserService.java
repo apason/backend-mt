@@ -180,7 +180,7 @@ public class UserService {
 
     /*SubUser-database methods start*/
 
-    // Gets all the subusers of a user.
+    // Gets all the SubUsers of a user.
     public List<Subuser> getSubUsers(User u){
         String sql 
             = "SELECT * "
@@ -212,7 +212,7 @@ public class UserService {
         }
     }
 
-    // Gets the subuser pointed by the given id.
+    // Gets the SubUser pointed by the given id.
     public Optional<Subuser> getSubUserById(int suid){
         String sql =
             "Select * " +
@@ -254,7 +254,7 @@ public class UserService {
         }
     }
     
-    // Deletes the subuser.
+    // Deletes the pointed SubUser by the given id.
     public void deleteSubUser(String subuserId){
         String sql
             = "DELETE FROM answer "
@@ -275,7 +275,7 @@ public class UserService {
         }
     }
 
-    // Gets the SUbUser's privacy-level (that is, its user-master's). If subuser is not found returns -1. 
+    // Gets the SUbUser's privacy-level (that is, its user-master's). If the SubUser is not found it returns -1. 
     public int getSubUserPrivacyLevel(int subuserId) {
         Optional<Subuser> subuser = getSubUserById(subuserId);
         
@@ -291,7 +291,7 @@ public class UserService {
     }
 
 
-    // I think that this checks if the subuser belongs to the given user.
+    // I think that this checks if the SubUser belongs to the given user.
     // TODO: Change methods name.
     public Subuser requireSubUser(User u, Integer subuserId){
         
@@ -322,7 +322,7 @@ public class UserService {
 
 
 
-    /* Below is then all about token stuff: */
+    /* All teh methods below are all about token-stuff: */
     
     // Generates a JSON Web Token for an anonymous user.
     // Returns the token.
