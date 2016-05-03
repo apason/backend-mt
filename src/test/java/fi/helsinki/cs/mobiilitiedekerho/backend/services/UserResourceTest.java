@@ -1,3 +1,6 @@
+// Test Commented out, because it is obligatory to pass a working appConfiguration for testing + S3 stuff.
+// TODO: Fix tests?
+//
 // package fi.helsinki.cs.mobiilitiedekerho.backend.services;
 // 
 // import fi.helsinki.cs.mobiilitiedekerho.backend.models.*;
@@ -50,6 +53,7 @@
 //         userResource = new UserResource(userService, appConfiguration);
 //         
 //         
+//         // User part.
 //         user = new User();
 //         user.setId(1);
 //         user.setCreated(new Date(0));
@@ -63,7 +67,7 @@
 //         when(userService.getUserById(2)).thenReturn(Optional.empty());
 //         
 //         
-//         //SubUser part. 
+//         // SubUser part.
 //         subuser = new Subuser();
 //         subuser.setId(1);
 //         subuser.setUser_id(1);
@@ -77,38 +81,31 @@
 // 
 //     public void testDescribeUserSuccess() {         
 //         when(req.queryParams("user_id")).thenReturn("1"); 
-//         /*
+//
 //         String jsonResponse = userResource.describeUser(req, res);
 //         
 //         String jsonExpected = "{\"objects\":[{\"id\":1,\"created\":\"Jan 1, 1970 2:00:00 AM\",\"enabled\":true,\"email\":\"testi@testika.test\",\"password\":\"password123\",\"pin\":\"1234\",\"privacy_level\":3}],\"status\":\"Success\"}";
 //         
 //         assertEquals(jsonResponse, jsonExpected);
-//         */
-//         assertTrue(true);
 //     }
 // 
 //     public void testDescribeUserNotFound() {      
 //         when(req.queryParams("user_id")).thenReturn("2"); 
-//         /*
+//
 //         String jsonResponse = userResource.describeUser(req, res);
 //         
 //         String jsonExpected = "{\"status\":\"UserNotFoundError\"}";
 //         
 //         assertEquals(jsonResponse, jsonExpected);
-//         */
-//         assertTrue(true);
 //     }
 //     
 //     public void testDescribeSubUserSuccess() {         
 //         when(req.queryParams("user_id")).thenReturn("1"); 
-//         /*
 //         String jsonResponse = userResource.describeSubUser(req, res, user, subuser);
 //         
 //         String jsonExpected = "{\"objects\":[{\"id\":1,\"user_id\":1,\"created\":\"Jan 1, 1970 2:00:00 AM\",\"nick\":\"Lissu\",\"avatar_url\":\"avatar_icon_id_1.png\"}],\"status\":\"Success\"}";
 //         
 //         assertEquals(jsonResponse, jsonExpected);
-//         */
-//         assertTrue(true);
 //     }
 // 
 //     public void testDescribeSubUserNotFound() {         

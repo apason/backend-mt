@@ -37,12 +37,12 @@ public class LikeResource extends Resource {
                 Subuser subUser = requireSubUser(req, res, user);
             return likeAnswer(req, res, subUser);
         });
-        
+
         Spark.get("/DescribeAnswerLikes", (req, res) -> {
             requireAnonymousUser(req, res);
             return describeAnswerLikes(req, res);
         });
-        
+
         Spark.get("/DescribeLikesFromSubuser", (req, res) -> {
             User user = requireAuthenticatedUser(req, res);
             Subuser subUser = requireSubUser(req, res, user);

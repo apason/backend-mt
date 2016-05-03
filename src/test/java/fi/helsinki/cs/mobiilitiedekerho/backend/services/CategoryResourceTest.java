@@ -1,3 +1,6 @@
+// Test Commented out, because it is obligatory to pass a working appConfiguration for testing + S3 stuff.
+// TODO: Fix tests?
+//
 // package fi.helsinki.cs.mobiilitiedekerho.backend.services;
 // 
 // import fi.helsinki.cs.mobiilitiedekerho.backend.models.*;
@@ -66,25 +69,20 @@
 //     public void testDescribeCategorySuccess() {         
 //         when(req.queryParams("category_id")).thenReturn("1"); 
 //         
-//         /*
 //         String jsonResponse = categoryResource.describeCategory(req, res);
 //         
 //         String jsonExpected = "{\"objects\":[{\"id\":1,\"created\":\"Jan 1, 1970 2:00:00 AM\",\"uploaded\":true,\"enabled\":true,\"name\":\"Fysiikka\",\"coordinate_x\":100,\"coordinate_y\":200,\"bg_uri\":\"category_bg_id_1.png\",\"icon_uri\":\"category_icon_id_1.png\"}],\"status\":\"Success\"}";        
 //         
 //         assertEquals(jsonResponse, jsonExpected);
-//         */
-//         assertTrue(true);
 //     }
 // 
 //     public void testDescribeCategoryNotFound() {         
 //         when(req.queryParams("category_id")).thenReturn("2"); 
-//         /*
+//
 //         String jsonResponse = categoryResource.describeCategory(req, res);
 //         
 //         String jsonExpected = "{\"status\":\"CategoryNotFoundError\"}";
 //         
 //         assertEquals(jsonResponse, jsonExpected);
-//         */
-//         assertTrue(true);
 //     }
 // }

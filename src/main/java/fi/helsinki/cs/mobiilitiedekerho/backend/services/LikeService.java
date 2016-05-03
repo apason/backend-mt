@@ -1,30 +1,21 @@
 package fi.helsinki.cs.mobiilitiedekerho.backend.services;
 
-import fi.helsinki.cs.mobiilitiedekerho.backend.models.User;
 import fi.helsinki.cs.mobiilitiedekerho.backend.models.Subuser;
 import fi.helsinki.cs.mobiilitiedekerho.backend.models.Like;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.JwtException;
-import java.security.Key;
-
 import org.sql2o.*;
 
 import java.util.List;
-import java.security.MessageDigest;
-import java.util.Date;
-import java.util.Optional;
 
 public class LikeService {
 
     private Sql2o sql2o;
 
-    
+
     public LikeService(Sql2o sql2o) {
         this.sql2o = sql2o;
     }    
 
+    // Get likes pointing to the given answer indicated by answerId.
     public List<Like> getLikesByAnswer(int answerId){
         String sql
             = "SELECT * FROM slaikka "
@@ -37,9 +28,9 @@ public class LikeService {
 
             return likes;
         }
-        }
+    }
 
-
+    // Get all the likes to answer made by the SubuSer as parameter.
     public List<Like> describeLikesToSubuser(Subuser subUser){
         String sql
             = "SELECT * FROM slaikka "
@@ -56,6 +47,7 @@ public class LikeService {
         }
     }
 
+    // Get all likes made by a SubUser.
     public List<Like> describeLikesFromSubuser(Subuser subUser){
         String sql
             = "SELECT * FROM slaikka "
@@ -70,7 +62,8 @@ public class LikeService {
         }
     }
 
-    //TODO: Check for duplicates.
+
+    // Like a answer pointed by answer_id and like by subUser.
     public int likeAnswer(int answerId, Subuser subUser){
 
         //check for duplicates
@@ -95,6 +88,7 @@ public class LikeService {
             }
     }
 
+    // Check if a like exists to the given answer by the given SubUser.
     private boolean likeExists(int answerId, Subuser subUser){
         String sql
             = "SELECT * FROM slaikka "

@@ -1,3 +1,6 @@
+// Test Commented out, because it is obligatory to pass a working appConfiguration for testing + S3 stuff.
+// TODO: Fix tests?
+//
 // package fi.helsinki.cs.mobiilitiedekerho.backend.services;
 // 
 // import fi.helsinki.cs.mobiilitiedekerho.backend.models.*;
@@ -53,6 +56,7 @@
 //         answer.setCreated(new Date(0));
 //         answer.setUploaded(true);
 //         answer.setEnabled(true);
+//         answer.setAnswerType("video");
 //         answer.setUri("answer_suid_1_id_1.webm");
 //         
 //         when(answerService.getAnswerById(1)).thenReturn(Optional.of(answer));
@@ -64,27 +68,20 @@
 //     public void testDescribeAnswerkSuccess() {         
 //         when(req.queryParams("answer_id")).thenReturn("1"); 
 //         
-//         /*
 //         String jsonResponse = answerResource.describeAnswer(req, res);
 //         
-//         String jsonExpected = "{\"objects\":[{\"id\":1,\"task_id\":1,\"subuser_id\":1,\"created\":\"Jan 1, 1970 2:00:00 AM\",\"uploaded\":true,\"enabled\":true,\"uri\":\"answer_suid_1_id_1.webm\"}],\"status\":\"Success\"}";
+//         String jsonExpected = "{\"objects\":[{\"id\":1,\"task_id\":1,\"subuser_id\":1,\"created\":\"Jan 1, 1970 2:00:00 AM\",\"uploaded\":true,\"enabled\":true,\"answer_type\":\"video\",\"uri\":\"answer_suid_1_id_1.webm\"}],\"status\":\"Success\"}";
 //         
 //         assertEquals(jsonResponse, jsonExpected);
-//         */
-//         assertTrue(true);
 //     }
 // 
 //     public void testDescribeAnswerkNotFound() {         
 //         when(req.queryParams("answer_id")).thenReturn("2"); 
 //         
-//         /*
 //         String jsonResponse = answerResource.describeAnswer(req, res);
 //         
 //         String jsonExpected = "{\"status\":\"AnswerNotFoundError\"}";
 //         
 //         assertEquals(jsonResponse, jsonExpected);
-//         */
-//         
-//         assertTrue(true);
 //     }
 // }

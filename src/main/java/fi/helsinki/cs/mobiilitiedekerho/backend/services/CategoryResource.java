@@ -13,11 +13,12 @@ import java.util.List;
 
 import com.typesafe.config.Config;
 
+
 public class CategoryResource extends Resource {
 
     private final CategoryService categoryService;
-    
-    
+
+
     public CategoryResource(UserService userService, CategoryService categoryService, Config appConfiguration) {
         super(userService, appConfiguration);
         this.categoryService = categoryService;
@@ -36,7 +37,7 @@ public class CategoryResource extends Resource {
             return this.DescribeCategories(req, res);
         });
     }
-    
+
     // Describes an category indicated by category_id.
     // If the category is not found, returns status: CategoryNotFoundError.
     String describeCategory(Request req, Response res) {
@@ -71,7 +72,7 @@ public class CategoryResource extends Resource {
 
         return jsonResponse.setStatus("Success").toJson();
     }
-    
+
     String DescribeCategories(Request req, Response res){
         JsonResponse jsonResponse = new JsonResponse();
         List<Category> categories = categoryService.getAllCategories();
@@ -80,7 +81,7 @@ public class CategoryResource extends Resource {
         }
         return jsonResponse.setStatus("Success").setObject(categories).toJson();
     }
-    
+
     // Generate signed urls for bg and icon uris.
     Category modifyUrisToSignedDownloadUrls(Category c) {
         String bgUri = this.getS3Helper().generateSignedDownloadUrl(

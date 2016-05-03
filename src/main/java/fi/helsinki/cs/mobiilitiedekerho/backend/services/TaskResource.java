@@ -98,7 +98,7 @@ public class TaskResource extends Resource {
         for (Task t: tasks) {
             t = modifyUrisToSignedDownloadUrls(t);
         }
-	
+
         jsonResponse.setObject(tasks);
 
         return jsonResponse.setStatus("Success").toJson();

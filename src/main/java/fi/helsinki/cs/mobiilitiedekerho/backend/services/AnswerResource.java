@@ -13,18 +13,18 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Optional;
 
-import static java.lang.System.out;
-
 import com.typesafe.config.Config;
 
 public class AnswerResource extends Resource {
 
     private final AnswerService answerService;
-    
+
     private HashMap<String, String> mimeTypes;
 
 
-    public AnswerResource(UserService userService, AnswerService answerService, Config appConfiguration) {
+    public AnswerResource(UserService userService,
+            AnswerService answerService,
+            Config appConfiguration) {
         super(userService, appConfiguration);
         this.answerService = answerService;
         mimeTypes = new HashMap<String, String>();
@@ -33,7 +33,7 @@ public class AnswerResource extends Resource {
 
         defineRoutes();
     }
-    
+
     private void configureAllowedMimeTypes() {
         /* List of allowed answer mime types. */
         mimeTypes.put("mp4", "video/mp4");
@@ -52,37 +52,44 @@ public class AnswerResource extends Resource {
             requireAnonymousUser(req, res);
             return this.describeAnswer(req, res);
         });
-        
+
         Spark.get("/DescribeTaskAnswers", (req, res) -> {
             requireAnonymousUser(req, res);
             return this.describeTaskAnswers(req, res);
         });
-        
+
         Spark.get("/DescribeSubUserAnswers", (req, res) -> {
             requireAnonymousUser(req, res);
             return this.describeSubUserAnswers(req, res);
         });
-        
+
         Spark.get("/StartAnswerUpload", (req, res) -> {
             User u = requireAuthenticatedUser(req, res);
             Subuser subUser = requireSubUser(req, res, u);
             return this.startAnswerUpload(req, res, subUser);
         });
-        
+
         Spark.get("/EndAnswerUpload", (req, res) -> {
             User u = requireAuthenticatedUser(req, res);
             return this.endAnswerUpload(req, res, u);
         });
     }
-    
+
+    /* Privacy levels
+    ** 0 - Privacy level not set by the user (default situation).
+    ** 1 - Only the user who submitted the answer can see it.
+    ** 2 - Only authenticated users can see the answer.
+    ** 3 - Everyone can see the answer.
+    */
     private boolean userHasPermissionToSeeAnswer(int answerSubUserId, int privacyLevel, Request req, Response res) {
 
         switch (privacyLevel) {
-            case 0: //Privacy level not setted explicitly by the user, it is like 1 otherwise.
+            case 0: // Privacy level not setted explicitly by the user. We assume the level is 1.
             case 1:
             {
                 // Only the answer's submitter can see this answer.
-                // First we check user type before getting user to avoid spark.halt.
+                // First we check current users type (anonymous vs authenticated)
+                // before calling requireSubUser.
                 String authToken = req.queryParams("auth_token");
                 String userType = getUserType(authToken);
                 if (!userType.equals("authenticated")) {
@@ -108,14 +115,13 @@ public class AnswerResource extends Resource {
             }
 
             case 3:
-            	// Anyone can see the answer.
+                // Anyone can see the answer.
                 return true;
-                break; //Useless but well... :^
         }
 
-        return true; //If in Cases 0,1 and 2 it is possible to see the answer, 'the method-run' ends up here. 
+        return true; // All checks passed - current user can see the answer.
     }
-    
+
 
     // Describes an answer indicated by answer_id.
     // If the answer is not found, returns status: AnswerNotFoundError.
@@ -214,7 +220,7 @@ public class AnswerResource extends Resource {
 
         return jsonResponse.setStatus("Success").toJson();
     }
-    
+
     // Describes all answers associated with the SubUser indicated by subuser_id.
     // If no answers are found, returns status: AnswerNotFoundError.
     String describeSubUserAnswers(Request req, Response res) {
@@ -245,8 +251,7 @@ public class AnswerResource extends Resource {
             return jsonResponse.setStatus("InsufficientPrivileges").toJson();
         }
         
-        ArrayList<Answer> answers = new ArrayList<Answer>();
-        answers = (ArrayList<Answer>) answerService.getAnswersBySubUser(subUserIdInt);
+        ArrayList<Answer> answers = (ArrayList<Answer>) answerService.getAnswersBySubUser(subUserIdInt);
         
         if (answers.isEmpty()) {
             jsonResponse.setStatus("AnswerNotFoundError");
@@ -261,7 +266,7 @@ public class AnswerResource extends Resource {
 
         return jsonResponse.setStatus("Success").toJson();
     }
-    
+
     // Starts answer upload.
     // Creates the answer in the database.
     // Returns the new answer id and an URI for the client to upload to.
@@ -275,12 +280,12 @@ public class AnswerResource extends Resource {
         if (taskId == null) {
             jsonResponse.setStatus("ParameterError");
             return jsonResponse.toJson();
-	}
+        }
 
         if (fileType == null) {
             jsonResponse.setStatus("ParameterError");
             return jsonResponse.toJson();
-	}
+        }
         
         if (!mimeTypes.containsKey(fileType)) {
             jsonResponse.setStatus("FileTypeError");
@@ -309,16 +314,16 @@ public class AnswerResource extends Resource {
         }
 
         return jsonResponse
-	    .addPropery("task_id", taskId)
-	    .addPropery("answer_id", "" + answer.get().getId())
-	    .addPropery("answer_uri", this.getS3Helper().generateSignedUploadUrl(
+            .addPropery("task_id", taskId)
+            .addPropery("answer_id", "" + answer.get().getId())
+            .addPropery("answer_uri", this.getS3Helper().generateSignedUploadUrl(
                     this.getAppConfiguration().getString("app.answer_bucket"),
                     answer.get().getUri(),
                     mimeTypes.get(fileType)))
-	    .setStatus("Success")
-	    .toJson();
+            .setStatus("Success")
+            .toJson();
     }
-    
+
     // Ends the answer upload.
     // If upload was successful, updates the database.
     // If upload failed, removes the row from the database.
@@ -357,7 +362,7 @@ public class AnswerResource extends Resource {
         return jsonResponse.toJson();
 
     }
-    
+
     // Generate signed url for answer uri.
     Answer modifyUriToSignedDownloadUrl(Answer a) {
         String uri = this.getS3Helper().generateSignedDownloadUrl(

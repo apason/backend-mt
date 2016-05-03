@@ -1,3 +1,6 @@
+// Test Commented out, because it is obligatory to pass a working appConfiguration for testing + S3 stuff.
+// TODO: Fix tests?
+//
 // package fi.helsinki.cs.mobiilitiedekerho.backend.services;
 // 
 // import fi.helsinki.cs.mobiilitiedekerho.backend.models.*;

@@ -1,22 +1,17 @@
 package fi.helsinki.cs.mobiilitiedekerho.backend.services;
 
+
 import fi.helsinki.cs.mobiilitiedekerho.backend.models.Answer;
 import fi.helsinki.cs.mobiilitiedekerho.backend.models.Task;
 import fi.helsinki.cs.mobiilitiedekerho.backend.models.User;
 import fi.helsinki.cs.mobiilitiedekerho.backend.models.Subuser;
 
-import fi.helsinki.cs.mobiilitiedekerho.backend.services.UserService;
-
 import java.util.Date;
-
-import java.text.SimpleDateFormat;
 
 import org.sql2o.*;
 
 import java.util.List;
 import java.util.Optional;
-
-import static java.lang.System.out;
 
 public class AnswerService {
 
@@ -52,161 +47,6 @@ public class AnswerService {
         }
     }
 
-    //checks if the answer with given id exists and is enabled
-    private boolean taskExists(int taskId){
-        String sql =
-            "SELECT * FROM task " +
-            "WHERE id = :task_id";
-
-        try(Connection con = sql2o.open()){
-            List<Task> task = con.createQuery(sql)
-                .throwOnMappingFailure(false)
-                .addParameter("task_id", taskId)
-                .executeAndFetch(Task.class);
-            
-            if(!task.isEmpty() &&
-                task.get(0).isEnabled()) return true;
-            else                        return false;
-        }
-        catch(Exception e){
-            return false;
-        }
-    }
-
-    //This function name shoulb be changed. Its stupid.
-    //checks if the answer is owned by given user
-    private boolean answerExists(int answerId, User user){
-
-        try(Connection con = sql2o.open()){
-
-            String sql =
-                "SELECT * " +
-                "FROM answer "+
-                "WHERE id = :aid";
-            
-            List<Answer> answer = con.createQuery(sql)
-                .throwOnMappingFailure(false)
-                .addParameter("aid", answerId)
-                .executeAndFetch(Answer.class);
-
-            if(answer.size() != 1)
-                return false;
-
-            return userService.requireSubUser(user, answer.get(0).getSubuser_id()) != null;
-        }
-        catch(Exception e){
-            return false;
-        }
-    }
-
-    // handles StartAnswerUpload api-call.
-    public Optional<Answer> setInitialAnswer(Subuser subUser, Integer taskId, String fileType, String answer_type){
-        Date date = new Date();
-
-        List<Answer> answer;
-
-        //first we need to check that the task exists and is enabled
-        if(!taskExists(taskId))
-            return Optional.empty();
-
-        int newAnswerId = -1;
-
-        //create new disabled answer instance to be uploaded
-        String sql =
-            "INSERT INTO answer " +
-            "(task_id, subuser_id, created, answer_type) " +
-            "VALUES " +
-            "(:task_id, :subuser_id, NOW(), :answer_type)";
-
-        try(Connection con = sql2o.open()) {
-        
-            newAnswerId  = con.createQuery(sql, true)
-                .addParameter("task_id", taskId)
-                .addParameter("subuser_id", subUser.getId())
-                .addParameter("answer_type", answer_type)
-                .executeUpdate()
-                .getKey(Integer.class);
-        }
-        
-        // Generate URI for the answer and save it to database.
-        String uri = "answer_suid_" + Integer.toString(subUser.getId()) +
-                "_id_" + newAnswerId + "." + fileType;
-        
-        sql = "UPDATE answer SET uri = :uri WHERE id = :id";
-        
-        try(Connection con = sql2o.open()){
-            con.createQuery(sql)
-                .addParameter("uri", uri)
-                .addParameter("id", newAnswerId)
-                .executeUpdate();
-        }
-        
-        // Get the newly created answer and return it.
-        sql =
-            "SELECT * " +
-            "FROM answer " +
-            "WHERE id = :id";
-
-        try(Connection con = sql2o.open()){
-            answer = con.createQuery(sql)
-                .throwOnMappingFailure(false)
-                .addParameter("id", newAnswerId)
-                .executeAndFetch(Answer.class);
-        }
-
-        if (answer.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(answer.get(0));
-        }
-    }
-
-    //this method is used when user calls EndAnswerUpload
-    //to inform the end of his upload.
-    public String enableAnswer(int answerId, User user){
-        if(!answerExists(answerId, user))
-            return "InvalidPermissions";
-        else{
-            String sql =
-                "UPDATE answer SET " +
-                "loaded = NOW(), " +
-                "enabled = true " +
-                "WHERE id = :id";
-                
-            try(Connection con = sql2o.open()){
-                con.createQuery(sql)
-                .addParameter("id", answerId)
-                .executeUpdate();
-
-                return "Success";
-            }
-            catch(Exception e){
-                return "DatabaseError";
-            }
-        }
-    }
-
-    // Deletes an answer from the database.
-    public String deleteAnswer(int answerId, User user){
-        if(!answerExists(answerId, user))
-            return "InvalidPermissions";
-        else{
-            String sql =
-                "DELETE FROM answer " +
-                "WHERE id = :id";
-
-            try(Connection con = sql2o.open()){		
-                con.createQuery(sql)
-                    .addParameter("id", answerId)
-                    .executeUpdate();
-
-                return "Success";
-            }
-            catch(Exception e){
-                return "DatabaseError";
-            }
-        }
-    }
 
     // Returns a list of answers to a task.
     public List<Answer> getAnswersByTask(int taskId) {
@@ -237,5 +77,165 @@ public class AnswerService {
             return answers;
         }        
     }
-    
+
+
+    // Handles the creating of a new answer from StartAnswerUpload API-call.
+    public Optional<Answer> setInitialAnswer(Subuser subUser, Integer taskId, String fileType, String answer_type){
+        Date date = new Date();
+
+        List<Answer> answer;
+
+        // first we need to check that the task exists and is enabled
+        if(!taskExists(taskId))
+            return Optional.empty();
+
+        int newAnswerId = -1;
+
+
+        //create new disabled answer instance to be uploaded
+        String sql =
+            "INSERT INTO answer " +
+            "(task_id, subuser_id, created, answer_type) " +
+            "VALUES " +
+            "(:task_id, :subuser_id, NOW(), :answer_type)";
+
+        try(Connection con = sql2o.open()) {
+        
+            newAnswerId  = con.createQuery(sql, true)
+                .addParameter("task_id", taskId)
+                .addParameter("subuser_id", subUser.getId())
+                .addParameter("answer_type", answer_type)
+                .executeUpdate()
+                .getKey(Integer.class);
+        }
+
+
+        // Generate URI for the answer and save it to database.
+        String uri = "answer_suid_" + Integer.toString(subUser.getId()) +
+                "_id_" + newAnswerId + "." + fileType;
+        
+        sql = "UPDATE answer SET uri = :uri WHERE id = :id";
+        
+        try(Connection con = sql2o.open()){
+            con.createQuery(sql)
+                .addParameter("uri", uri)
+                .addParameter("id", newAnswerId)
+                .executeUpdate();
+        }
+
+
+        // Get the newly created answer and return it.
+        sql =
+            "SELECT * " +
+            "FROM answer " +
+            "WHERE id = :id";
+
+        try(Connection con = sql2o.open()){
+            answer = con.createQuery(sql)
+                .throwOnMappingFailure(false)
+                .addParameter("id", newAnswerId)
+                .executeAndFetch(Answer.class);
+        }
+
+        if (answer.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(answer.get(0));
+        }
+    }
+
+    // This method is used when user calls EndAnswerUpload
+    // to inform the end of the user's upload. Enables answer.
+    public String enableAnswer(int answerId, User user){
+        if(!answerExistsAndOwnedBySubUser(answerId, user))
+            return "InvalidPermissions";
+        else{
+            String sql =
+                "UPDATE answer SET " +
+                "uploaded = true, " +
+                "enabled = true " +
+                "WHERE id = :id";
+                
+            try(Connection con = sql2o.open()){
+                con.createQuery(sql)
+                .addParameter("id", answerId)
+                .executeUpdate();
+
+                return "Success";
+            }
+            catch(Exception e){
+                return "DatabaseError";
+            }
+        }
+    }
+
+    // Deletes an answer from the database.
+    public String deleteAnswer(int answerId, User user){
+        if(!answerExistsAndOwnedBySubUser(answerId, user))
+            return "InvalidPermissions";
+        else{
+            String sql =
+                "DELETE FROM answer " +
+                "WHERE id = :id";
+
+            try(Connection con = sql2o.open()){		
+                con.createQuery(sql)
+                    .addParameter("id", answerId)
+                    .executeUpdate();
+
+                return "Success";
+            }
+            catch(Exception e){
+                return "DatabaseError";
+            }
+        }
+    }
+
+
+    // Checks if the answer is owned by given user
+    private boolean answerExistsAndOwnedBySubUser(int answerId, User user){
+
+        try(Connection con = sql2o.open()){
+
+            String sql =
+                "SELECT * " +
+                "FROM answer "+
+                "WHERE id = :aid";
+            
+            List<Answer> answer = con.createQuery(sql)
+                .throwOnMappingFailure(false)
+                .addParameter("aid", answerId)
+                .executeAndFetch(Answer.class);
+
+            if(answer.size() != 1)
+                return false;
+
+            return userService.requireSubUser(user, answer.get(0).getSubuser_id()) != null;
+        }
+        catch(Exception e){
+            return false;
+        }
+    }
+
+
+    // Checks if the task with the given id exists and is enabled
+    private boolean taskExists(int taskId){
+        String sql =
+            "SELECT * FROM task " +
+            "WHERE id = :task_id";
+
+        try(Connection con = sql2o.open()){
+            List<Task> task = con.createQuery(sql)
+                .throwOnMappingFailure(false)
+                .addParameter("task_id", taskId)
+                .executeAndFetch(Task.class);
+            
+            if(!task.isEmpty() && task.get(0).isEnabled()) return true;
+            else return false;
+        }
+        catch(Exception e){
+            return false;
+        }
+    }
+
 }

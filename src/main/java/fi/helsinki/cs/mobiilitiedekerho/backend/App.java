@@ -1,5 +1,6 @@
 package fi.helsinki.cs.mobiilitiedekerho.backend;
 
+
 import fi.helsinki.cs.mobiilitiedekerho.backend.services.*;
 
 import org.sql2o.Sql2o;
@@ -13,8 +14,9 @@ import io.jsonwebtoken.impl.crypto.MacProvider;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.Config;
 
+
 public class App {
-    
+
     private static Config appConfiguration;
 
     // Backend initialization.
@@ -23,13 +25,13 @@ public class App {
         
         // Load application-wide confguration from application.conf 
         appConfiguration = ConfigFactory.load();
-        
+
         // Sql2o object for the services
         Sql2o sql2o = new Sql2o(App.configureHikariConnectionPool());
-        
+
         // Generates a secret key for JSON Web Token signatures.
         Key key = MacProvider.generateKey();
-        
+
         // Create service instances
         UserService userService = new UserService(sql2o, key);        
         TaskService taskService = new TaskService(sql2o);
@@ -38,7 +40,7 @@ public class App {
         LikeService likeService = new LikeService(sql2o);
 
 
-        
+
         // This class is 'both' resource and service. 
         Misc misc = new Misc(userService, sql2o, appConfiguration);
 
@@ -53,17 +55,17 @@ public class App {
     // Configures Hikari Connection Pool.
     private static HikariDataSource configureHikariConnectionPool() {        
         HikariConfig hikariConfig = new HikariConfig();
-        
+
         hikariConfig.setJdbcUrl(appConfiguration.getString("db.jdbc_"));
         hikariConfig.setUsername(appConfiguration.getString("db.username"));
         hikariConfig.setPassword(appConfiguration.getString("db.password"));
         hikariConfig.addDataSourceProperty("cachePrepStmts", "true");
         hikariConfig.addDataSourceProperty("prepStmtCacheSize", "250");
         hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-        
+
         return new HikariDataSource(hikariConfig);
     }
-    
+
     // Sets response type to application/json.
     private static void SparkConfiguration() {
         Spark.before((req, res) -> {

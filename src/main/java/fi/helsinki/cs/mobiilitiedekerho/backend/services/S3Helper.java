@@ -12,13 +12,13 @@ import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
 
 
 public class S3Helper {
-    
+
     private String accessKey;
     private String secretAccessKey;
     private BasicAWSCredentials basicAWSCredentials;
     private AmazonS3Client s3Client;
-    
-    
+
+
     public S3Helper(String accessKey, String secretAccessKey) {
         System.setProperty("SDKGlobalConfiguration.ENFORCE_S3_SIGV4_SYSTEM_PROPERTY", "true");
         

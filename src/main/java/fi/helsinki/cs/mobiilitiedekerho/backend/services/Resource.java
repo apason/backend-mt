@@ -19,7 +19,7 @@ abstract public class Resource {
     private S3Helper s3Helper;
     private final Config appConfiguration;
 
-    
+
     public Resource(UserService userService, Config appConfiguration) {
         this.userService = userService;
         this.appConfiguration = appConfiguration;
@@ -127,6 +127,7 @@ abstract public class Resource {
         return new JsonResponse().setStatus("ParameterError").toJson();
     }
     
+
     UserService getUserService() {
         return userService;
     }
@@ -138,4 +139,5 @@ abstract public class Resource {
     Config getAppConfiguration() {
         return this.appConfiguration;
     }
+
 }

@@ -25,32 +25,32 @@ public class UserResource extends Resource {
         Spark.get("/GetAuthToken", (req, res) -> {
             return getAuthToken(req, res);
         });
-    	
+
         Spark.get("/CheckTokenIntegrity", (req, res) -> {
             checkAuthToken(req, res);
             return checkTokenIntegrity(req, res);
         });
-        
+
         Spark.get("/CreateUser", (req,res) -> {
             requireAnonymousUser(req, res);
             return createUser(req, res);
         });
-    	
+
         Spark.get("/DescribeUser", (req, res) -> {
             User user = requireAuthenticatedUser(req, res);
             return describeUser(req, res, user);
         });
-        
+
         Spark.get("/SetPrivacyLevel", (req, res) -> {
             User user = requireAuthenticatedUser(req, res);
             return setPrivacyLevel(req, res, user); 
         });
-        
+
         Spark.get("/SetPin", (req, res) -> {
             User user = requireAuthenticatedUser(req, res);
             return setPin(req, res, user); 
         });
-        
+
         Spark.get("/CreateSubUser", (req, res) -> {
             User user = requireAuthenticatedUser(req, res);
            return createSubUser(req, res, user); 
@@ -74,7 +74,7 @@ public class UserResource extends Resource {
         });
 
     }
-    
+
     // Generates a JSON Web Token for the client.
     // If email and password are set in GET, authenticates the user.
     // If they are not set, generates an anonymous token.
@@ -100,7 +100,7 @@ public class UserResource extends Resource {
             }
         }
         // else if ((email != null) || (password != null)) {
-        // 	  Error as one parameter is set but the other not.
+        //    Error as one parameter is set but the other not.
         //    Should not happen, but anyways...
         // }
         // else
@@ -143,8 +143,8 @@ public class UserResource extends Resource {
     String describeUser(Request req, Response res, User user) {
         return new JsonResponse().setObject(user).setStatus("Success").toJson();
     }
-    
-    
+
+
     //Sets the calling users privacy_level to the one given as a parameter.
     String setPrivacyLevel(Request req, Response res, User user) {
         JsonResponse jsonResponse = new JsonResponse();
@@ -169,8 +169,8 @@ public class UserResource extends Resource {
             return jsonResponse.setStatus("InvalidPrivacyLevelNumber").toJson();
         }
     }
-    
-    
+
+
     //Sets the calling users pin to the one given as a parameter.
     String setPin(Request req, Response res, User user) {
         JsonResponse jsonResponse = new JsonResponse();
@@ -182,8 +182,8 @@ public class UserResource extends Resource {
         
         return jsonResponse.setStatus(getUserService().setPin(user, pin)).toJson();
     }
-    
-    
+
+
     String createSubUser (Request req, Response res, User user){
         JsonResponse jsonResponse = new JsonResponse();
         String subuserNick = req.queryParams("subuser_nick");
@@ -205,9 +205,11 @@ public class UserResource extends Resource {
 
         int subuserId = getUserService().createSubUser(user, subuserNick);
         
-        Optional<Subuser> subuser = getUserService().getSubUserById(subuserId);
+        ArrayList<Subuser> subUsers = new ArrayList<Subuser>();
+        Optional<Subuser> subUser = getUserService().getSubUserById(subuserId);
+        subUsers.add(modifyUriToSignedDownloadUrl(subUser.get()));
         //No need to check as must exist.
-        return jsonResponse.setStatus("Success").setObject(modifyUriToSignedDownloadUrl(subuser.get())).toJson();
+        return jsonResponse.setStatus("Success").setObject(subUsers).toJson();
     }
 
     //It can be assumed that the subuser exist (requireSubUser() in defineRoutes
@@ -240,7 +242,7 @@ public class UserResource extends Resource {
         return jsonResponse.setStatus("Success")
             .setObject(subusers).toJson();
     }
-    
+
     // Generate signed url for subuser avatar uri.
     Subuser modifyUriToSignedDownloadUrl(Subuser su) {
         String url = this.getS3Helper().generateSignedDownloadUrl(
