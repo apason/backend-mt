@@ -15,7 +15,7 @@ public class Misc extends Resource {
 
     private final  Sql2o sql2o;
 
-    
+
     public Misc(UserService userService, Sql2o sql2o, Config appConfiguration) {
         super(userService, appConfiguration);
 
@@ -29,12 +29,12 @@ public class Misc extends Resource {
             return getEULA();
         
         });
-        
+
         Spark.get("/GetInstructions", (req, res) -> {
             requireAnonymousUser(req, res);
             return getInstructions();
         });
-        
+
         Spark.get("/GetCategoryMenuBG", (req, res) -> {
             requireAnonymousUser(req, res);
             return getCategoryMenuBG();
@@ -58,7 +58,7 @@ public class Misc extends Resource {
             return jsonResponse.setStatus("InfoNotFound").toJson();
         }
     }
-    
+
     private String getInstructions() {
         JsonResponse jsonResponse = new JsonResponse();
 
@@ -75,7 +75,7 @@ public class Misc extends Resource {
             return jsonResponse.setStatus("InfoNotFound").toJson();
         }
     }
-    
+
     private String getCategoryMenuBG() {
         JsonResponse jsonResponse = new JsonResponse();
 

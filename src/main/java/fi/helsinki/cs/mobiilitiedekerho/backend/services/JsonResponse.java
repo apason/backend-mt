@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
 
+
 // JsonResponse class is used the construct JSON responses.
 // The response always has the field status.
 // Fields can be set with addProperty(field_name, field_value) method.

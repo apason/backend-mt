@@ -10,7 +10,7 @@ public class LikeService {
 
     private Sql2o sql2o;
 
-    
+
     public LikeService(Sql2o sql2o) {
         this.sql2o = sql2o;
     }    

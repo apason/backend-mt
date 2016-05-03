@@ -33,7 +33,7 @@ public class UserService {
     }
 
     /*User-database methods start*/
-    
+
     // Returns an user from the database.
     // If the user is found, returns Optional<User> with the user object.
     // Otherwise returns an empty Optional<User>.
@@ -91,7 +91,7 @@ public class UserService {
         }
         return false;
     }
-    
+
     // Checks if a user exists with the given email.
     public boolean userExists(String email){
         String sql
@@ -106,8 +106,8 @@ public class UserService {
             return !user.isEmpty();
         }
     }
-    
-    
+
+
     // Sets the user's privacy-level.
     public String setPrivacyLevel(User user, Integer privacyLevel) {
             String sql =
@@ -127,7 +127,7 @@ public class UserService {
                 return "DatabaseError";
             }
     }
-    
+
     // Sets the user's pin.
     public String setPin(User user, String pin) {
             String sql =
@@ -194,7 +194,7 @@ public class UserService {
             return subusers;
         }
     }
-    
+
     // TODO: Duplicate!
     // Describe all SubUsers of the given user.
     public List<Subuser> describeSubUsers(User user){
@@ -253,7 +253,7 @@ public class UserService {
             return newKey;
         }
     }
-    
+
     // Deletes the pointed SubUser by the given id.
     public void deleteSubUser(String subuserId){
         String sql
@@ -322,8 +322,8 @@ public class UserService {
 
 
 
-    /* All teh methods below are all about token-stuff: */
-    
+    /* All the methods below are all about token-stuff: */
+
     // Generates a JSON Web Token for an anonymous user.
     // Returns the token.
     public String generateAnonymousToken(String client_ip) {
@@ -366,4 +366,5 @@ public class UserService {
             return false;
         }
     }
+
 }

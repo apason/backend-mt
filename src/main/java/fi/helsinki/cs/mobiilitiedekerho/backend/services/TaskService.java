@@ -38,7 +38,7 @@ public class TaskService {
             }
         }
     }
-    
+
     // Returns a list of tasks that belongs to a category.
     public List<Task> getTasksByCategory(int categoryId) {
         String sql
@@ -53,7 +53,7 @@ public class TaskService {
             return tasks;
         }        
     }
-    
+
     // Lists all tasks from the database.
     public List<Task> getAllTasks() {
         String sql
@@ -63,7 +63,7 @@ public class TaskService {
             return con.createQuery(sql).executeAndFetch(Task.class);
         }
     }
-    
+
 
     // Saves the task to the database.
     // TODO: Is this ever needed?

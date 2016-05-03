@@ -11,15 +11,15 @@ import java.util.Optional;
 
 
 public class CategoryService {
-    
+
     private final Sql2o sql2o;
 
-    
+
     public CategoryService(Sql2o sql2o) {
         this.sql2o = sql2o;
     }
-    
-    
+
+
     // Returns a category from the database by category_id.
     // If the category is found, returns Optional<Category> with the category object.
     // Otherwise, returns an empty Optional<Caetgory>
@@ -40,7 +40,7 @@ public class CategoryService {
             }
         }
     }
-    
+
     // Lists all categories from the database.
     public List<Category> getAllCategories() {
         String sql
@@ -96,5 +96,5 @@ public class CategoryService {
 // 
 //         return "Success";
 //     }
-    
+
 }
