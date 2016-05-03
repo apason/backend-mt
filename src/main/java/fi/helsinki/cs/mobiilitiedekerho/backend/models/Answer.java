@@ -11,10 +11,10 @@ public class Answer {
     private Date created;
     private boolean uploaded;
     private boolean enabled;
-    private String answer_type;
+    private String answer_type; //Should be either "video" or "image".
     private String uri;
 
-    
+
     public int getId() {
         return id;
     }
