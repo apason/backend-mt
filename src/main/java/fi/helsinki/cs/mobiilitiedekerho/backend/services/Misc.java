@@ -45,10 +45,11 @@ public class Misc extends Resource {
     private String getEULA() {
         JsonResponse jsonResponse = new JsonResponse();
 
-        String sql = "SELECT eula FROM info ";
+        String sql = "SELECT info_text FROM info WHERE id=:id";
 
         try(Connection con = sql2o.open()){
             List<String> eula = con.createQuery(sql)
+            .addParameter("id", "eula")
             .executeAndFetch(String.class);
 
             return jsonResponse.addPropery("eula", eula.get(0))
@@ -62,10 +63,11 @@ public class Misc extends Resource {
     private String getInstructions() {
         JsonResponse jsonResponse = new JsonResponse();
 
-        String sql = "SELECT instructions FROM info ";
+        String sql = "SELECT info_text FROM info WHERE id=:id";
 
         try(Connection con = sql2o.open()){
             List<String> instructions = con.createQuery(sql)
+            .addParameter("id", "instructions")
             .executeAndFetch(String.class);
 
             return jsonResponse.addPropery("instructions", instructions.get(0))
@@ -79,10 +81,11 @@ public class Misc extends Resource {
     private String getCategoryMenuBG() {
         JsonResponse jsonResponse = new JsonResponse();
 
-        String sql = "SELECT category_menu_bg_uri FROM info ";
+        String sql = "SELECT info_text FROM info WHERE id=:id";
 
         try(Connection con = sql2o.open()){
             List<String> BG_uri = con.createQuery(sql)
+            .addParameter("id", "category_menu_bg_uri")
             .executeAndFetch(String.class);
 
             return jsonResponse.addPropery("category_menu_bg_uri", this.getS3Helper().generateSignedDownloadUrl(this.getAppConfiguration().getString("app.graphics_bucket"), BG_uri.get(0)))
