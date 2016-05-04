@@ -1,6 +1,6 @@
-#Mobiilitiedekerhon backend#
+Mobiilitiedekerhon backend.
 
-This is the state of the repo at the course end.
+#Sprint 7#
 
 ##How to compile the project?##
 
@@ -13,7 +13,3 @@ How to run the project?
 or
 
 - run the shell script: "run_backend.sh"
-
-##All dependencies can be found in pom.xml##
-- Maven will download them for you if needed.
-- If a new version of a dependency is released change to it in pom.xml.
