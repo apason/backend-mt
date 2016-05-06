@@ -34,14 +34,18 @@ public class AnswerResource extends Resource {
         defineRoutes();
     }
 
+    // These are the file types that are accepted as answers.
+    // These are the ones that are supported (surely) across all devices.
     private void configureAllowedMimeTypes() {
-        /* List of allowed answer mime types. */
+        /* List of allowed answer-videos' mime types. */
         mimeTypes.put("mp4", "video/mp4");
         mimeTypes.put("webm", "video/webm");
         mimeTypes.put("mkv", "video/x-matroska");
-        /* image/jpeg can end with .jpg or .jpeg */
-        mimeTypes.put("jpeg", "image/jpeg");
-        mimeTypes.put("jpg", "image/jpeg");
+
+
+        /* List of allowed answer-images' mime types. */
+        // image/jpeg mimetype can be expressed in a filename with both .jpg or .jpeg
+        mimeTypes.put("jpeg", "image/jpeg"); mimeTypes.put("jpg", "image/jpeg");
         mimeTypes.put("png", "image/png");
         mimeTypes.put("gif", "image/gif");        
     }
