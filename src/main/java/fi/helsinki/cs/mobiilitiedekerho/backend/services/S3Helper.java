@@ -31,14 +31,28 @@ public class S3Helper {
         s3Client.setRegion(com.amazonaws.regions.Region.getRegion(Regions.EU_CENTRAL_1));
     }
     
+    /**
+    * Generates PresignedUrl to download the given file.
+    * @param bucketName the bucketName where the file is.
+    * @param objectKey the file's name there.
+    * @return The PresignedUrl to download the given file that expires in some time.
+    */
     public String generateSignedDownloadUrl(String bucketName, String objectKey) {
         return generateSignedUrl(bucketName, objectKey, HttpMethod.GET, null);
     }
 
+    /**
+    * Generates PresignedUrl to upload a file.
+    * @param bucketName the bucketName where the file is.
+    * @param objectKey the file's name there.
+    * @return The PresignedUrl to upload the given file that expires in some time.
+    */
     public String generateSignedUploadUrl(String bucketName, String objectKey, String MimeTypee) {
         return generateSignedUrl(bucketName, objectKey, HttpMethod.PUT,  MimeTypee);
     }
     
+    // This generates the PresignedUrl.
+    // To the uploading it adds the needed headers to the signed url.
     private String generateSignedUrl(String bucketName, String objectKey, HttpMethod method, String mimeType) {
         java.util.Date expiration = new java.util.Date();
         long milliSeconds = expiration.getTime();
