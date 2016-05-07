@@ -30,7 +30,7 @@ public class LikeService {
         }
     }
 
-    // Get all the likes to answer made by the SubuSer as parameter.
+    // Get all the likes to answer made by the SubUser as parameter.
     public List<Like> describeLikesToSubuser(Subuser subUser){
         String sql
             = "SELECT * FROM slaikka "

@@ -73,6 +73,7 @@ public class CategoryResource extends Resource {
         return jsonResponse.setStatus("Success").toJson();
     }
 
+    // Describe all categories in the database.
     String DescribeCategories(Request req, Response res){
         JsonResponse jsonResponse = new JsonResponse();
         List<Category> categories = categoryService.getAllCategories();

@@ -32,19 +32,20 @@ public class App {
         // Generates a secret key for JSON Web Token signatures.
         Key key = MacProvider.generateKey();
 
-        // Create service instances
+
+        /* Creates (starts) all Services and Resources that are part of the server. */
+
+        // Create and starts the services' instances.
         UserService userService = new UserService(sql2o, key);        
         TaskService taskService = new TaskService(sql2o);
         AnswerService answerService = new AnswerService(sql2o, userService);
         CategoryService categoryService = new CategoryService(sql2o);
         LikeService likeService = new LikeService(sql2o);
 
-
-
         // This class is 'both' resource and service. 
         Misc misc = new Misc(userService, sql2o, appConfiguration);
 
-        // Create resources.
+        // Create and starts the resources' instances.
         LikeResource likeResource = new LikeResource(likeService, userService, answerService, appConfiguration);
         TaskResource taskResource = new TaskResource(userService, taskService, appConfiguration);
         AnswerResource answerResource = new AnswerResource(userService, answerService, appConfiguration);
@@ -67,6 +68,7 @@ public class App {
     }
 
     // Sets response type to application/json.
+    // And sets explicitely the charset to utf-8.
     private static void SparkConfiguration() {
         Spark.before((req, res) -> {
             res.type("application/json;charset=utf-8");

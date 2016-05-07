@@ -33,8 +33,8 @@ public class LikeResource extends Resource {
     // Defines routes for LikeResource
     private void defineRoutes() {
         Spark.get("/LikeAnswer", (req, res) -> {
-                User user = requireAuthenticatedUser(req, res);
-                Subuser subUser = requireSubUser(req, res, user);
+            User user = requireAuthenticatedUser(req, res);
+            Subuser subUser = requireSubUser(req, res, user);
             return likeAnswer(req, res, subUser);
         });
 
@@ -57,6 +57,8 @@ public class LikeResource extends Resource {
     }
 
 
+    // Describe all likes related to the given subuser.
+    // Direction is TO or From depending of what likes are wanted to be described.
     String describeSubuserLikes(Subuser subUser, Direction direction){
         JsonResponse jsonResponse = new JsonResponse();
 
@@ -74,6 +76,7 @@ public class LikeResource extends Resource {
             .toJson();
     }
 
+    // Likes and answer if possible.
     private String likeAnswer(Request req, Response res, Subuser subUser){
         JsonResponse jsonResponse = new JsonResponse();
         int answerIdInt; 
@@ -102,6 +105,7 @@ public class LikeResource extends Resource {
     }
 
 
+    // Describe all likes to the given answer.
     private String describeAnswerLikes(Request req, Response res){
         JsonResponse jsonResponse = new JsonResponse();
         int answerIdInt;

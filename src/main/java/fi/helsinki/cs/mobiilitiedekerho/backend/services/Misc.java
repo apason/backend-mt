@@ -39,9 +39,12 @@ public class Misc extends Resource {
             requireAnonymousUser(req, res);
             return getCategoryMenuBG();
         });
+        
+        // + GetMainMenuBG?
     }
 
 
+    // Returns to the caller the EULA in the info field.
     private String getEULA() {
         JsonResponse jsonResponse = new JsonResponse();
 
@@ -60,6 +63,7 @@ public class Misc extends Resource {
         }
     }
 
+    // Returns to the caller the instructions in the info field.
     private String getInstructions() {
         JsonResponse jsonResponse = new JsonResponse();
 
@@ -78,6 +82,7 @@ public class Misc extends Resource {
         }
     }
 
+    // Returns to the caller a signed url to get the CategoryMenuBG.
     private String getCategoryMenuBG() {
         JsonResponse jsonResponse = new JsonResponse();
 
