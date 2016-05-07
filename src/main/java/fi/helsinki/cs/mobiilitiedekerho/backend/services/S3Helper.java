@@ -45,10 +45,11 @@ public class S3Helper {
     * Generates PresignedUrl to upload a file.
     * @param bucketName the bucketName where the file is.
     * @param objectKey the file's name there.
+    * @param mimeType the mimeType of the file to be uploaded (needed for the header)
     * @return The PresignedUrl to upload the given file that expires in some time.
     */
-    public String generateSignedUploadUrl(String bucketName, String objectKey, String MimeTypee) {
-        return generateSignedUrl(bucketName, objectKey, HttpMethod.PUT,  MimeTypee);
+    public String generateSignedUploadUrl(String bucketName, String objectKey, String mimeType) {
+        return generateSignedUrl(bucketName, objectKey, HttpMethod.PUT,  mimeType);
     }
     
     // This generates the PresignedUrl.
